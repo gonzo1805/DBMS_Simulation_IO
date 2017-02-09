@@ -1,11 +1,11 @@
 package ucr.group1.query;
-import ucr.group1.generator.generator;
+import ucr.group1.generator.Generator;
 
 /**
  * Created by Daniel on 8/2/2017.
  */
-public class query {
-    private queryType type;
+public class Query {
+    private QueryType type;
     private double lifespan;
     private double departureTime;
     private double arrivalTime;
@@ -16,9 +16,9 @@ public class query {
     private double storageDuration;
     private double executionDuration;
 
-    public query(int ID, generator gener){
+    public Query(int ID, Generator gener){
         id = ID;
-        type = new queryType(gener);
+        type = new QueryType(gener);
         lifespan = 0;
         departureTime = Double.MAX_VALUE;
         arrivalTime = Double.MAX_VALUE;

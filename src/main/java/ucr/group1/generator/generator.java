@@ -4,13 +4,13 @@ import java.util.Random;
 /**
  * Created by Daniel on 8/2/2017.
  */
-public class generator {
+public class Generator {
     private Random random;
 
     /*
-     * Builds a new generator
+     * Builds a new Generator
      */
-    public generator(){
+    public Generator(){
         random = new Random();
     }
 

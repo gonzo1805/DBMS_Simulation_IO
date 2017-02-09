@@ -1,12 +1,12 @@
 package ucr.group1.query;
-import ucr.group1.generator.generator;
+import ucr.group1.generator.Generator;
 
 /**
  * Created by Daniel on 8/2/2017.
  */
 
 
-public class queryType {
+public class QueryType {
     private type qType;
     private int priority;
     private boolean readOnly;
@@ -18,7 +18,7 @@ public class queryType {
         SELECT;
     }
 
-    public queryType(generator gener){
+    public QueryType(Generator gener){
         double randomNumber = gener.getProbability();
         if(randomNumber < 0.33){
             qType = type.JOIN;
