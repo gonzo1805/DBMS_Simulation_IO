@@ -13,7 +13,7 @@ public abstract class Module<E> {
     int numberOfServers;
     int numberOfFreeServers;
     Queue<E> beignServedQuerys;
-    List<Event> list;// De nuestra clase event, TODO hacer la clase event
+    Queue<Event/*TODO nuestra clase event*/> eventList;
 
     /**
      * Inserts a Query on queue if there is not free servers, if there are free servers, inserts a Query on
