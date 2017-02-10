@@ -3,6 +3,8 @@ package ucr.group1.module;
 import ucr.group1.query.Query;
 
 import java.awt.*;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.locks.Condition;
 
@@ -12,7 +14,11 @@ import java.util.concurrent.locks.Condition;
 public class Connection extends Module<Query> {
 
     public Connection(int numberOfFreeServers, int numberOfServers, Queue<Query> queue, Queue<Query> beignServedQuerys, Queue<Event> eventList) {
-        super(numberOfFreeServers, numberOfServers, queue, beignServedQuerys, eventList);
+        this.queue = new PriorityQueue<Query>();
+        this.numberOfFreeServers = numberOfFreeServers;
+        this.numberOfServers = numberOfServers;
+        this.beignServedQuerys = beignServedQuerys;
+        this.eventList = eventList;
     }
 
     public void entriesANewQuery(Query query) {

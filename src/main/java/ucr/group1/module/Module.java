@@ -15,13 +15,13 @@ public abstract class Module<E> {
     protected Queue<E> beignServedQuerys;
     protected Queue<Event/*TODO nuestra clase event*/> eventList;
 
-    public Module(int numberOfFreeServers, int numberOfServers, Queue<E> queue, Queue<E> beignServedQuerys, Queue<Event> eventList) {
+    /*public Module(int numberOfFreeServers, int numberOfServers, Queue<E> queue, Queue<E> beignServedQuerys, Queue<Event> eventList) {
         this.beignServedQuerys = beignServedQuerys;
         this.queue = queue;
         this.numberOfFreeServers = numberOfFreeServers;
         this.numberOfServers = numberOfServers;
         this.eventList = eventList;
-    }
+    }*/
 
     /**
      * Inserts a Query on queue if there is not free servers, if there are free servers, inserts a Query on
@@ -64,5 +64,25 @@ public abstract class Module<E> {
 
     public Queue<Event> getEventList() {
         return eventList;
+    }
+
+    public void setQueue(Queue<E> queue) {
+        this.queue = queue;
+    }
+
+    public void setNumberOfServers(int numberOfServers) {
+        this.numberOfServers = numberOfServers;
+    }
+
+    public void setNumberOfFreeServers(int numberOfFreeServers) {
+        this.numberOfFreeServers = numberOfFreeServers;
+    }
+
+    public void setBeignServedQuerys(Queue<E> beignServedQuerys) {
+        this.beignServedQuerys = beignServedQuerys;
+    }
+
+    public void setEventList(Queue<Event> eventList) {
+        this.eventList = eventList;
     }
 }
