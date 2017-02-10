@@ -90,6 +90,9 @@ public class Query {
         this.systemCallDuration = systemCallDuration;
     }
 
+    /*
+     *
+     */
     public void setValidationDuration(double validationDuration) {
         this.lifespan += validationDuration;
         this.validationDuration = validationDuration;
