@@ -1,28 +1,31 @@
 package ucr.group1.simulation;
 import ucr.group1.event.Event;
+import ucr.group1.event.EventComparator;
 
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by Daniel on 11/2/2017.
  */
-public class Simulation implements Comparator<Event>, Comparable<Event>{
+public class Simulation {
+
     private double time;
     private Queue<Event> eventList;
+    private List<Event> finalizedEvents;
+    private int kConnections;
+    private int nConcurrentProcesses;
+    private int pTransactionProcesses;
+    private int mAvailableProcesses;
+    private int tTimeout;
+    private boolean slowMode;
+    private double timeBetweenEvents;
+
 
     public Simulation(){
         time = 0;
-        eventList = new PriorityQueue<Event>(Comparator<Event> comparator);
+        eventList = new PriorityQueue<Event>(1000000, new EventComparator());
+        finalizedEvents = new LinkedList<Event>();
     }
 
-    public int compareTo(Event o) {
-        return (int)(0 - o.getTime());
-    }
-
-    public int compare(Event o1, Event o2) {
-        return 0;
-    }
 
 }

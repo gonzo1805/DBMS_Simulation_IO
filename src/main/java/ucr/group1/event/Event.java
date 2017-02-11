@@ -2,6 +2,8 @@ package ucr.group1.event;
 
 import ucr.group1.query.Query;
 
+import java.util.Comparator;
+
 /**
  * Created by Gonzalo on 2/11/2017.
  */
@@ -10,6 +12,15 @@ public class Event {
     private Query query;
     private double time;
     private eventType eventType;
+
+    public int compare(Event o1, Event o2) {
+        if (o1.getTime() == o2.getTime()) {
+            return 0;
+        } else if (o1.getTime() > o2.getTime()) {
+            return 1;
+        }
+        return -1;
+    }
 
     public enum eventType {
         ENTER_CONNECTION,
