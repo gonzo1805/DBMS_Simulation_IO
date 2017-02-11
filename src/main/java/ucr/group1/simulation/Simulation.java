@@ -34,5 +34,9 @@ public class Simulation {
         this.timeBetweenEvents = timeBetweenEvents;
     }
 
+    public double getTime() {
+        return time;
+    }
+
 
 }

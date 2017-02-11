@@ -1,11 +1,12 @@
 package ucr.group1.module;
 
-import java.awt.*;
+import ucr.group1.event.*;
 import java.util.List;
 import java.util.Queue;
 
 import ucr.group1.generator.Generator;
 import ucr.group1.query.*;
+import ucr.group1.simulation.Simulation;
 
 /**
  * Created by Gonzalo on 2/8/2017.
@@ -15,15 +16,17 @@ public abstract class Module<E> {
     //protected int numberOfServers;
     protected int numberOfFreeServers;
     protected Queue<E> beingServedQueries;
-    protected Queue<Event/*TODO nuestra clase event*/> eventList;
+    protected Queue<Event> eventList;
     protected Generator generator;
+    protected Simulation simulation;
 
-    /*public Module(int numberOfFreeServers, int numberOfServers, Queue<E> queue, Queue<E> beignServedQuerys, Queue<Event> eventList) {
-        this.beignServedQuerys = beignServedQuerys;
+    /*public Module(int numberOfFreeServers, int numberOfServers, Queue<E> queue, Queue<E> beignServedQuerys, Queue<Event> eventList, Simulation simulation) {
+        //this.beignServedQuerys = beignServedQuerys;
         this.queue = queue;
         this.numberOfFreeServers = numberOfFreeServers;
-        this.numberOfServers = numberOfServers;
+        //this.numberOfServers = numberOfServers;
         this.eventList = eventList;
+        this.simulation = simulation;
     }*/
 
     /**
