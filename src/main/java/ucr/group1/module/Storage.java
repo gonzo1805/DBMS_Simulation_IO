@@ -22,4 +22,8 @@ public class Storage extends Module<String> {
     public Query aQueryFinished() {
         return null;
     }
+
+    public boolean confirmAliveQuery(Query query) {
+        return false;
+    }
 }

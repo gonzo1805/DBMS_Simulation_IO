@@ -3,6 +3,8 @@ package ucr.group1.module;
 import java.awt.*;
 import java.util.List;
 import java.util.Queue;
+
+import ucr.group1.generator.Generator;
 import ucr.group1.query.*;
 
 /**
@@ -10,10 +12,11 @@ import ucr.group1.query.*;
  */
 public abstract class Module<E> {
     protected Queue<E> queue;
-    protected int numberOfServers;
+    //protected int numberOfServers;
     protected int numberOfFreeServers;
-    protected Queue<E> beignServedQuerys;
+    protected Queue<E> beingServedQueries;
     protected Queue<Event/*TODO nuestra clase event*/> eventList;
+    protected Generator generator;
 
     /*public Module(int numberOfFreeServers, int numberOfServers, Queue<E> queue, Queue<E> beignServedQuerys, Queue<Event> eventList) {
         this.beignServedQuerys = beignServedQuerys;
@@ -46,43 +49,69 @@ public abstract class Module<E> {
      */
     public abstract Query aQueryFinished();
 
+    /**
+     * Return a boolean if the query needs to be rejected on the next module or get out from
+     * a queue while waiting
+     * @param query the query that we want to see the kill boolean
+     * @return the kill boolean
+     */
+    public abstract boolean confirmAliveQuery(Query query);
+
+
+    /**
+     * Setters and Getters
+     */
+
+
+    /**
+     *
+     * @return
+     */
     public Queue<E> getQueue() {
         return queue;
     }
 
-    public int getNumberOfServers() {
+    /*public int getNumberOfServers() {
         return numberOfServers;
-    }
+    }*/
 
     public int getNumberOfFreeServers() {
         return numberOfFreeServers;
     }
 
-    public Queue<E> getBeignServedQuerys() {
-        return beignServedQuerys;
+    public Queue<E> getBeingServedQueries() {
+        return beingServedQueries;
     }
 
     public Queue<Event> getEventList() {
         return eventList;
     }
 
+    public Generator getGenerator() {
+        return generator;
+    }
+
     public void setQueue(Queue<E> queue) {
         this.queue = queue;
     }
 
-    public void setNumberOfServers(int numberOfServers) {
+    /*public void setNumberOfServers(int numberOfServers) {
         this.numberOfServers = numberOfServers;
-    }
+    }*/
 
     public void setNumberOfFreeServers(int numberOfFreeServers) {
         this.numberOfFreeServers = numberOfFreeServers;
     }
 
-    public void setBeignServedQuerys(Queue<E> beignServedQuerys) {
-        this.beignServedQuerys = beignServedQuerys;
+    public void setBeingServedQueries(Queue<E> beingServedQueries) {
+        this.beingServedQueries = beingServedQueries;
     }
 
-    public void setEventList(Queue<Event> eventList) {
+    /*public void setEventList(Queue<Event> eventList) {
         this.eventList = eventList;
+    }*/
+
+    public void setGenerator(Generator generator) {
+        this.generator = generator;
     }
 }

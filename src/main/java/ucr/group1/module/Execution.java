@@ -22,4 +22,8 @@ public class Execution extends Module<String> {
     public Query aQueryFinished() {
         return null;
     }
+
+    public boolean confirmAliveQuery(Query query) {
+        return false;
+    }
 }

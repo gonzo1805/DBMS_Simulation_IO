@@ -13,16 +13,17 @@ import java.util.concurrent.locks.Condition;
  */
 public class Connection extends Module<Query> {
 
-    public Connection(int numberOfFreeServers, int numberOfServers, Queue<Query> queue, Queue<Query> beignServedQuerys, Queue<Event> eventList) {
-        this.queue = new PriorityQueue<Query>();
+    public Connection(int numberOfFreeServers, Queue<Query> beingServedQueries, Queue<Event> eventList) {
         this.numberOfFreeServers = numberOfFreeServers;
-        this.numberOfServers = numberOfServers;
-        this.beignServedQuerys = beignServedQuerys;
+        this.beingServedQueries = new PriorityQueue<Query>();
         this.eventList = eventList;
     }
 
     public void entriesANewQuery(Query query) {
-
+        if (numberOfFreeServers > 0) {
+            beingServedQueries.add(query);
+           // getGenerator().getRandomUniform(0.01, 0.05);
+        }
     }
 
     public void aQueryIsServed() {
@@ -35,5 +36,9 @@ public class Connection extends Module<Query> {
 
     public Query aQueryFinished() {
         return null;
+    }
+
+    public boolean confirmAliveQuery(Query query) {
+        return false;
     }
 }
