@@ -31,7 +31,7 @@ public abstract class Module<E> {
      * beignServedQuerys
      * @param query the Query to insert on queue
      */
-    public abstract void entriesANewQuery(Query query);
+    public abstract double entriesANewQuery(Query query);
 
     /**
      * Gets the next Query and inserts on beignServedQuerys

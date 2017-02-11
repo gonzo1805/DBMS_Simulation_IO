@@ -19,11 +19,13 @@ public class Connection extends Module<Query> {
         this.eventList = eventList;
     }
 
-    public void entriesANewQuery(Query query) {
+    public double entriesANewQuery(Query query) {
         if (numberOfFreeServers > 0) {
+            //query.setArrivalTime(time);/*TODO crear clase event*/
             beingServedQueries.add(query);
-           // getGenerator().getRandomUniform(0.01, 0.05);
+            query.setDepartureTime(getGenerator().getRandomUniform(0.01, 0.05) /*+*/ /*time*/);
         }
+        return 0;
     }
 
     public void aQueryIsServed() {

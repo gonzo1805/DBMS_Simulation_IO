@@ -7,8 +7,8 @@ import ucr.group1.query.Query;
  */
 public class Storage extends Module<String> {
 
-    public void entriesANewQuery(Query query) {
-
+    public double entriesANewQuery(Query query) {
+        return 1;
     }
 
     public void aQueryIsServed() {
