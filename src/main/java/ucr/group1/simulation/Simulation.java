@@ -21,10 +21,17 @@ public class Simulation {
     private double timeBetweenEvents;
 
 
-    public Simulation(){
+    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses, int tTimeout, boolean slowMode, double timeBetweenEvents) {
         time = 0;
         eventList = new PriorityQueue<Event>(1000000, new EventComparator());
         finalizedEvents = new LinkedList<Event>();
+        this.kConnections = kConnections;
+        this.nConcurrentProcesses = nConcurrentProcesses;
+        this.pTransactionProcesses = pTransactionProcesses;
+        this.mAvailableProcesses = mAvailableProcesses;
+        this.tTimeout = tTimeout;
+        this.slowMode = slowMode;
+        this.timeBetweenEvents = timeBetweenEvents;
     }
 
 
