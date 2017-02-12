@@ -15,6 +15,7 @@ public class Query {
     private double validationDuration;
     private double storageDuration;
     private double executionDuration;
+    private boolean dead;
 
     public Query(int ID, Generator gener){
         id = ID;
@@ -27,6 +28,7 @@ public class Query {
         validationDuration = 0;
         storageDuration = 0;
         executionDuration = 0;
+        dead = false;
     }
 
     public double getArrivalTime() {
@@ -59,6 +61,10 @@ public class Query {
 
     public double getValidationDuration() {
         return validationDuration;
+    }
+
+    public boolean getDead() {
+        return this.dead;
     }
 
     public void setArrivalTime(double arrivalTime) {
@@ -96,5 +102,9 @@ public class Query {
     public void setValidationDuration(double validationDuration) {
         this.lifespan += validationDuration;
         this.validationDuration = validationDuration;
+    }
+
+    public void kill() {
+        this.dead = true;
     }
 }

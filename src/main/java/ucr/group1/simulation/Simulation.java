@@ -38,5 +38,9 @@ public class Simulation {
         return time;
     }
 
+    public Event getNextEvent() {
+        return eventList.poll();
+    }
+
 
 }

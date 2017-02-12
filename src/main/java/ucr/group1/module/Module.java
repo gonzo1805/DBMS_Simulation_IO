@@ -20,13 +20,8 @@ public abstract class Module<E> {
     protected Generator generator;
     protected Simulation simulation;
 
-    /*public Module(int numberOfFreeServers, int numberOfServers, Queue<E> queue, Queue<E> beignServedQuerys, Queue<Event> eventList, Simulation simulation) {
-        //this.beignServedQuerys = beignServedQuerys;
-        this.queue = queue;
-        this.numberOfFreeServers = numberOfFreeServers;
-        //this.numberOfServers = numberOfServers;
-        this.eventList = eventList;
-        this.simulation = simulation;
+    /*public Module(Generator generator) {
+        this.generator = generator;
     }*/
 
     /**
