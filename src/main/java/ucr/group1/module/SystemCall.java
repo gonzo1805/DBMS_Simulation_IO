@@ -21,29 +21,41 @@ public class SystemCall extends Module<Query> {
     }
 
     public double entriesANewQuery(Query query) {
+        query.setArrivalTime(simulation.getTime());
         if (numberOfFreeServers > 0) {
             numberOfFreeServers--;
-            query.setArrivalTime(simulation.getTime());
             beingServedQueries.add(query);
             query.setDepartureTime(getGenerator().getNormal(1.5, 0.1) + query.getArrivalTime());
             return query.getDepartureTime();
         }
-        return 0;
+        queue.add(query);
+        return -1;
     }
 
     public void aQueryIsServed() {
-
+        Query toBeServed = queue.poll();
+        toBeServed.setArrivalTime(simulation.getTime());
+        toBeServed.setDepartureTime(simulation.getTime() + getGenerator().getNormal(1.5, 0.1));
+        beingServedQueries.add(toBeServed);
     }
 
     public void rejectQuery(Query query) {
-
+        query.kill();
     }
 
-    public Query aQueryFinished() {
-        return null;
+    public Query aQueryFinished(){
+        Query out = beingServedQueries.poll();
+        out.setSystemCallDuration(simulation.getTime() - out.getArrivalTime());
+        if(!queue.isEmpty()){
+            aQueryIsServed();
+        }
+        else{
+            numberOfFreeServers++;
+        }
+        return out;
     }
 
     public boolean confirmAliveQuery(Query query) {
-        return false;
+        return !query.getDead();
     }
 }

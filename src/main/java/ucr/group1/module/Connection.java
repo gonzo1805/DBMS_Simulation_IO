@@ -68,7 +68,10 @@ public class Connection extends Module<Query> {
      * @return the query from the beingServedQuery
      */
     public Query aQueryFinished() {
-        return beingServedQueries.poll();
+        numberOfFreeServers++;
+        Query finished = beingServedQueries.poll();
+        finished.setConectionDuration(simulation.getTime() - finished.getArrivalTime());
+        return finished;
     }
 
     /**
