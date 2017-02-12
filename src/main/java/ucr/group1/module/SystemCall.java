@@ -34,7 +34,6 @@ public class SystemCall extends Module<Query> {
 
     public void aQueryIsServed() {
         Query toBeServed = queue.poll();
-        toBeServed.setArrivalTime(simulation.getTime());
         toBeServed.setDepartureTime(simulation.getTime() + getGenerator().getNormal(1.5, 0.1));
         beingServedQueries.add(toBeServed);
     }

@@ -33,7 +33,6 @@ public class Validation extends Module<Query> {
 
     public void aQueryIsServed() {
         Query toBeServed = queue.poll();
-        toBeServed.setArrivalTime(simulation.getTime());
         toBeServed.setDepartureTime(simulation.getTime() + getServiceDuration(toBeServed));
         beingServedQueries.add(toBeServed);
     }
