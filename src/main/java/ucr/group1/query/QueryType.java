@@ -42,6 +42,8 @@ public class QueryType {
         }
     }
 
+    public type getType(){ return qType; }
+
     public int getPriority(){
         return priority;
     }
