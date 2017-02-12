@@ -28,6 +28,7 @@ public class SystemCall extends Module<Query> {
             query.setDepartureTime(getGenerator().getNormal(1.5, 0.1) + query.getArrivalTime());
             return query.getDepartureTime();
         }
+        return 0;
     }
 
     public void aQueryIsServed() {
