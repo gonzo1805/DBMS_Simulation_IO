@@ -12,19 +12,20 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class SystemCall extends Module<Query> {
 
+    public Query beingServedQuery;
+
     public SystemCall(Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = 1;
         this.queue = new LinkedBlockingQueue<Query>();
-        this.beingServedQueries = new PriorityQueue<Query>(1, new QueryComparator());// Tentativo ya que es solo de 1 espacio
     }
 
     public double entriesANewQuery(Query query) {
         query.setArrivalTime(simulation.getTime());
         if (numberOfFreeServers > 0) {
             numberOfFreeServers--;
-            beingServedQueries.add(query);
+            beingServedQuery = query;
             query.setDepartureTime(getGenerator().getNormal(1.5, 0.1) + query.getArrivalTime());
             return query.getDepartureTime();
         }
@@ -35,7 +36,7 @@ public class SystemCall extends Module<Query> {
     public void aQueryIsServed() {
         Query toBeServed = queue.poll();
         toBeServed.setDepartureTime(simulation.getTime() + getGenerator().getNormal(1.5, 0.1));
-        beingServedQueries.add(toBeServed);
+        beingServedQuery = toBeServed;
     }
 
     public void rejectQuery(Query query) {
@@ -43,7 +44,8 @@ public class SystemCall extends Module<Query> {
     }
 
     public Query aQueryFinished(){
-        Query out = beingServedQueries.poll();
+        Query out = beingServedQuery;
+        beingServedQuery = null;
         out.setSystemCallDuration(simulation.getTime() - out.getArrivalTime());
         if(!queue.isEmpty()){
             aQueryIsServed();

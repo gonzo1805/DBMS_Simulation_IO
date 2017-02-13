@@ -39,7 +39,7 @@ public class Storage extends Module<Query> {
     }
 
     public void rejectQuery(Query query) {
-
+        query.kill();
     }
 
     public Query aQueryFinished() {
@@ -90,6 +90,6 @@ public class Storage extends Module<Query> {
     }
 
     public boolean confirmAliveQuery(Query query) {
-        return false;
+        return !query.getDead();
     }
 }

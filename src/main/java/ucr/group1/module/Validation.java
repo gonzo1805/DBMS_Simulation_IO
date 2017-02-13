@@ -80,6 +80,6 @@ public class Validation extends Module<Query> {
     }
 
     public boolean confirmAliveQuery(Query query) {
-        return false;
+        return !query.getDead();
     }
 }
