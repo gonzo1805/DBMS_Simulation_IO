@@ -41,6 +41,7 @@ public class Connection extends Module<Query> {
             query.setArrivalTime(simulation.getTime());
             beingServedQueries.add(query);
             query.setDepartureTime(getGenerator().getRandomUniform(0.01, 0.05) + query.getArrivalTime());
+            query.setBeingServed(true);
             return query.getDepartureTime();
         } else {
             rejectQuery(query);
@@ -68,7 +69,11 @@ public class Connection extends Module<Query> {
      * @return the query from the beingServedQuery
      */
     public Query aQueryFinished() {
-        return beingServedQueries.poll();
+        numberOfFreeServers++;
+        Query finished = beingServedQueries.poll();
+        finished.setConectionDuration(simulation.getTime() - finished.getArrivalTime());
+        finished.setBeingServed(false);
+        return finished;
     }
 
     /**

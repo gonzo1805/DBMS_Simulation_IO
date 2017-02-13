@@ -1,26 +1,106 @@
 package ucr.group1.module;
 
+import ucr.group1.generator.Generator;
 import ucr.group1.query.Query;
+import ucr.group1.simulation.Simulation;
+
+import java.util.PriorityQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class Execution extends Module<String> {
+public class Execution extends Module<Query> {
 
-    public double entriesANewQuery(Query query) {
-        return 1;
+    Query ddlToBeExecuted;
+    int totalServers;
+    boolean aDdlIsWaiting;
+
+    public Execution(int numberOfFreeServers, Simulation simulation, Generator generator) {
+        this.generator = generator;
+        this.simulation = simulation;
+        this.numberOfFreeServers = numberOfFreeServers;
+        this.totalServers = numberOfFreeServers;
+        this.queue = new PriorityQueue<Query>(1000000 , new ExecutionComparator());
+        this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
+        this.aDdlIsWaiting = false;
     }
 
-    public void aQueryIsServed() {
-
+    public double entriesANewQuery(Query query) {
+        if ((numberOfFreeServers > 0)&&(!aDdlIsWaiting)) {
+            if(query.getPriority() > 1) {
+                numberOfFreeServers--;
+                query.setArrivalTime(simulation.getTime());
+                beingServedQueries.add(query);
+                query.setDepartureTime(((totalServers - numberOfFreeServers)*0.03) + query.getArrivalTime());
+                query.setBeingServed(true);
+                return query.getDepartureTime();
+            }
+            else{
+                aDdlIsWaiting = true;
+                if(numberOfFreeServers == totalServers){
+                    numberOfFreeServers--;
+                    query.setArrivalTime(simulation.getTime());
+                    beingServedQueries.add(query);
+                    query.setDepartureTime(0.03 + query.getArrivalTime());
+                    query.setBeingServed(true);
+                    return query.getDepartureTime();
+                }
+                else{
+                    ddlToBeExecuted = query;
+                    return -1;
+                }
+            }
+        }
+        else{
+            queue.add(query);
+            return -1;
+        }
     }
 
     public void rejectQuery(Query query) {
-
+        query.kill();
     }
 
+    public void aQueryIsServed(){}
+
     public Query aQueryFinished() {
-        return null;
+        Query out = beingServedQueries.poll();
+        out.setBeingServed(false);
+        if(out.getPriority() == 1){
+            aDdlIsWaiting = false;
+        }
+        out.setExecutionDuration(simulation.getTime() - out.getArrivalTime());
+        numberOfFreeServers++;
+        if(!aDdlIsWaiting){
+            if(!queue.isEmpty()){
+                Query query = queue.poll();
+                if(query.getPriority() > 1){
+                    numberOfFreeServers--;
+                    beingServedQueries.add(query);
+                    query.setBeingServed(true);
+                    query.setDepartureTime(((totalServers - numberOfFreeServers)*0.03) + simulation.getTime());
+                }
+                else{
+                    aDdlIsWaiting = true;
+                    if(numberOfFreeServers == totalServers){
+                        numberOfFreeServers--;
+                        beingServedQueries.add(query);
+                        query.setBeingServed(true);
+                        query.setDepartureTime(0.03 + simulation.getTime());
+                    }
+                    else{
+                        ddlToBeExecuted = query;
+                    }
+                }
+            }
+        }
+        else if(numberOfFreeServers == totalServers){
+            numberOfFreeServers--;
+            beingServedQueries.add(ddlToBeExecuted);
+            ddlToBeExecuted.setDepartureTime(0.03 + simulation.getTime());
+        }
+        return out;
     }
 
     public boolean confirmAliveQuery(Query query) {

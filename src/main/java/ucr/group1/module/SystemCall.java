@@ -12,38 +12,54 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class SystemCall extends Module<Query> {
 
+    public Query beingServedQuery;
+
     public SystemCall(Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = 1;
         this.queue = new LinkedBlockingQueue<Query>();
-        this.beingServedQueries = new PriorityQueue<Query>(1, new QueryComparator());// Tentativo ya que es solo de 1 espacio
     }
 
     public double entriesANewQuery(Query query) {
+        query.setArrivalTime(simulation.getTime());
         if (numberOfFreeServers > 0) {
             numberOfFreeServers--;
-            query.setArrivalTime(simulation.getTime());
-            beingServedQueries.add(query);
+            beingServedQuery = query;
             query.setDepartureTime(getGenerator().getNormal(1.5, 0.1) + query.getArrivalTime());
+            query.setBeingServed(true);
             return query.getDepartureTime();
         }
-        return 0;
+        queue.add(query);
+        return -1;
     }
 
     public void aQueryIsServed() {
-
+        Query toBeServed = queue.poll();
+        toBeServed.setDepartureTime(simulation.getTime() + getGenerator().getNormal(1.5, 0.1));
+        toBeServed.setBeingServed(true);
+        beingServedQuery = toBeServed;
     }
 
     public void rejectQuery(Query query) {
-
+        query.kill();
     }
 
-    public Query aQueryFinished() {
-        return null;
+    public Query aQueryFinished(){
+        Query out = beingServedQuery;
+        beingServedQuery = null;
+        out.setBeingServed(false);
+        out.setSystemCallDuration(simulation.getTime() - out.getArrivalTime());
+        if(!queue.isEmpty()){
+            aQueryIsServed();
+        }
+        else{
+            numberOfFreeServers++;
+        }
+        return out;
     }
 
     public boolean confirmAliveQuery(Query query) {
-        return false;
+        return !query.getDead();
     }
 }
