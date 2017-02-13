@@ -16,6 +16,7 @@ public class Query {
     private double storageDuration;
     private double executionDuration;
     private boolean dead;
+    private boolean beingServed;
 
     public Query(int ID, Generator gener){
         id = ID;
@@ -29,6 +30,7 @@ public class Query {
         storageDuration = 0;
         executionDuration = 0;
         dead = false;
+        beingServed = false;
     }
 
     public int getPriority(){
@@ -110,6 +112,14 @@ public class Query {
     public void setValidationDuration(double validationDuration) {
         this.lifespan += validationDuration;
         this.validationDuration = validationDuration;
+    }
+
+    public boolean isBeingServed() {
+        return beingServed;
+    }
+
+    public void setBeingServed(boolean beingServed) {
+        this.beingServed = beingServed;
     }
 
     public void kill() {

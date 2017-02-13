@@ -27,6 +27,7 @@ public class SystemCall extends Module<Query> {
             numberOfFreeServers--;
             beingServedQuery = query;
             query.setDepartureTime(getGenerator().getNormal(1.5, 0.1) + query.getArrivalTime());
+            query.setBeingServed(true);
             return query.getDepartureTime();
         }
         queue.add(query);
@@ -36,6 +37,7 @@ public class SystemCall extends Module<Query> {
     public void aQueryIsServed() {
         Query toBeServed = queue.poll();
         toBeServed.setDepartureTime(simulation.getTime() + getGenerator().getNormal(1.5, 0.1));
+        toBeServed.setBeingServed(true);
         beingServedQuery = toBeServed;
     }
 
@@ -46,6 +48,7 @@ public class SystemCall extends Module<Query> {
     public Query aQueryFinished(){
         Query out = beingServedQuery;
         beingServedQuery = null;
+        out.setBeingServed(false);
         out.setSystemCallDuration(simulation.getTime() - out.getArrivalTime());
         if(!queue.isEmpty()){
             aQueryIsServed();

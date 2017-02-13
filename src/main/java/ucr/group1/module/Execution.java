@@ -14,7 +14,7 @@ public class Execution extends Module<Query> {
 
     Query ddlToBeExecuted;
     int totalServers;
-    boolean aDddlIsWaiting;
+    boolean aDdlIsWaiting;
 
     public Execution(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
@@ -23,25 +23,27 @@ public class Execution extends Module<Query> {
         this.totalServers = numberOfFreeServers;
         this.queue = new PriorityQueue<Query>(1000000 , new ExecutionComparator());
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
-        this.aDddlIsWaiting = false;
+        this.aDdlIsWaiting = false;
     }
 
     public double entriesANewQuery(Query query) {
-        if ((numberOfFreeServers > 0)&&(!aDddlIsWaiting)) {
+        if ((numberOfFreeServers > 0)&&(!aDdlIsWaiting)) {
             if(query.getPriority() > 1) {
                 numberOfFreeServers--;
                 query.setArrivalTime(simulation.getTime());
                 beingServedQueries.add(query);
                 query.setDepartureTime(((totalServers - numberOfFreeServers)*0.03) + query.getArrivalTime());
+                query.setBeingServed(true);
                 return query.getDepartureTime();
             }
             else{
-                aDddlIsWaiting = true;
+                aDdlIsWaiting = true;
                 if(numberOfFreeServers == totalServers){
                     numberOfFreeServers--;
                     query.setArrivalTime(simulation.getTime());
                     beingServedQueries.add(query);
                     query.setDepartureTime(0.03 + query.getArrivalTime());
+                    query.setBeingServed(true);
                     return query.getDepartureTime();
                 }
                 else{
@@ -64,24 +66,27 @@ public class Execution extends Module<Query> {
 
     public Query aQueryFinished() {
         Query out = beingServedQueries.poll();
+        out.setBeingServed(false);
         if(out.getPriority() == 1){
-            aDddlIsWaiting = false;
+            aDdlIsWaiting = false;
         }
-        out.setStorageDuration(simulation.getTime() - out.getArrivalTime());
+        out.setExecutionDuration(simulation.getTime() - out.getArrivalTime());
         numberOfFreeServers++;
-        if(!aDddlIsWaiting){
+        if(!aDdlIsWaiting){
             if(!queue.isEmpty()){
                 Query query = queue.poll();
                 if(query.getPriority() > 1){
                     numberOfFreeServers--;
                     beingServedQueries.add(query);
+                    query.setBeingServed(true);
                     query.setDepartureTime(((totalServers - numberOfFreeServers)*0.03) + simulation.getTime());
                 }
                 else{
-                    aDddlIsWaiting = true;
+                    aDdlIsWaiting = true;
                     if(numberOfFreeServers == totalServers){
                         numberOfFreeServers--;
                         beingServedQueries.add(query);
+                        query.setBeingServed(true);
                         query.setDepartureTime(0.03 + simulation.getTime());
                     }
                     else{

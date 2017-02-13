@@ -26,6 +26,7 @@ public class Storage extends Module<Query> {
             numberOfFreeServers--;
             beingServedQueries.add(query);
             query.setDepartureTime(query.getArrivalTime() + getServiceDuration(query));
+            query.setBeingServed(true);
             return query.getDepartureTime();
         }
         queue.add(query);
@@ -34,6 +35,7 @@ public class Storage extends Module<Query> {
 
     public void aQueryIsServed() {
         Query toBeServed = queue.poll();
+        toBeServed.setBeingServed(true);
         toBeServed.setDepartureTime(simulation.getTime() + getServiceDuration(toBeServed));
         beingServedQueries.add(toBeServed);
     }
@@ -45,6 +47,7 @@ public class Storage extends Module<Query> {
     public Query aQueryFinished() {
         Query out = beingServedQueries.poll();
         out.setStorageDuration(simulation.getTime() - out.getArrivalTime());
+        out.setBeingServed(false);
         if(!queue.isEmpty()){
             aQueryIsServed();
         }
