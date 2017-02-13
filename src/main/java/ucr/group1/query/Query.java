@@ -31,6 +31,14 @@ public class Query {
         dead = false;
     }
 
+    public int getPriority(){
+        return type.getPriority();
+    }
+
+    public boolean getReadOnly(){
+        return type.getReadOnly();
+    }
+
     public double getArrivalTime() {
         return arrivalTime;
     }
