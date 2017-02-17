@@ -106,4 +106,12 @@ public class Execution extends Module<Query> {
     public boolean confirmAliveQuery(Query query) {
         return false;
     }
+
+    public boolean isAQueryBeingServed(){
+        return !beingServedQueries.isEmpty();
+    }
+
+    public Query nextQueryToBeOut(){
+        return beingServedQueries.peek();
+    }
 }

@@ -112,4 +112,8 @@ public abstract class Module<E> {
     public void setGenerator(Generator generator) {
         this.generator = generator;
     }
+
+    public abstract boolean isAQueryBeingServed();
+
+    public abstract Query nextQueryToBeOut();
 }

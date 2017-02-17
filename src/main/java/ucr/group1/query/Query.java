@@ -33,6 +33,8 @@ public class Query {
         beingServed = false;
     }
 
+    public int getId() { return id; }
+
     public int getPriority(){
         return type.getPriority();
     }

@@ -95,4 +95,12 @@ public class Storage extends Module<Query> {
     public boolean confirmAliveQuery(Query query) {
         return !query.getDead();
     }
+
+    public boolean isAQueryBeingServed(){
+        return !beingServedQueries.isEmpty();
+    }
+
+    public Query nextQueryToBeOut(){
+        return beingServedQueries.peek();
+    }
 }

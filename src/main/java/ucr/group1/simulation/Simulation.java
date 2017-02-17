@@ -3,6 +3,7 @@ import ucr.group1.event.Event;
 import ucr.group1.event.EventComparator;
 import ucr.group1.generator.Generator;
 import ucr.group1.module.*;
+import ucr.group1.query.Query;
 
 import java.util.*;
 
@@ -98,5 +99,26 @@ public class Simulation {
 
     public void finalizeEvent(Event toFinalize){
         finalizedEvents.add(toFinalize);
+    }
+
+    public Queue getDeadQueryQueue(Query query){
+        if(connection.getQueue().contains(query)){
+            return connection.getQueue();
+        }
+        else if(systemCall.getQueue().contains(query)){
+            return systemCall.getQueue();
+        }
+        else if(validation.getQueue().contains(query)){
+            return validation.getQueue();
+        }
+        else if(storage.getQueue().contains(query)){
+            return storage.getQueue();
+        }
+        else if(execution.getQueue().contains(query)){
+            return execution.getQueue();
+        }
+        else{
+            return null;
+        }
     }
 }

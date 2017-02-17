@@ -62,4 +62,12 @@ public class SystemCall extends Module<Query> {
     public boolean confirmAliveQuery(Query query) {
         return !query.getDead();
     }
+
+    public boolean isAQueryBeingServed(){
+        return (beingServedQuery != null);
+    }
+
+    public Query nextQueryToBeOut(){
+        return beingServedQueries.peek();
+    }
 }
