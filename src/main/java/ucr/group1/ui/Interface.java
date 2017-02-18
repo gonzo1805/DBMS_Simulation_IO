@@ -36,6 +36,7 @@ public class Interface {
     private JLabel defMProc;
     private JLabel defTTimeout;
     private JLabel defTimeBetEvents;
+    private JButton oKButtom;
 
     public Interface() {
 

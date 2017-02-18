@@ -38,7 +38,8 @@ public class Connection extends Module<Query> {
      * Enters a new query on the servers if there are at least one free server, if not, reject the query
      * Also returns the departure time of the query
      * @param query the Query to insert on queue
-     * @return the time that the query is going to finish it´s time on the server
+     * @return the time that the query is going to finish it´s time on the server, it returns -1
+     * if there are no free servers
      */
     public double entriesANewQuery(Query query) {
         if (numberOfFreeServers > 0) {

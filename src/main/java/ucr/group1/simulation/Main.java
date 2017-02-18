@@ -28,7 +28,8 @@ public class Main {
                     System.out.println(simulation.getTimeInHHMMSS()+"A new query is trying to get a connection");
                     exitTime = simulation.getConnection().entriesANewQuery(actualEvent.getQuery());
                     if(exitTime > -1) {
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " the query is connected with the database");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + actualEvent.getQuery().getId() +
+                                " the query is connected with the database");
                         Event nextEvent = new Event(ENTER_SYSTEMCALL, exitTime, actualEvent.getQuery());
                         actualEvent.getQuery().setNextEvent(nextEvent);
                         simulation.addEvent(nextEvent);
@@ -38,9 +39,11 @@ public class Main {
                     }
                     else{
                         // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
-                        System.out.println(simulation.getTimeInHHMMSS() + "The system reached the maximum of simultaneous connections, the new query is rejected");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The system reached the maximum of simultaneous " +
+                                "connections, the new query is rejected");
                     }
-                    simulation.addEvent(new Event(ENTER_CONNECTION, simulation.getTime() + simulation.getGenerator().getExponential(1.7142), new Query(idAsigner++, simulation.getGenerator())));
+                    simulation.addEvent(new Event(ENTER_CONNECTION, simulation.getTime() + simulation.getGenerator().getExponential(1.7142),
+                            new Query(idAsigner++, simulation.getGenerator())));
                     simulation.finalizeEvent(actualEvent);
                     break;
                 case RETURN_TO_CONNECTION:
@@ -52,24 +55,26 @@ public class Main {
                     break;
                 case EXIT_CONNECTION:
                     simulation.setTime(actualEvent.getTime());
-                    fromModule = simulation.getConnection().aQueryFinished();
+                    fromModule = simulation.getConnection().aQueryFinished();// De que modulo viene
                     System.out.println(simulation.getTimeInHHMMSS()+"The query " + fromModule.getId() + " is out from connection.");
                     simulation.thisQueryKillNeverHappened(fromModule);
                     simulation.finalizeEvent(actualEvent);
                     break;
                 case ENTER_SYSTEMCALL:
                     simulation.setTime(actualEvent.getTime());
-                    System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " arrived to systemcall.");
+                    System.out.println(simulation.getTimeInHHMMSS() + "The query " + actualEvent.getQuery().getId() +
+                            " arrived to systemcall.");
                     exitTime = simulation.getSystemCall().entriesANewQuery(actualEvent.getQuery());
                     if(exitTime > -1) {
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " is now attended in systemcall.");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + actualEvent.getQuery().getId() +
+                                " is now attended in systemcall.");
                         simulation.addEvent(new Event(EXIT_SYSTEMCALL, exitTime, actualEvent.getQuery()));
                     }
                     simulation.finalizeEvent(actualEvent);
                     break;
                 case EXIT_SYSTEMCALL:
                     simulation.setTime(actualEvent.getTime());
-                    fromModule = simulation.getSystemCall().aQueryFinished();
+                    fromModule = simulation.getSystemCall().aQueryFinished();// De que modulo viene
                     if(!fromModule.getDead()){
                         System.out.println(simulation.getTimeInHHMMSS()+"The query " + fromModule.getId() + " is out from systemcall.");
                         simulation.addEvent(new Event(ENTER_VALIDATION, simulation.getTime(), fromModule));
@@ -79,7 +84,8 @@ public class Main {
                     }
                     if(simulation.getSystemCall().isAQueryBeingServed()){
                         Query nextQueryToExit = simulation.getSystemCall().nextQueryFromQueueToBeOut();
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + nextQueryToExit.getId() + " is now attended in systemcall.");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + nextQueryToExit.getId() +
+                                " is now attended in systemcall.");
                         Event nextEvent = new Event(EXIT_SYSTEMCALL, nextQueryToExit.getDepartureTime(), nextQueryToExit);
                         actualEvent.getQuery().setNextEvent(nextEvent);
                         simulation.addEvent(nextEvent);
@@ -88,17 +94,19 @@ public class Main {
                     break;
                 case ENTER_VALIDATION:
                     simulation.setTime(actualEvent.getTime());
-                    System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " arrived to validation.");
+                    System.out.println(simulation.getTimeInHHMMSS() + "The query " + actualEvent.getQuery().getId() +
+                            " arrived to validation.");
                     exitTime = simulation.getValidation().entriesANewQuery(actualEvent.getQuery());
                     if(exitTime > -1) {
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " is now attended in validation.");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + actualEvent.getQuery().getId() +
+                                " is now attended in validation.");
                         simulation.addEvent(new Event(EXIT_VALIDATION, exitTime, actualEvent.getQuery()));
                     }
                     simulation.finalizeEvent(actualEvent);
                     break;
                 case EXIT_VALIDATION:
                     simulation.setTime(actualEvent.getTime());
-                    fromModule = simulation.getValidation().aQueryFinished();
+                    fromModule = simulation.getValidation().aQueryFinished();// De que modulo viene
                     if(!fromModule.getDead()){
                         System.out.println(simulation.getTimeInHHMMSS()+"The query " + fromModule.getId() + " is out from validation.");
                         simulation.addEvent(new Event(ENTER_STORAGE, simulation.getTime(), fromModule));
@@ -108,7 +116,8 @@ public class Main {
                     }
                     if(simulation.getValidation().isAQueryBeingServed()){
                         Query nextQueryToExit = simulation.getValidation().nextQueryFromQueueToBeOut();
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + nextQueryToExit.getId() + " is now attended in validation.");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + nextQueryToExit.getId() +
+                                " is now attended in validation.");
                         Event nextEvent = new Event(EXIT_VALIDATION, nextQueryToExit.getDepartureTime(), nextQueryToExit);
                         actualEvent.getQuery().setNextEvent(nextEvent);
                         simulation.addEvent(nextEvent);
@@ -120,14 +129,15 @@ public class Main {
                     System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " arrived to storage.");
                     exitTime = simulation.getStorage().entriesANewQuery(actualEvent.getQuery());
                     if(exitTime > -1) {
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " is now attended in storage.");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + actualEvent.getQuery().getId() +
+                                " is now attended in storage.");
                         simulation.addEvent(new Event(EXIT_STORAGE, exitTime, actualEvent.getQuery()));
                     }
                     simulation.finalizeEvent(actualEvent);
                     break;
                 case EXIT_STORAGE:
                     simulation.setTime(actualEvent.getTime());
-                    fromModule = simulation.getStorage().aQueryFinished();
+                    fromModule = simulation.getStorage().aQueryFinished();// De que modulo viene
                     if(!fromModule.getDead()){
                         System.out.println(simulation.getTimeInHHMMSS()+"The query " + fromModule.getId() + " is out from storage.");
                         simulation.addEvent(new Event(ENTER_EXECUTION, simulation.getTime(), fromModule));
@@ -137,7 +147,8 @@ public class Main {
                     }
                     if(simulation.getStorage().isAQueryBeingServed()){
                         Query nextQueryToExit = simulation.getStorage().nextQueryFromQueueToBeOut();
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + nextQueryToExit.getId() + " is now attended in storage.");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + nextQueryToExit.getId() +
+                                " is now attended in storage.");
                         Event nextEvent = new Event(EXIT_STORAGE, nextQueryToExit.getDepartureTime(), nextQueryToExit);
                         actualEvent.getQuery().setNextEvent(nextEvent);
                         simulation.addEvent(nextEvent);
@@ -146,17 +157,19 @@ public class Main {
                     break;
                 case ENTER_EXECUTION:
                     simulation.setTime(actualEvent.getTime());
-                    System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " arrived to execution.");
+                    System.out.println(simulation.getTimeInHHMMSS() + "The query " + actualEvent.getQuery().getId() +
+                            " arrived to execution.");
                     exitTime = simulation.getExecution().entriesANewQuery(actualEvent.getQuery());
                     if(exitTime > -1) {
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + actualEvent.getQuery().getId() + " is now attended in execution.");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + actualEvent.getQuery().getId() +
+                                " is now attended in execution.");
                         simulation.addEvent(new Event(EXIT_EXECUTION, exitTime, actualEvent.getQuery()));
                     }
                     simulation.finalizeEvent(actualEvent);
                     break;
                 case EXIT_EXECUTION:
                     simulation.setTime(actualEvent.getTime());
-                    fromModule = simulation.getExecution().aQueryFinished();
+                    fromModule = simulation.getExecution().aQueryFinished();// De que modulo viene
                     if(!fromModule.getDead()){
                         System.out.println(simulation.getTimeInHHMMSS()+"The query " + fromModule.getId() + " is out from execution.");
                         simulation.addEvent(new Event(RETURN_TO_CONNECTION, simulation.getTime(), fromModule));
@@ -166,7 +179,8 @@ public class Main {
                     }
                     if(simulation.getExecution().isAQueryBeingServed()){
                         Query nextQueryToExit = simulation.getExecution().nextQueryFromQueueToBeOut();
-                        System.out.println(simulation.getTimeInHHMMSS()+"The query " + nextQueryToExit.getId() + " is now attended in execution.");
+                        System.out.println(simulation.getTimeInHHMMSS() + "The query " + nextQueryToExit.getId() +
+                                " is now attended in execution.");
                         Event nextEvent = new Event(EXIT_EXECUTION, nextQueryToExit.getDepartureTime(), nextQueryToExit);
                         actualEvent.getQuery().setNextEvent(nextEvent);
                         simulation.addEvent(nextEvent);
