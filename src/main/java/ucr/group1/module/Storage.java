@@ -12,12 +12,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Storage extends Module<Query> {
 
+    private Query lastQueryObtainedFromQueue;
+    private boolean entriesANewQueryFromQueue;
+
     public Storage(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
         this.queue = new LinkedBlockingQueue<Query>();
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
+        this.entriesANewQueryFromQueue = false;
     }
 
     public double entriesANewQuery(Query query) {
@@ -29,12 +33,15 @@ public class Storage extends Module<Query> {
             query.setBeingServed(true);
             return query.getDepartureTime();
         }
-        queue.add(query);
-        return -1;
+        else{
+            queue.add(query);
+            return -1;
+        }
     }
 
     public void aQueryIsServed() {
         Query toBeServed = queue.poll();
+        lastQueryObtainedFromQueue = toBeServed;
         toBeServed.setBeingServed(true);
         toBeServed.setDepartureTime(simulation.getTime() + getServiceDuration(toBeServed));
         beingServedQueries.add(toBeServed);
@@ -50,9 +57,11 @@ public class Storage extends Module<Query> {
         out.setBeingServed(false);
         if(!queue.isEmpty()){
             aQueryIsServed();
+            entriesANewQueryFromQueue = true;
         }
         else{
             numberOfFreeServers++;
+            entriesANewQueryFromQueue = false;
         }
         return out;
     }
@@ -60,33 +69,31 @@ public class Storage extends Module<Query> {
     public double getServiceDuration(Query query) {
         double duration = 0;
         int nBlocks = 0;
-        switch(query.getPriority()){
-            case 1:
+        switch(query.getType()){
+            case DDL:
                 // UPDATE DATABASE SCHEME
                 duration += 0.5;
                 break;
-            case 2:
+            case UPDATE:
                 // UPDATE DATABASE SCHEME
                 duration += 1;
                 break;
-            case 3:
+            case JOIN:
                 nBlocks += (int)getGenerator().getRandomUniform(1,17);
                 nBlocks += (int)getGenerator().getRandomUniform(1,13);
+                query.setChargedBlocks(nBlocks);
                 // LOAD BLOCKS INTO DATA BASE
                 duration += ((double)nBlocks / 10);
                 // UPDATE DATABASE SCHEME
                 duration += (double)(nBlocks^2) / 1000;
-                // Return result to conection module
-                duration += (double)nBlocks / 6;
                 break;
-            case 4:
+            case SELECT:
                 nBlocks += (int)getGenerator().getRandomUniform(1,65);
+                query.setChargedBlocks(nBlocks);
                 // LOAD BLOCKS INTO DATA BASE
                 duration += (double)nBlocks / 10;
                 // UPDATE DATABASE SCHEME
                 duration += (double)(nBlocks^2) / 1000;
-                // Return result to conection module
-                duration += (double)nBlocks / 6;
                 break;
         }
         return duration;
@@ -97,10 +104,10 @@ public class Storage extends Module<Query> {
     }
 
     public boolean isAQueryBeingServed(){
-        return !beingServedQueries.isEmpty();
+        return entriesANewQueryFromQueue;
     }
 
-    public Query nextQueryToBeOut(){
-        return beingServedQueries.peek();
+    public Query nextQueryFromQueueToBeOut(){
+        return lastQueryObtainedFromQueue;
     }
 }

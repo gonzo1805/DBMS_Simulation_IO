@@ -15,6 +15,7 @@ public class Event {
 
     public enum eventType {
         ENTER_CONNECTION,
+        RETURN_TO_CONNECTION,
         EXIT_CONNECTION,
         ENTER_SYSTEMCALL,
         EXIT_SYSTEMCALL,

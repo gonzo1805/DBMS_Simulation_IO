@@ -115,5 +115,5 @@ public abstract class Module<E> {
 
     public abstract boolean isAQueryBeingServed();
 
-    public abstract Query nextQueryToBeOut();
+    public abstract Query nextQueryFromQueueToBeOut();
 }

@@ -6,6 +6,8 @@ import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
 
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -13,6 +15,8 @@ import java.util.Queue;
  * Created by Gonzalo on 2/9/2017.
  */
 public class Connection extends Module<Query> {
+
+    private List<Query> queriesExpectedToBeReturned;
 
     /**
      * Constructor
@@ -23,10 +27,11 @@ public class Connection extends Module<Query> {
      */
     public Connection(int numberOfFreeServers, Queue<Event> eventList, Simulation simulation, Generator generator) {
         this.numberOfFreeServers = numberOfFreeServers;
-        this.beingServedQueries = new PriorityQueue<Query>();
+        this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers, new QueryComparator());
         this.eventList = eventList;
         this.simulation = simulation;
         this.generator = generator;
+        this.queriesExpectedToBeReturned = new LinkedList<Query>();
     }
 
     /**
@@ -39,9 +44,9 @@ public class Connection extends Module<Query> {
         if (numberOfFreeServers > 0) {
             numberOfFreeServers--;
             query.setArrivalTime(simulation.getTime());
-            beingServedQueries.add(query);
+            queriesExpectedToBeReturned.add(query);
             query.setDepartureTime(getGenerator().getRandomUniform(0.01, 0.05) + query.getArrivalTime());
-            query.setBeingServed(true);
+            query.setConectionDuration(simulation.getTime() - query.getArrivalTime());
             return query.getDepartureTime();
         } else {
             rejectQuery(query);
@@ -76,6 +81,14 @@ public class Connection extends Module<Query> {
         return finished;
     }
 
+    public void aQueryHasReturned(Query query) {
+        queriesExpectedToBeReturned.remove(query);
+        query.setBeingServed(true);
+        query.setArrivalTime(simulation.getTime());
+        query.setDepartureTime(simulation.getTime() + (query.getChargedBlocks()/6));
+        beingServedQueries.add(query);
+    }
+
     /**
      * Look if the query is alive or dead
      * @param query the query that we want to see the kill boolean
@@ -89,7 +102,7 @@ public class Connection extends Module<Query> {
         return !beingServedQueries.isEmpty();
     }
 
-    public Query nextQueryToBeOut(){
+    public Query nextQueryFromQueueToBeOut(){
         return beingServedQueries.peek();
     }
 }
