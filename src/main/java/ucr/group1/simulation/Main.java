@@ -1,6 +1,7 @@
 package ucr.group1.simulation;
 
 import ucr.group1.event.Event;
+import ucr.group1.module.Connection;
 import ucr.group1.query.Query;
 
 import java.util.Queue;
@@ -49,7 +50,7 @@ public class Main {
                 case RETURN_TO_CONNECTION:
                     simulation.setTime(actualEvent.getTime());
                     //La línea que sigue así como está no sirve, pero tiene que servir de alguna forma
-                    //simulation.getConnection().aQueryHasReturned(actualEvent.getQuery());
+                    ((Connection) simulation.getConnection()).aQueryHasReturned(actualEvent.getQuery());
                     simulation.addEvent(new Event(EXIT_CONNECTION, actualEvent.getQuery().getDepartureTime(), actualEvent.getQuery()));
                     simulation.finalizeEvent(actualEvent);
                     break;
