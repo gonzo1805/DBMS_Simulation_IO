@@ -2,19 +2,24 @@ package ucr.group1.module;
 
 import ucr.group1.generator.Generator;
 import ucr.group1.query.Query;
+import ucr.group1.query.QueryType;
 import ucr.group1.simulation.Simulation;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static ucr.group1.query.QueryType.type.DDL;
 
 /**
  * Created by Gonzalo on 2/9/2017.
  */
 public class Execution extends Module<Query> {
 
-    Query ddlToBeExecuted;
-    int totalServers;
-    boolean aDdlIsWaiting;
+    private Query ddlToBeExecuted;
+    private int totalServers;
+    private boolean aDdlIsWaiting;
+    private Query lastQueryObtainedFromQueue;
+    private boolean entriesANewQueryFromQueue;
 
     public Execution(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
@@ -24,6 +29,7 @@ public class Execution extends Module<Query> {
         this.queue = new PriorityQueue<Query>(1000000 , new ExecutionComparator());
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
         this.aDdlIsWaiting = false;
+        this.entriesANewQueryFromQueue = false;
     }
 
     public double entriesANewQuery(Query query) {
@@ -67,7 +73,7 @@ public class Execution extends Module<Query> {
     public Query aQueryFinished() {
         Query out = beingServedQueries.poll();
         out.setBeingServed(false);
-        if(out.getPriority() == 1){
+        if(out.getType() == DDL){
             aDdlIsWaiting = false;
         }
         out.setExecutionDuration(simulation.getTime() - out.getArrivalTime());
@@ -75,35 +81,56 @@ public class Execution extends Module<Query> {
         if(!aDdlIsWaiting){
             if(!queue.isEmpty()){
                 Query query = queue.poll();
-                if(query.getPriority() > 1){
+                if(query.getType() != DDL){
                     numberOfFreeServers--;
                     beingServedQueries.add(query);
+                    lastQueryObtainedFromQueue = query;
                     query.setBeingServed(true);
                     query.setDepartureTime(((totalServers - numberOfFreeServers)*0.03) + simulation.getTime());
+                    entriesANewQueryFromQueue = true;
                 }
                 else{
                     aDdlIsWaiting = true;
                     if(numberOfFreeServers == totalServers){
                         numberOfFreeServers--;
+                        lastQueryObtainedFromQueue = query;
                         beingServedQueries.add(query);
                         query.setBeingServed(true);
                         query.setDepartureTime(0.03 + simulation.getTime());
+                        entriesANewQueryFromQueue = true;
                     }
                     else{
                         ddlToBeExecuted = query;
+                        entriesANewQueryFromQueue = false;
                     }
                 }
+            }
+            else{
+                entriesANewQueryFromQueue = false;
             }
         }
         else if(numberOfFreeServers == totalServers){
             numberOfFreeServers--;
+            lastQueryObtainedFromQueue = ddlToBeExecuted;
             beingServedQueries.add(ddlToBeExecuted);
             ddlToBeExecuted.setDepartureTime(0.03 + simulation.getTime());
+            entriesANewQueryFromQueue = true;
+        }
+        else{
+            entriesANewQueryFromQueue = false;
         }
         return out;
     }
 
     public boolean confirmAliveQuery(Query query) {
         return false;
+    }
+
+    public boolean isAQueryBeingServed(){
+        return entriesANewQueryFromQueue;
+    }
+
+    public Query nextQueryFromQueueToBeOut(){
+        return lastQueryObtainedFromQueue;
     }
 }

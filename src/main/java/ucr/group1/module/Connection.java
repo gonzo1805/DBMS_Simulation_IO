@@ -6,6 +6,8 @@ import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
 
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -13,6 +15,8 @@ import java.util.Queue;
  * Created by Gonzalo on 2/9/2017.
  */
 public class Connection extends Module<Query> {
+
+    private List<Query> queriesExpectedToBeReturned;
 
     /**
      * Constructor
@@ -23,25 +27,27 @@ public class Connection extends Module<Query> {
      */
     public Connection(int numberOfFreeServers, Queue<Event> eventList, Simulation simulation, Generator generator) {
         this.numberOfFreeServers = numberOfFreeServers;
-        this.beingServedQueries = new PriorityQueue<Query>();
+        this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers, new QueryComparator());
         this.eventList = eventList;
         this.simulation = simulation;
         this.generator = generator;
+        this.queriesExpectedToBeReturned = new LinkedList<Query>();
     }
 
     /**
      * Enters a new query on the servers if there are at least one free server, if not, reject the query
      * Also returns the departure time of the query
      * @param query the Query to insert on queue
-     * @return the time that the query is going to finish it´s time on the server
+     * @return the time that the query is going to finish it´s time on the server, it returns -1
+     * if there are no free servers
      */
     public double entriesANewQuery(Query query) {
         if (numberOfFreeServers > 0) {
             numberOfFreeServers--;
             query.setArrivalTime(simulation.getTime());
-            beingServedQueries.add(query);
+            queriesExpectedToBeReturned.add(query);
             query.setDepartureTime(getGenerator().getRandomUniform(0.01, 0.05) + query.getArrivalTime());
-            query.setBeingServed(true);
+            query.setConectionDuration(simulation.getTime() - query.getArrivalTime());
             return query.getDepartureTime();
         } else {
             rejectQuery(query);
@@ -76,6 +82,14 @@ public class Connection extends Module<Query> {
         return finished;
     }
 
+    public void aQueryHasReturned(Query query) {
+        queriesExpectedToBeReturned.remove(query);
+        query.setBeingServed(true);
+        query.setArrivalTime(simulation.getTime());
+        query.setDepartureTime(simulation.getTime() + (query.getChargedBlocks()/6));
+        beingServedQueries.add(query);
+    }
+
     /**
      * Look if the query is alive or dead
      * @param query the query that we want to see the kill boolean
@@ -83,5 +97,13 @@ public class Connection extends Module<Query> {
      */
     public boolean confirmAliveQuery(Query query) {
         return !query.getDead();
+    }
+
+    public boolean isAQueryBeingServed(){
+        return !beingServedQueries.isEmpty();
+    }
+
+    public Query nextQueryFromQueueToBeOut(){
+        return beingServedQueries.peek();
     }
 }

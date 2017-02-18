@@ -1,4 +1,5 @@
 package ucr.group1.query;
+import ucr.group1.event.Event;
 import ucr.group1.generator.Generator;
 
 /**
@@ -17,6 +18,9 @@ public class Query {
     private double executionDuration;
     private boolean dead;
     private boolean beingServed;
+    private int chargedBlocks;
+    private Event nextEvent;
+    private Event killEvent;
 
     public Query(int ID, Generator gener){
         id = ID;
@@ -31,7 +35,10 @@ public class Query {
         executionDuration = 0;
         dead = false;
         beingServed = false;
+        chargedBlocks = 0;
     }
+
+    public int getId() { return id; }
 
     public int getPriority(){
         return type.getPriority();
@@ -40,6 +47,8 @@ public class Query {
     public boolean getReadOnly(){
         return type.getReadOnly();
     }
+
+    public QueryType.type getType() { return type.getType(); }
 
     public double getArrivalTime() {
         return arrivalTime;
@@ -77,17 +86,28 @@ public class Query {
         return this.dead;
     }
 
+    public int getChargedBlocks() {
+        return chargedBlocks;
+    }
+
+    public Event getKillEvent() {
+        return killEvent;
+    }
+
+    public Event getNextEvent() {
+        return nextEvent;
+    }
+
     public void setArrivalTime(double arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
 
     public void setConectionDuration(double conectionDuration) {
         this.lifespan += conectionDuration;
-        this.conectionDuration = conectionDuration;
+        this.conectionDuration += conectionDuration;
     }
 
     public void setDepartureTime(double departureTime) {
-        this.lifespan += departureTime;
         this.departureTime = departureTime;
     }
 
@@ -120,6 +140,18 @@ public class Query {
 
     public void setBeingServed(boolean beingServed) {
         this.beingServed = beingServed;
+    }
+
+    public void setChargedBlocks(int chargedBlocks) {
+        this.chargedBlocks = chargedBlocks;
+    }
+
+    public void setKillEvent(Event killEvent) {
+        this.killEvent = killEvent;
+    }
+
+    public void setNextEvent(Event nextEvent) {
+        this.nextEvent = nextEvent;
     }
 
     public void kill() {

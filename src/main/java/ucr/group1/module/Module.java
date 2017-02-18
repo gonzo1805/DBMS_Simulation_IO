@@ -28,6 +28,8 @@ public abstract class Module<E> {
      * Inserts a Query on queue if there is not free servers, if there are free servers, inserts a Query on
      * beignServedQuerys
      * @param query the Query to insert on queue
+     * @return the time that the query is going to finish it´s time on the server, it returns -1
+     * if there are no free servers and is rejected or put on queue
      */
     public abstract double entriesANewQuery(Query query);
 
@@ -112,4 +114,8 @@ public abstract class Module<E> {
     public void setGenerator(Generator generator) {
         this.generator = generator;
     }
+
+    public abstract boolean isAQueryBeingServed();
+
+    public abstract Query nextQueryFromQueueToBeOut();
 }

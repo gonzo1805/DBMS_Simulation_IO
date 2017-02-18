@@ -11,12 +11,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Validation extends Module<Query> {
 
+    private Query lastQueryObtainedFromQueue;
+    private boolean entriesANewQueryFromQueue;
+
     public Validation(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
         this.queue = new LinkedBlockingQueue<Query>();
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
+        this.entriesANewQueryFromQueue = false;
     }
 
     public double entriesANewQuery(Query query) {
@@ -28,12 +32,15 @@ public class Validation extends Module<Query> {
             query.setBeingServed(true);
             return query.getDepartureTime();
         }
-        queue.add(query);
-        return -1;
+        else {
+            queue.add(query);
+            return -1;
+        }
     }
 
     public void aQueryIsServed() {
         Query toBeServed = queue.poll();
+        lastQueryObtainedFromQueue = toBeServed;
         toBeServed.setBeingServed(true);
         toBeServed.setDepartureTime(simulation.getTime() + getServiceDuration(toBeServed));
         beingServedQueries.add(toBeServed);
@@ -75,14 +82,24 @@ public class Validation extends Module<Query> {
         out.setValidationDuration(simulation.getTime() - out.getArrivalTime());
         if(!queue.isEmpty()){
             aQueryIsServed();
+            entriesANewQueryFromQueue = true;
         }
         else{
             numberOfFreeServers++;
+            entriesANewQueryFromQueue = false;
         }
         return out;
     }
 
     public boolean confirmAliveQuery(Query query) {
         return !query.getDead();
+    }
+
+    public boolean isAQueryBeingServed(){
+        return entriesANewQueryFromQueue;
+    }
+
+    public Query nextQueryFromQueueToBeOut(){
+        return lastQueryObtainedFromQueue;
     }
 }

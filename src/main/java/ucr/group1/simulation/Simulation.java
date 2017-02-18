@@ -3,6 +3,7 @@ import ucr.group1.event.Event;
 import ucr.group1.event.EventComparator;
 import ucr.group1.generator.Generator;
 import ucr.group1.module.*;
+import ucr.group1.query.Query;
 
 import java.util.*;
 
@@ -42,12 +43,6 @@ public class Simulation {
         this.timeBetweenEvents = timeBetweenEvents;
         this.generator = new Generator();
         buildModules();
-    }
-
-    public void simulate(){
-        while(time < 15000){
-
-        }
     }
 
     public Generator getGenerator(){ return generator; }
@@ -98,5 +93,55 @@ public class Simulation {
 
     public void finalizeEvent(Event toFinalize){
         finalizedEvents.add(toFinalize);
+    }
+
+    public void thisQueryKillNeverHappened(Query query){
+        eventList.remove(query.getKillEvent());
+    }
+
+    public void thisQueryWereKilledBeforeReachTheNextEvent(Query query){
+        eventList.remove(query.getNextEvent());
+    }
+
+    public Queue getDeadQueryQueue(Query query){
+        if(connection.getQueue().contains(query)){
+            return connection.getQueue();
+        }
+        else if(systemCall.getQueue().contains(query)){
+            return systemCall.getQueue();
+        }
+        else if(validation.getQueue().contains(query)){
+            return validation.getQueue();
+        }
+        else if(storage.getQueue().contains(query)){
+            return storage.getQueue();
+        }
+        else if(execution.getQueue().contains(query)){
+            return execution.getQueue();
+        }
+        else{
+            return null;
+        }
+    }
+
+    public String getTimeInHHMMSS(){
+        int seconds = (int)time;
+        int minutes = (seconds/60);
+        seconds -= (60*minutes);
+        int hours = (minutes/60);
+        minutes -= (60*hours);
+        String secondsString = String.valueOf(seconds);
+        String minutesString = String.valueOf(minutes);
+        String hoursString = String.valueOf(hours);
+        if(seconds < 10){
+            secondsString = "0" + secondsString;
+        }
+        if(minutes < 10){
+            minutesString = "0" + minutesString;
+        }
+        if(hours < 10){
+            hoursString = "0" + hoursString;
+        }
+        return ("[" + hoursString + ":" + minutesString + ":" + secondsString + "] ");
     }
 }
