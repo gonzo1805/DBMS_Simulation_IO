@@ -111,7 +111,7 @@ public class Controller {
 
     @FXML
     void enterKConnection(ActionEvent event) {
-        if (txtKConnection.getText().matches("[^0-9]+")) {
+        if (!txtKConnection.getText().matches("[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
@@ -121,7 +121,7 @@ public class Controller {
 
     @FXML
     void enterMConsults(ActionEvent event) {
-        if (txtMConsults.getText().matches("[^0-9]+")) {
+        if (!txtMConsults.getText().matches("^[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
@@ -131,7 +131,7 @@ public class Controller {
 
     @FXML
     void enterNProc(ActionEvent event) {
-        if (txtNProc.getText().matches("[^0-9]+")) {
+        if (!txtNProc.getText().matches("[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
@@ -141,7 +141,7 @@ public class Controller {
 
     @FXML
     void enterPTrans(ActionEvent event) {
-        if (txtPTrans.getText().matches("[^0-9]+")) {
+        if (!txtPTrans.getText().matches("[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
@@ -151,7 +151,7 @@ public class Controller {
 
     @FXML
     void enterRuns(ActionEvent event) {
-        if (txtRuns.getText().matches("[^0-9]+")) {
+        if (!txtRuns.getText().matches("[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
@@ -176,7 +176,7 @@ public class Controller {
 
     @FXML
     void enterTimeBetEvents(ActionEvent event) {
-        if (txtTimeBetEvents.getText().matches("[^0-9]+")) {
+        if (!txtTimeBetEvents.getText().matches("[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
@@ -186,7 +186,7 @@ public class Controller {
 
     @FXML
     void enterTimePerRun(ActionEvent event) {
-        if (txtTimePerRun.getText().matches("[^0-9]+")) {
+        if (!txtTimePerRun.getText().matches("[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
@@ -196,7 +196,7 @@ public class Controller {
 
     @FXML
     void enterTimeout(ActionEvent event) {
-        if (txtTimeout.getText().matches("[^0-9]+")) {
+        if (!txtTimeout.getText().matches("[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
