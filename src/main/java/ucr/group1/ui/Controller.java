@@ -161,11 +161,16 @@ public class Controller {
 
     @FXML
     void enterSlowMode(ActionEvent event) {
-        if (!txtSlowMode.getText().equals("Si") && !txtSlowMode.getText().equals("No")) {
+        if (!txtSlowMode.getText().toLowerCase().equals("si") && !txtSlowMode.getText().toLowerCase().equals("no")) {
             JOptionPane.showMessageDialog(null, "Debe insertar Si o No nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
-            labelSlowMode.setText(txtSlowMode.getText());
+            if (txtSlowMode.getText().toLowerCase().equals("si")) {
+                labelSlowMode.setText("Si");
+            } else {
+                labelSlowMode.setText("No");
+            }
+
         }
     }
 
