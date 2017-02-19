@@ -20,6 +20,7 @@ public class SystemCall extends Module<Query> {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = 1;
+        this.numberOfServers = numberOfFreeServers;
         this.queue = new LinkedBlockingQueue<Query>();
         this.entriesANewQueryFromQueue = false;
     }
@@ -55,7 +56,8 @@ public class SystemCall extends Module<Query> {
         Query out = beingServedQuery;
         beingServedQuery = null;
         out.setBeingServed(false);
-        out.setSystemCallDuration(simulation.getTime() - out.getArrivalTime());
+        out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
+        simulation.getSystemCallStatistics().updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
         if(!queue.isEmpty()){
             aQueryIsServed();
             entriesANewQueryFromQueue = true;
@@ -77,5 +79,16 @@ public class SystemCall extends Module<Query> {
 
     public Query nextQueryFromQueueToBeOut(){
         return lastQueryObtainedFromQueue;
+    }
+
+    public int getNumberOfQueriesOnQueue(){
+        return queue.size();
+    }
+
+    public int getNumberOfQueriesBeingServed(){
+        if(beingServedQuery == null){
+            return 0;
+        }
+        return 1;
     }
 }

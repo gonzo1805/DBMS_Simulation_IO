@@ -19,6 +19,7 @@ public class Storage extends Module<Query> {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
+        this.numberOfServers = numberOfFreeServers;
         this.queue = new LinkedBlockingQueue<Query>();
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
         this.entriesANewQueryFromQueue = false;
@@ -53,7 +54,8 @@ public class Storage extends Module<Query> {
 
     public Query aQueryFinished() {
         Query out = beingServedQueries.poll();
-        out.setStorageDuration(simulation.getTime() - out.getArrivalTime());
+        out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
+        simulation.getStorageStatistics().updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
         out.setBeingServed(false);
         if(!queue.isEmpty()){
             aQueryIsServed();
@@ -109,5 +111,13 @@ public class Storage extends Module<Query> {
 
     public Query nextQueryFromQueueToBeOut(){
         return lastQueryObtainedFromQueue;
+    }
+
+    public int getNumberOfQueriesOnQueue(){
+        return queue.size();
+    }
+
+    public int getNumberOfQueriesBeingServed(){
+        return beingServedQueries.size();
     }
 }

@@ -11,11 +11,11 @@ public class Query {
     private double departureTime;
     private double arrivalTime;
     private int id;
-    private double conectionDuration;
+    /*private double conectionDuration;
     private double systemCallDuration;
     private double validationDuration;
     private double storageDuration;
-    private double executionDuration;
+    private double executionDuration;*/
     private boolean dead;
     private boolean beingServed;
     private int chargedBlocks;
@@ -28,11 +28,13 @@ public class Query {
         lifespan = 0;
         departureTime = Double.MAX_VALUE;
         arrivalTime = Double.MAX_VALUE;
+        /*
         conectionDuration = 0;
         systemCallDuration = 0;
         validationDuration = 0;
         storageDuration = 0;
         executionDuration = 0;
+        */
         dead = false;
         beingServed = false;
         chargedBlocks = 0;
@@ -50,24 +52,25 @@ public class Query {
 
     public QueryType.type getType() { return type.getType(); }
 
-    public double getArrivalTime() {
-        return arrivalTime;
+    public double getLifespan() {
+        return lifespan;
     }
 
-    public double getConectionDuration() {
-        return conectionDuration;
+    public double getArrivalTime() {
+        return arrivalTime;
     }
 
     public double getDepartureTime() {
         return departureTime;
     }
 
-    public double getExecutionDuration() {
-        return executionDuration;
+    /*
+    public double getConectionDuration() {
+        return conectionDuration;
     }
 
-    public double getLifespan() {
-        return lifespan;
+    public double getExecutionDuration() {
+        return executionDuration;
     }
 
     public double getStorageDuration() {
@@ -81,6 +84,7 @@ public class Query {
     public double getValidationDuration() {
         return validationDuration;
     }
+    */
 
     public boolean getDead() {
         return this.dead;
@@ -102,14 +106,17 @@ public class Query {
         this.arrivalTime = arrivalTime;
     }
 
+    public void setDepartureTime(double departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    /*
     public void setConectionDuration(double conectionDuration) {
         this.lifespan += conectionDuration;
         this.conectionDuration += conectionDuration;
     }
 
-    public void setDepartureTime(double departureTime) {
-        this.departureTime = departureTime;
-    }
+
 
     public void setExecutionDuration(double executionDuration) {
         this.lifespan += executionDuration;
@@ -126,12 +133,14 @@ public class Query {
         this.systemCallDuration = systemCallDuration;
     }
 
-    /*
-     *
-     */
     public void setValidationDuration(double validationDuration) {
         this.lifespan += validationDuration;
         this.validationDuration = validationDuration;
+    }
+    */
+
+    public void addLifeSpan(double additive){
+        this.lifespan += additive;
     }
 
     public boolean isBeingServed() {

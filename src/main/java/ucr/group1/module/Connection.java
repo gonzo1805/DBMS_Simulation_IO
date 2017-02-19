@@ -27,6 +27,7 @@ public class Connection extends Module<Query> {
      */
     public Connection(int numberOfFreeServers, Queue<Event> eventList, Simulation simulation, Generator generator) {
         this.numberOfFreeServers = numberOfFreeServers;
+        this.numberOfServers = numberOfFreeServers;
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers, new QueryComparator());
         this.eventList = eventList;
         this.simulation = simulation;
@@ -47,7 +48,8 @@ public class Connection extends Module<Query> {
             query.setArrivalTime(simulation.getTime());
             queriesExpectedToBeReturned.add(query);
             query.setDepartureTime(getGenerator().getRandomUniform(0.01, 0.05) + query.getArrivalTime());
-            query.setConectionDuration(simulation.getTime() - query.getArrivalTime());
+            query.addLifeSpan(query.getDepartureTime() - query.getArrivalTime());
+            simulation.getConnectionStatistics().updateModuleTime(query, query.getDepartureTime() - query.getArrivalTime());
             return query.getDepartureTime();
         } else {
             rejectQuery(query);
@@ -77,7 +79,8 @@ public class Connection extends Module<Query> {
     public Query aQueryFinished() {
         numberOfFreeServers++;
         Query finished = beingServedQueries.poll();
-        finished.setConectionDuration(simulation.getTime() - finished.getArrivalTime());
+        finished.addLifeSpan(simulation.getTime() - finished.getArrivalTime());
+        simulation.getConnectionStatistics().updateModuleTime(finished, simulation.getTime() - finished.getArrivalTime());
         finished.setBeingServed(false);
         return finished;
     }
@@ -105,5 +108,13 @@ public class Connection extends Module<Query> {
 
     public Query nextQueryFromQueueToBeOut(){
         return beingServedQueries.peek();
+    }
+
+    public int getNumberOfQueriesOnQueue(){
+        return 0;
+    }
+
+    public int getNumberOfQueriesBeingServed(){
+        return beingServedQueries.size();
     }
 }

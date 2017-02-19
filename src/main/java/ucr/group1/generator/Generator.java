@@ -11,7 +11,7 @@ public class Generator {
      * Builds a new Generator
      */
     public Generator(){
-        random = new Random(47);
+        random = new Random();
     }
 
     /*

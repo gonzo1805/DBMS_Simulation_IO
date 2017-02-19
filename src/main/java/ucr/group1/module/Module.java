@@ -13,7 +13,7 @@ import ucr.group1.simulation.Simulation;
  */
 public abstract class Module<E> {
     protected Queue<E> queue;
-    //protected int numberOfServers;
+    protected int numberOfServers;
     protected int numberOfFreeServers;
     protected Queue<E> beingServedQueries;
     protected Queue<Event> eventList;
@@ -75,9 +75,13 @@ public abstract class Module<E> {
         return numberOfServers;
     }*/
 
-    public int getNumberOfFreeServers() {
-        return numberOfFreeServers;
+    public int getNumberOfServers() {
+        return numberOfServers;
     }
+
+    public abstract int getNumberOfQueriesOnQueue();
+
+    public abstract int getNumberOfQueriesBeingServed();
 
     public Queue<E> getBeingServedQueries() {
         return beingServedQueries;

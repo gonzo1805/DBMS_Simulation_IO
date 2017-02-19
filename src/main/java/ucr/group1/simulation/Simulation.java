@@ -4,8 +4,10 @@ import ucr.group1.event.EventComparator;
 import ucr.group1.generator.Generator;
 import ucr.group1.module.*;
 import ucr.group1.query.Query;
+import ucr.group1.statistics.ModuleStatistics;
 
 import java.util.*;
+
 
 /**
  * Created by Daniel on 11/2/2017.
@@ -27,6 +29,11 @@ public class Simulation {
     private Module validation;
     private Module storage;
     private Module execution;
+    private ModuleStatistics connectionStatistics;
+    private ModuleStatistics systemCallStatistics;
+    private ModuleStatistics validationStatistics;
+    private ModuleStatistics storageStatistics;
+    private ModuleStatistics executionStatistics;
     private Generator generator;
 
 
@@ -42,7 +49,7 @@ public class Simulation {
         this.slowMode = slowMode;
         this.timeBetweenEvents = timeBetweenEvents;
         this.generator = new Generator();
-        buildModules();
+        buildModulesAndStatistics();
     }
 
     public Generator getGenerator(){ return generator; }
@@ -59,12 +66,17 @@ public class Simulation {
         this.time = time;
     }
 
-    public void buildModules(){
+    public void buildModulesAndStatistics(){
         this.connection = new Connection(kConnections,this.eventList,this,generator);
         this.systemCall = new SystemCall(this, generator);
         this.validation = new Validation(nConcurrentProcesses,this,generator);
         this.storage = new Storage(mAvailableProcesses,this,generator);
         this.execution = new Execution(pTransactionProcesses,this,generator);
+        this.connectionStatistics = new ModuleStatistics(this.connection, this);
+        this.systemCallStatistics = new ModuleStatistics(this.systemCall, this);
+        this.validationStatistics = new ModuleStatistics(this.validation, this);
+        this.storageStatistics = new ModuleStatistics(this.storage, this);
+        this.executionStatistics = new ModuleStatistics(this.execution, this);
     }
 
     public void addEvent(Event event){
@@ -91,6 +103,26 @@ public class Simulation {
         return execution;
     }
 
+    public ModuleStatistics getConnectionStatistics() {
+        return connectionStatistics;
+    }
+
+    public ModuleStatistics getSystemCallStatistics() {
+        return systemCallStatistics;
+    }
+
+    public ModuleStatistics getExecutionStatistics() {
+        return executionStatistics;
+    }
+
+    public ModuleStatistics getStorageStatistics() {
+        return storageStatistics;
+    }
+
+    public ModuleStatistics getValidationStatistics() {
+        return validationStatistics;
+    }
+
     public void finalizeEvent(Event toFinalize){
         finalizedEvents.add(toFinalize);
     }
@@ -104,10 +136,7 @@ public class Simulation {
     }
 
     public Queue getDeadQueryQueue(Query query){
-        if(connection.getQueue().contains(query)){
-            return connection.getQueue();
-        }
-        else if(systemCall.getQueue().contains(query)){
+        if(systemCall.getQueue().contains(query)){
             return systemCall.getQueue();
         }
         else if(validation.getQueue().contains(query)){
@@ -144,4 +173,5 @@ public class Simulation {
         }
         return ("[" + hoursString + ":" + minutesString + ":" + secondsString + "] ");
     }
+
 }
