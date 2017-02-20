@@ -229,7 +229,12 @@ public class Controller implements Initializable {
 
     @FXML
     void clickDefault(ActionEvent event) {
+        if (buttonDefault.getText().equals("Cancelar")) {
+            setAllTextAreasEnabled();
+            buttonDefault.setText("Default");
+        } else {
 
+        }
     }
 
     @FXML
@@ -263,5 +268,18 @@ public class Controller implements Initializable {
         txtTimePerRun.setDisable(true);
         radioButtonYes.setDisable(true);
         radioButtonNo.setDisable(true);
+    }
+
+    private void setAllTextAreasEnabled() {
+        txtKConnection.setDisable(false);
+        txtPTrans.setDisable(false);
+        txtTimeout.setDisable(false);
+        txtMConsults.setDisable(false);
+        txtNProc.setDisable(false);
+        txtRuns.setDisable(false);
+        txtTimeBetEvents.setDisable(false);
+        txtTimePerRun.setDisable(false);
+        radioButtonYes.setDisable(false);
+        radioButtonNo.setDisable(false);
     }
 }
