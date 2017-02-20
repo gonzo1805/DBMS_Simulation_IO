@@ -1,15 +1,22 @@
 package ucr.group1.ui;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 
 import javax.swing.*;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class Controller {
+public class Controller implements Initializable {
+
+    ObservableList<String> modules = FXCollections.observableArrayList("Connection", "System Call", "Validation",
+            "Storage", "Execution");
+
     @FXML
     private Label labelMConsults;
 
@@ -19,8 +26,7 @@ public class Controller {
     @FXML
     private TextField txtTimePerRun;
 
-    @FXML
-    private TextField txtSlowMode;
+
 
     @FXML
     private TextField txtTimeBetEvents;
@@ -46,8 +52,7 @@ public class Controller {
     @FXML
     private Label labelTimePerRun;
 
-    @FXML
-    private Label labelSlowMode;
+
 
     @FXML
     private Label labelTimeBetEvents;
@@ -63,6 +68,27 @@ public class Controller {
 
     @FXML
     private Label labelPTrans;
+
+    @FXML
+    private ComboBox<String> comboBoxModule;
+
+    @FXML
+    private Button botonStartSimulation;
+
+    @FXML
+    private Button buttonRestartSimulation;
+
+    @FXML
+    private Button buttonNewSimulation;
+
+    @FXML
+    private Button buttonDefault;
+
+    @FXML
+    private RadioButton radioButtonYes;
+
+    @FXML
+    private RadioButton radioButtonNo;
 
     @FXML
     void clickKConnection(MouseEvent event) {
@@ -87,11 +113,6 @@ public class Controller {
     @FXML
     void clickRuns(MouseEvent event) {
         txtRuns.setText("");
-    }
-
-    @FXML
-    void clickSlowMode(MouseEvent event) {
-        txtSlowMode.setText("");
     }
 
     @FXML
@@ -160,21 +181,6 @@ public class Controller {
     }
 
     @FXML
-    void enterSlowMode(ActionEvent event) {
-        if (!txtSlowMode.getText().toLowerCase().equals("si") && !txtSlowMode.getText().toLowerCase().equals("no")) {
-            JOptionPane.showMessageDialog(null, "Debe insertar Si o No nada más", "Error de inserción",
-                    JOptionPane.ERROR_MESSAGE);
-        } else {
-            if (txtSlowMode.getText().toLowerCase().equals("si")) {
-                labelSlowMode.setText("Si");
-            } else {
-                labelSlowMode.setText("No");
-            }
-
-        }
-    }
-
-    @FXML
     void enterTimeBetEvents(ActionEvent event) {
         if (!txtTimeBetEvents.getText().matches("[0-9]+$")) {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
@@ -202,5 +208,60 @@ public class Controller {
         } else {
             labelTimeout.setText(txtTimeout.getText());
         }
+    }
+
+    @FXML
+    void clickBotonStarSimulation(ActionEvent event) {
+        setAllTextAreasDisabled();
+        buttonDefault.setText("Cancelar");
+    }
+
+
+    @FXML
+    void clickRestart(ActionEvent event) {
+
+    }
+
+    @FXML
+    void clickNew(ActionEvent event) {
+
+    }
+
+    @FXML
+    void clickDefault(ActionEvent event) {
+
+    }
+
+    @FXML
+    void clickRadioButtonNo(ActionEvent event) {
+        txtTimeBetEvents.setDisable(true);
+    }
+
+    @FXML
+    void clickRadioButtonYes(ActionEvent event) {
+        txtTimeBetEvents.setDisable(false);
+    }
+
+
+    public void initialize(URL location, ResourceBundle resources) {
+        comboBoxModule.setValue("Modulo");
+        comboBoxModule.setItems(modules);
+        final ToggleGroup group = new ToggleGroup();
+        radioButtonNo.setToggleGroup(group);
+        radioButtonYes.setToggleGroup(group);
+
+    }
+
+    private void setAllTextAreasDisabled() {
+        txtKConnection.setDisable(true);
+        txtPTrans.setDisable(true);
+        txtTimeout.setDisable(true);
+        txtMConsults.setDisable(true);
+        txtNProc.setDisable(true);
+        txtRuns.setDisable(true);
+        txtTimeBetEvents.setDisable(true);
+        txtTimePerRun.setDisable(true);
+        radioButtonYes.setDisable(true);
+        radioButtonNo.setDisable(true);
     }
 }
