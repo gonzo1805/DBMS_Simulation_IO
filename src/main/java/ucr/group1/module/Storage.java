@@ -68,6 +68,11 @@ public class Storage extends Module<Query> {
         return out;
     }
 
+    /**
+     *
+     * @param query The query to calculate the service duration
+     * @return      A single service duration in the module
+     */
     public double getServiceDuration(Query query) {
         double duration = 0;
         int nBlocks = 0;
@@ -101,11 +106,7 @@ public class Storage extends Module<Query> {
         return duration;
     }
 
-    public boolean confirmAliveQuery(Query query) {
-        return !query.getDead();
-    }
-
-    public boolean isAQueryBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed(){
         return entriesANewQueryFromQueue;
     }
 

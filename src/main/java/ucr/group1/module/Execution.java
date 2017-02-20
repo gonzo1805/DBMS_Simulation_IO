@@ -122,11 +122,7 @@ public class Execution extends Module<Query> {
         return out;
     }
 
-    public boolean confirmAliveQuery(Query query) {
-        return false;
-    }
-
-    public boolean isAQueryBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed(){
         return entriesANewQueryFromQueue;
     }
 

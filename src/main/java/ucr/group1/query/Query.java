@@ -11,11 +11,6 @@ public class Query {
     private double departureTime;
     private double arrivalTime;
     private int id;
-    /*private double conectionDuration;
-    private double systemCallDuration;
-    private double validationDuration;
-    private double storageDuration;
-    private double executionDuration;*/
     private boolean dead;
     private boolean beingServed;
     private int chargedBlocks;
@@ -28,142 +23,150 @@ public class Query {
         lifespan = 0;
         departureTime = Double.MAX_VALUE;
         arrivalTime = Double.MAX_VALUE;
-        /*
-        conectionDuration = 0;
-        systemCallDuration = 0;
-        validationDuration = 0;
-        storageDuration = 0;
-        executionDuration = 0;
-        */
         dead = false;
         beingServed = false;
         chargedBlocks = 0;
     }
 
+    /**
+     * @param additive The amounts of seconds added to the lifespan
+     */
+    public void addLifeSpan(double additive) {
+        this.lifespan += additive;
+    }
+
+    /**
+     * Set on true the dead attribute of the query
+     */
+    public void kill() {
+        this.dead = true;
+    }
+
+
+    /********************************************* GETTERS ***********************************************************/
+
+    /**
+     * @return The id of the query
+     */
     public int getId() { return id; }
 
+    /**
+     * @return The priority of the query
+     */
     public int getPriority(){
         return type.getPriority();
     }
 
+    /**
+     * @return True if and only if the query is read only
+     */
     public boolean getReadOnly(){
         return type.getReadOnly();
     }
 
+    /**
+     * @return The type of the query
+     */
     public QueryType.type getType() { return type.getType(); }
 
+    /**
+     * @return The lifespan of the query
+     */
     public double getLifespan() {
         return lifespan;
     }
 
+    /**
+     * @return The last arrival time of the query
+     */
     public double getArrivalTime() {
         return arrivalTime;
     }
 
+    /**
+     * @return The next departure time of the query
+     */
     public double getDepartureTime() {
         return departureTime;
     }
 
-    /*
-    public double getConectionDuration() {
-        return conectionDuration;
-    }
-
-    public double getExecutionDuration() {
-        return executionDuration;
-    }
-
-    public double getStorageDuration() {
-        return storageDuration;
-    }
-
-    public double getSystemCallDuration() {
-        return systemCallDuration;
-    }
-
-    public double getValidationDuration() {
-        return validationDuration;
-    }
-    */
-
+    /**
+     * @return True if and only if the query is dead
+     */
     public boolean getDead() {
         return this.dead;
     }
 
+    /**
+     * @return The amount of charged blocks of the query
+     */
     public int getChargedBlocks() {
         return chargedBlocks;
     }
 
+    /**
+     * @return The event that kills the query
+     */
     public Event getKillEvent() {
         return killEvent;
     }
 
+    /**
+     * @return The next event that is involved with the query
+     */
     public Event getNextEvent() {
         return nextEvent;
     }
 
-    public void setArrivalTime(double arrivalTime) {
-        this.arrivalTime = arrivalTime;
-    }
-
-    public void setDepartureTime(double departureTime) {
-        this.departureTime = departureTime;
-    }
-
-    /*
-    public void setConectionDuration(double conectionDuration) {
-        this.lifespan += conectionDuration;
-        this.conectionDuration += conectionDuration;
-    }
-
-
-
-    public void setExecutionDuration(double executionDuration) {
-        this.lifespan += executionDuration;
-        this.executionDuration = executionDuration;
-    }
-
-    public void setStorageDuration(double storageDuration) {
-        this.lifespan += storageDuration;
-        this.storageDuration = storageDuration;
-    }
-
-    public void setSystemCallDuration(double systemCallDuration) {
-        this.lifespan += systemCallDuration;
-        this.systemCallDuration = systemCallDuration;
-    }
-
-    public void setValidationDuration(double validationDuration) {
-        this.lifespan += validationDuration;
-        this.validationDuration = validationDuration;
-    }
-    */
-
-    public void addLifeSpan(double additive){
-        this.lifespan += additive;
-    }
-
+    /**
+     * @return True if and only if the query is being served
+     */
     public boolean isBeingServed() {
         return beingServed;
     }
 
+
+    /*********************************************** SETTERS **********************************************************/
+
+    /**
+     * @param arrivalTime The new arrival time of the query
+     */
+    public void setArrivalTime(double arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    /**
+     * @param departureTime The new departure time of the query
+     */
+    public void setDepartureTime(double departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    /**
+     * @param beingServed Set on his value the beingServed of the query
+     */
     public void setBeingServed(boolean beingServed) {
         this.beingServed = beingServed;
     }
 
+    /**
+     * @param chargedBlocks The new amount of charged blocks of the query
+     */
     public void setChargedBlocks(int chargedBlocks) {
         this.chargedBlocks = chargedBlocks;
     }
 
+    /**
+     * @param killEvent Defines the event that gonna kill the query
+     */
     public void setKillEvent(Event killEvent) {
         this.killEvent = killEvent;
     }
 
+    /**
+     * @param nextEvent Defines the next event with which the query will be involved
+     */
     public void setNextEvent(Event nextEvent) {
         this.nextEvent = nextEvent;
-    }
-
-    public void kill() {
-        this.dead = true;
     }
 }

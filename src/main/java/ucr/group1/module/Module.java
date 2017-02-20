@@ -1,7 +1,6 @@
 package ucr.group1.module;
 
 import ucr.group1.event.*;
-import java.util.List;
 import java.util.Queue;
 
 import ucr.group1.generator.Generator;
@@ -16,30 +15,25 @@ public abstract class Module<E> {
     protected int numberOfServers;
     protected int numberOfFreeServers;
     protected Queue<E> beingServedQueries;
-    protected Queue<Event> eventList;
     protected Generator generator;
     protected Simulation simulation;
-
-    /*public Module(Generator generator) {
-        this.generator = generator;
-    }*/
 
     /**
      * Inserts a Query on queue if there is not free servers, if there are free servers, inserts a Query on
      * beignServedQuerys
-     * @param query the Query to insert on queue
+     * @param query the Query to insert in the module
      * @return the time that the query is going to finish it´s time on the server, it returns -1
      * if there are no free servers and is rejected or put on queue
      */
     public abstract double entriesANewQuery(Query query);
 
     /**
-     * Gets the next Query and inserts on beignServedQuerys
+     * Gets the next Query from queue and inserts on beignServedQuerys
      */
     public abstract void aQueryIsServed();
 
     /**
-     * Gets Query and pull out from the system
+     * Gets Query and marks it as dead query.
      */
     public abstract void rejectQuery(Query query);
 
@@ -50,76 +44,52 @@ public abstract class Module<E> {
     public abstract Query aQueryFinished();
 
     /**
-     * Return a boolean if the query needs to be rejected on the next module or get out from
-     * a queue while waiting
-     * @param query the query that we want to see the kill boolean
-     * @return the kill boolean
+     * @return true if and only if the last query to be added to beingServedQueries came from queue
      */
-    public abstract boolean confirmAliveQuery(Query query);
-
+    public abstract boolean aQueryFromQueueIsNowBeingServed();
 
     /**
-     * Setters and Getters
+     * @return the next query from queue to be attended by servers
      */
+    public abstract Query nextQueryFromQueueToBeOut();
 
+    /************************************************ Getters *********************************************************/
 
     /**
-     *
-     * @return
+     * @return The queue from the module
      */
     public Queue<E> getQueue() {
         return queue;
     }
 
-    /*public int getNumberOfServers() {
-        return numberOfServers;
-    }*/
-
+    /**
+     * @return The number of servers of the module
+     */
     public int getNumberOfServers() {
         return numberOfServers;
     }
 
+    /**
+     * @return The number of free servers
+     */
+    public int getNumberOfFreeServers() {
+        return numberOfFreeServers;
+    }
+
+    /**
+     * @return The number of queries on queue
+     */
     public abstract int getNumberOfQueriesOnQueue();
 
+    /**
+     * @return The number of queries that are being served
+     */
     public abstract int getNumberOfQueriesBeingServed();
 
-    public Queue<E> getBeingServedQueries() {
-        return beingServedQueries;
-    }
-
-    public Queue<Event> getEventList() {
-        return eventList;
-    }
-
+    /**
+     * @return The generator of the simulation
+     */
     public Generator getGenerator() {
         return generator;
     }
-
-    public void setQueue(Queue<E> queue) {
-        this.queue = queue;
-    }
-
-    /*public void setNumberOfServers(int numberOfServers) {
-        this.numberOfServers = numberOfServers;
-    }*/
-
-    public void setNumberOfFreeServers(int numberOfFreeServers) {
-        this.numberOfFreeServers = numberOfFreeServers;
-    }
-
-    public void setBeingServedQueries(Queue<E> beingServedQueries) {
-        this.beingServedQueries = beingServedQueries;
-    }
-
-    /*public void setEventList(Queue<Event> eventList) {
-        this.eventList = eventList;
-    }*/
-
-    public void setGenerator(Generator generator) {
-        this.generator = generator;
-    }
-
-    public abstract boolean isAQueryBeingServed();
-
-    public abstract Query nextQueryFromQueueToBeOut();
 }

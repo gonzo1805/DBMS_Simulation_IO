@@ -51,6 +51,11 @@ public class Validation extends Module<Query> {
         query.getDead();
     }
 
+    /**
+     *
+     * @param query The query to calculate the service duration
+     * @return      A single service duration in the module
+     */
     public double getServiceDuration(Query query) {
         double duration = 0;
         // LEXIC VALIDATION
@@ -93,11 +98,7 @@ public class Validation extends Module<Query> {
         return out;
     }
 
-    public boolean confirmAliveQuery(Query query) {
-        return !query.getDead();
-    }
-
-    public boolean isAQueryBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed(){
         return entriesANewQueryFromQueue;
     }
 

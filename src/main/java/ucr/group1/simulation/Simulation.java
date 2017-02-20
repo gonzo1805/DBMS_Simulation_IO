@@ -5,6 +5,7 @@ import ucr.group1.generator.Generator;
 import ucr.group1.module.*;
 import ucr.group1.query.Query;
 import ucr.group1.statistics.ModuleStatistics;
+import ucr.group1.statistics.QueryStatistics;
 
 import java.util.*;
 
@@ -34,6 +35,7 @@ public class Simulation {
     private ModuleStatistics validationStatistics;
     private ModuleStatistics storageStatistics;
     private ModuleStatistics executionStatistics;
+    private QueryStatistics queryStatistics;
     private Generator generator;
 
 
@@ -67,7 +69,7 @@ public class Simulation {
     }
 
     public void buildModulesAndStatistics(){
-        this.connection = new Connection(kConnections,this.eventList,this,generator);
+        this.connection = new Connection(kConnections,this,generator);
         this.systemCall = new SystemCall(this, generator);
         this.validation = new Validation(nConcurrentProcesses,this,generator);
         this.storage = new Storage(mAvailableProcesses,this,generator);
@@ -77,6 +79,7 @@ public class Simulation {
         this.validationStatistics = new ModuleStatistics(this.validation, this);
         this.storageStatistics = new ModuleStatistics(this.storage, this);
         this.executionStatistics = new ModuleStatistics(this.execution, this);
+        this.queryStatistics = new QueryStatistics();
     }
 
     public void addEvent(Event event){
@@ -121,6 +124,10 @@ public class Simulation {
 
     public ModuleStatistics getValidationStatistics() {
         return validationStatistics;
+    }
+
+    public QueryStatistics getQueryStatistics() {
+        return queryStatistics;
     }
 
     public void finalizeEvent(Event toFinalize){

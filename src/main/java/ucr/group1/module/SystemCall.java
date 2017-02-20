@@ -69,11 +69,7 @@ public class SystemCall extends Module<Query> {
         return out;
     }
 
-    public boolean confirmAliveQuery(Query query) {
-        return !query.getDead();
-    }
-
-    public boolean isAQueryBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed(){
         return entriesANewQueryFromQueue;
     }
 

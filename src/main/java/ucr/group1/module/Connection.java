@@ -1,6 +1,5 @@
 package ucr.group1.module;
 
-import ucr.group1.event.Event;
 import ucr.group1.generator.Generator;
 import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
@@ -9,7 +8,6 @@ import ucr.group1.simulation.Simulation;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Queue;
 
 /**
  * Created by Gonzalo on 2/9/2017.
@@ -21,15 +19,14 @@ public class Connection extends Module<Query> {
     /**
      * Constructor
      *
-     * @param numberOfFreeServers the amount of concurrent connections that the module can handle
-     * @param eventList           the event list of the simulation
-     * @param simulation          a pointer to the simulation
+     * @param numberOfFreeServers   The amount of concurrent connections that the module can handle at once-
+     * @param simulation            A pointer to the simulation
+     * @param generator
      */
-    public Connection(int numberOfFreeServers, Queue<Event> eventList, Simulation simulation, Generator generator) {
+    public Connection(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.numberOfFreeServers = numberOfFreeServers;
         this.numberOfServers = numberOfFreeServers;
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers, new QueryComparator());
-        this.eventList = eventList;
         this.simulation = simulation;
         this.generator = generator;
         this.queriesExpectedToBeReturned = new LinkedList<Query>();
@@ -58,24 +55,14 @@ public class Connection extends Module<Query> {
     }
 
     /**
-     * Connection doesn´t use this method
+     * Connection doesn't use this method
      */
-    public void aQueryIsServed() {
+    public void aQueryIsServed() {}
 
-    }
-
-    /**
-     * Set the kill boolean on true of the query
-     * @param query the query that we wan to kill
-     */
     public void rejectQuery(Query query) {
         query.kill();
     }
 
-    /**
-     * Return the query from the beingServedQuery
-     * @return the query from the beingServedQuery
-     */
     public Query aQueryFinished() {
         numberOfFreeServers++;
         Query finished = beingServedQueries.poll();
@@ -85,6 +72,9 @@ public class Connection extends Module<Query> {
         return finished;
     }
 
+    /**
+     *@param query A query is back to the control of the connection to finish
+     */
     public void aQueryHasReturned(Query query) {
         queriesExpectedToBeReturned.remove(query);
         query.setBeingServed(true);
@@ -93,16 +83,7 @@ public class Connection extends Module<Query> {
         beingServedQueries.add(query);
     }
 
-    /**
-     * Look if the query is alive or dead
-     * @param query the query that we want to see the kill boolean
-     * @return true if the boolean is alive
-     */
-    public boolean confirmAliveQuery(Query query) {
-        return !query.getDead();
-    }
-
-    public boolean isAQueryBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed(){
         return !beingServedQueries.isEmpty();
     }
 

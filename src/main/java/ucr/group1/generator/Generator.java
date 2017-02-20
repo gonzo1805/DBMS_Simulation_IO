@@ -14,15 +14,17 @@ public class Generator {
         random = new Random();
     }
 
-    /*
-     * Returns a random real number between the interval [0,1[
+    /**
+     * @return Random real number between the interval [0,1[
      */
     public double getProbability(){
         return random.nextDouble();
     }
 
-    /*
-     * Returns a random real number based in the normal distribution with mean and variance as parameters
+    /**
+     * @return          Random real number based in the normal distribution
+     * @param mean      The mean of the normal distribution
+     * @param variance  The variance of the normal distribution
      */
     public double getNormal(double mean, double variance){
         double Z = 0;
@@ -36,8 +38,10 @@ public class Generator {
         return X;
     }
 
-    /*
-     * Returns a random real number between the interval [min,max[
+    /**
+     * @return      Random real number between an interval
+     * @param min   The minimum value of the interval (inclusive)
+     * @param max   The maximum value of the interval (exclusive)
      */
     public double getRandomUniform(double min, double max){
         double X = random.nextDouble();
@@ -46,8 +50,9 @@ public class Generator {
         return X;
     }
 
-    /*
-     * Returns a random real number based in the exponential distribution with mean as parameter
+    /**
+     * @return      Random real number based in the exponential distribution
+     * @param mean  The mean of the exponential distribution
      */
     public double getExponential(double mean){
         double r = random.nextDouble();
