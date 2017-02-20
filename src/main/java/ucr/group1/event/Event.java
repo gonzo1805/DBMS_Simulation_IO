@@ -28,23 +28,40 @@ public class Event {
         KILL
     }
 
+    /**
+     * Constructor
+     *
+     * @param event             The event type
+     * @param time              The time at which the event occurs
+     * @param associatedQuery   A pointer to the query associated to the event
+     */
+    public Event(eventType event, double time, Query associatedQuery) {
+        this.eventType = event;
+        this.time = time;
+        this.query = associatedQuery;
+    }
+
+
+    /********************************************** GETTERS ***********************************************************/
+
+    /**
+     * @return the query associated to the event
+     */
     public Query getQuery() {
         return query;
     }
 
+    /**
+     * @return the time at which the event occurs
+     */
     public double getTime() {
         return time;
     }
 
+    /**
+     * @return the event type
+     */
     public Event.eventType getEventType() {
         return eventType;
     }
-
-    public Event(eventType event, double time, Query associateQuery) {
-        this.eventType = event;
-        this.time = time;
-        this.query = associateQuery;
-    }
-
-
 }

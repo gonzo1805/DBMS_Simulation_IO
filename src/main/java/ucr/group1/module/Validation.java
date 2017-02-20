@@ -18,6 +18,7 @@ public class Validation extends Module<Query> {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
+        this.numberOfServers = numberOfFreeServers;
         this.queue = new LinkedBlockingQueue<Query>();
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
         this.entriesANewQueryFromQueue = false;
@@ -50,6 +51,11 @@ public class Validation extends Module<Query> {
         query.getDead();
     }
 
+    /**
+     *
+     * @param query The query to calculate the service duration
+     * @return      A single service duration in the module
+     */
     public double getServiceDuration(Query query) {
         double duration = 0;
         // LEXIC VALIDATION
@@ -79,7 +85,8 @@ public class Validation extends Module<Query> {
     public Query aQueryFinished() {
         Query out = beingServedQueries.poll();
         out.setBeingServed(true);
-        out.setValidationDuration(simulation.getTime() - out.getArrivalTime());
+        out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
+        simulation.getValidationStatistics().updateModuleTime(out,simulation.getTime() - out.getArrivalTime());
         if(!queue.isEmpty()){
             aQueryIsServed();
             entriesANewQueryFromQueue = true;
@@ -91,15 +98,19 @@ public class Validation extends Module<Query> {
         return out;
     }
 
-    public boolean confirmAliveQuery(Query query) {
-        return !query.getDead();
-    }
-
-    public boolean isAQueryBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed(){
         return entriesANewQueryFromQueue;
     }
 
     public Query nextQueryFromQueueToBeOut(){
         return lastQueryObtainedFromQueue;
+    }
+
+    public int getNumberOfQueriesOnQueue(){
+        return queue.size();
+    }
+
+    public int getNumberOfQueriesBeingServed(){
+        return beingServedQueries.size();
     }
 }

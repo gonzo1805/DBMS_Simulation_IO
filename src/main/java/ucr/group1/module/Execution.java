@@ -16,7 +16,6 @@ import static ucr.group1.query.QueryType.type.DDL;
 public class Execution extends Module<Query> {
 
     private Query ddlToBeExecuted;
-    private int totalServers;
     private boolean aDdlIsWaiting;
     private Query lastQueryObtainedFromQueue;
     private boolean entriesANewQueryFromQueue;
@@ -25,7 +24,7 @@ public class Execution extends Module<Query> {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
-        this.totalServers = numberOfFreeServers;
+        this.numberOfServers = numberOfFreeServers;
         this.queue = new PriorityQueue<Query>(1000000 , new ExecutionComparator());
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
         this.aDdlIsWaiting = false;
@@ -38,13 +37,13 @@ public class Execution extends Module<Query> {
                 numberOfFreeServers--;
                 query.setArrivalTime(simulation.getTime());
                 beingServedQueries.add(query);
-                query.setDepartureTime(((totalServers - numberOfFreeServers)*0.03) + query.getArrivalTime());
+                query.setDepartureTime(((numberOfServers - numberOfFreeServers)*0.03) + query.getArrivalTime());
                 query.setBeingServed(true);
                 return query.getDepartureTime();
             }
             else{
                 aDdlIsWaiting = true;
-                if(numberOfFreeServers == totalServers){
+                if(numberOfFreeServers == numberOfServers){
                     numberOfFreeServers--;
                     query.setArrivalTime(simulation.getTime());
                     beingServedQueries.add(query);
@@ -76,7 +75,8 @@ public class Execution extends Module<Query> {
         if(out.getType() == DDL){
             aDdlIsWaiting = false;
         }
-        out.setExecutionDuration(simulation.getTime() - out.getArrivalTime());
+        out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
+        simulation.getExecutionStatistics().updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
         numberOfFreeServers++;
         if(!aDdlIsWaiting){
             if(!queue.isEmpty()){
@@ -86,12 +86,12 @@ public class Execution extends Module<Query> {
                     beingServedQueries.add(query);
                     lastQueryObtainedFromQueue = query;
                     query.setBeingServed(true);
-                    query.setDepartureTime(((totalServers - numberOfFreeServers)*0.03) + simulation.getTime());
+                    query.setDepartureTime(((numberOfServers - numberOfFreeServers)*0.03) + simulation.getTime());
                     entriesANewQueryFromQueue = true;
                 }
                 else{
                     aDdlIsWaiting = true;
-                    if(numberOfFreeServers == totalServers){
+                    if(numberOfFreeServers == numberOfServers){
                         numberOfFreeServers--;
                         lastQueryObtainedFromQueue = query;
                         beingServedQueries.add(query);
@@ -109,7 +109,7 @@ public class Execution extends Module<Query> {
                 entriesANewQueryFromQueue = false;
             }
         }
-        else if(numberOfFreeServers == totalServers){
+        else if(numberOfFreeServers == numberOfServers){
             numberOfFreeServers--;
             lastQueryObtainedFromQueue = ddlToBeExecuted;
             beingServedQueries.add(ddlToBeExecuted);
@@ -122,15 +122,19 @@ public class Execution extends Module<Query> {
         return out;
     }
 
-    public boolean confirmAliveQuery(Query query) {
-        return false;
-    }
-
-    public boolean isAQueryBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed(){
         return entriesANewQueryFromQueue;
     }
 
     public Query nextQueryFromQueueToBeOut(){
         return lastQueryObtainedFromQueue;
+    }
+
+    public int getNumberOfQueriesOnQueue(){
+        return queue.size();
+    }
+
+    public int getNumberOfQueriesBeingServed(){
+        return beingServedQueries.size();
     }
 }
