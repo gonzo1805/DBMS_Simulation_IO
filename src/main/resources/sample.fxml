@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.AmbientLight?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="mainWindow" prefHeight="359.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/8.0.111"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucr.group1.ui.Controller">
+    <children>
+        <Label layoutX="15.0" layoutY="41.0" text="Numero de Runs"/>
+        <TextField fx:id="txtRuns" layoutX="15.0" layoutY="58.0" onAction="#enterRuns" onMouseClicked="#clickRuns"
+                   prefHeight="25.0" prefWidth="50.0"/>
+        <Label layoutX="15.0" layoutY="94.0" text="Tiempo por Run"/>
+        <TextField fx:id="txtTimePerRun" layoutX="15.0" layoutY="111.0" onAction="#enterTimePerRun"
+                   onMouseClicked="#clickTimePerRun" prefHeight="25.0" prefWidth="50.0" text="Seg."/>
+        <Label layoutX="15.0" layoutY="148.0" text="Modo Lento"/>
+        <Label layoutX="15.0" layoutY="201.0" text="Tiempo entre Eventos"/>
+        <TextField fx:id="txtTimeBetEvents" disable="true" layoutX="15.0" layoutY="218.0" onAction="#enterTimeBetEvents"
+                   onMouseClicked="#clickTimeBetEvents" prefHeight="25.0" prefWidth="50.0" text="Seg."/>
+        <Label layoutX="15.0" layoutY="253.0" text="Timeout (T)"/>
+        <TextField fx:id="txtTimeout" layoutX="15.0" layoutY="270.0" onAction="#enterTimeout"
+                   onMouseClicked="#clickTimeout" prefHeight="25.0" prefWidth="50.0" text="Seg."/>
+        <Label layoutX="118.0" layoutY="41.0" text="Conecciones Concurrentes(K)"/>
+        <TextField fx:id="txtKConnection" layoutX="118.0" layoutY="58.0" onAction="#enterKConnection"
+                   onMouseClicked="#clickKConnection" prefHeight="25.0" prefWidth="50.0"/>
+        <Label layoutX="118.0" layoutY="94.0" text="Procesos Disp. (N)"/>
+        <TextField fx:id="txtNProc" layoutX="118.0" layoutY="111.0" onAction="#enterNProc" onMouseClicked="#clickNProc"
+                   prefHeight="25.0" prefWidth="50.0"/>
+        <Label layoutX="117.0" layoutY="148.0" prefHeight="17.0" prefWidth="158.0"
+               text="Procesos de Transacciones (P)"/>
+        <TextField fx:id="txtPTrans" layoutX="118.0" layoutY="165.0" onAction="#enterPTrans"
+                   onMouseClicked="#clickPTrans" prefHeight="25.0" prefWidth="50.0"/>
+        <Label layoutX="117.0" layoutY="253.0" text="Procesos de Consultas (M) "/>
+        <TextField fx:id="txtMConsults" layoutX="118.0" layoutY="270.0" onAction="#enterMConsults"
+                   onMouseClicked="#clickMConsults" prefHeight="25.0" prefWidth="50.0"/>
+        <Button fx:id="botonStartSimulation" layoutX="118.0" layoutY="318.0" mnemonicParsing="false"
+                onAction="#clickBotonStarSimulation" text="Iniciar Simulación"/>
+        <Button fx:id="buttonDefault" layoutX="13.0" layoutY="318.0" mnemonicParsing="false" onAction="#clickDefault"
+                text="Default"/>
+        <Label fx:id="labelRuns" alignment="CENTER" contentDisplay="CENTER" layoutX="73.0" layoutY="62.0" text="1"/>
+        <Label fx:id="labelTimePerRun" alignment="CENTER" contentDisplay="CENTER" layoutX="73.0" layoutY="115.0"
+               text="1200"/>
+        <Label fx:id="labelTimeBetEvents" alignment="CENTER" contentDisplay="CENTER" layoutX="73.0" layoutY="223.0"
+               text="0"/>
+        <Label fx:id="labelTimeout" alignment="CENTER" contentDisplay="CENTER" layoutX="73.0" layoutY="275.0"
+               text="15"/>
+        <Label fx:id="labelKConnection" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="62.0"
+               text="3"/>
+        <Label fx:id="labelNProc" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="115.0" text="3"/>
+        <Label fx:id="labelPTrans" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="169.0" text="3"/>
+        <Label fx:id="labelMConsults" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="274.0"
+               text="3"/>
+        <MenuBar prefHeight="25.0" prefWidth="285.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete"/>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About"/>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+        <Separator layoutX="278.0" layoutY="3.0" orientation="VERTICAL" prefHeight="359.0" prefWidth="13.0"/>
+        <AmbientLight color="CHARTREUSE" lightOn="true"/>
+        <TextArea editable="false" layoutX="285.0" prefHeight="365.0" prefWidth="276.0" wrapText="true"/>
+        <Label layoutX="567.0" layoutY="5.0" text="Reloj del Sistema:"/>
+        <Label layoutX="716.0" layoutY="5.0" text="Label"/>
+        <ComboBox fx:id="comboBoxModule" layoutX="566.0" layoutY="103.0" prefWidth="150.0" promptText="Modulo"
+                  visibleRowCount="5"/>
+        <Label layoutX="567.0" layoutY="35.0" text="Evento actual:"/>
+        <Label layoutX="716.0" layoutY="35.0" text="Label"/>
+        <Label layoutX="567.0" layoutY="65.0" text="Conecciones Descartadas:"/>
+        <Label layoutX="716.0" layoutY="65.0" text="Label"/>
+        <Button fx:id="buttonRestartSimulation" layoutX="566.0" layoutY="318.0" mnemonicParsing="false"
+                onAction="#clickRestart" text="Reiniciar"/>
+        <Button fx:id="buttonNewSimulation" layoutX="641.0" layoutY="318.0" mnemonicParsing="false" onAction="#clickNew"
+                text="Nueva Simulación"/>
+        <Label layoutX="567.0" layoutY="156.0" text="Cantidad de Servidores:"/>
+        <Label layoutX="716.0" layoutY="156.0" text="Label"/>
+        <Label layoutX="567.0" layoutY="186.0" text="Servidores ocupados:"/>
+        <Label layoutX="567.0" layoutY="216.0" text="Longitud de la cola:"/>
+        <Label layoutX="566.0" layoutY="246.0" text="Clientes servidos:"/>
+        <Label layoutX="716.0" layoutY="186.0" text="Label"/>
+        <Label layoutX="716.0" layoutY="216.0" text="Label"/>
+        <Label layoutX="716.0" layoutY="246.0" text="Label"/>
+        <RadioButton fx:id="radioButtonYes" layoutX="15.0" layoutY="174.0" mnemonicParsing="false"
+                     onAction="#clickRadioButtonYes" text="Si"/>
+        <RadioButton fx:id="radioButtonNo" layoutX="56.0" layoutY="174.0" mnemonicParsing="false"
+                     onAction="#clickRadioButtonNo" selected="true" text="No"/>
+    </children>
+</AnchorPane>
