@@ -116,8 +116,8 @@ public class ModuleStatistics {
     }
 
     /**
-     * @param type
-     * @return
+     * @param type The type of query that is wanted to get the average time through the module
+     * @return The average time in module of a specified type of query
      */
     public double getAverageTime(QueryType type){
         switch(type.getType()){
@@ -134,6 +134,9 @@ public class ModuleStatistics {
         }
     }
 
+    /**
+     * @return The leisure time of the module
+     */
     public double getLeisureTime(){
         double rho = getRho();
         if(rho < 1) {
@@ -144,10 +147,16 @@ public class ModuleStatistics {
         }
     }
 
+    /**
+     * @return The total of queries that passed through the module
+     */
     public int getAmountOfServedQueries() {
         return amountOfServedQueries;
     }
 
+    /**
+     * @param newTimeBetweenArrives The time of a new arrival to the module
+     */
     public void updateTimeBetweenArrives(double newTimeBetweenArrives){
         numberTimeBetweenArrives++;
         double percentage = (1 -(1/numberTimeBetweenArrives));
@@ -156,6 +165,9 @@ public class ModuleStatistics {
         lastArrive = newTimeBetweenArrives;
     }
 
+    /**
+     * @param newL_q The size of the queue at a moment
+     */
     public void updateL_Q(int newL_q){
         numberL_Q++;
         double percentage = (1 -(1/numberL_Q));
@@ -163,6 +175,9 @@ public class ModuleStatistics {
         l_q += (1 - percentage)*(double)newL_q;
     }
 
+    /**
+     * @param newL_s The number of being served queries at a moment
+     */
     public void updateL_S(int newL_s){
         numberL_S++;
         double percentage = (1 -(1/numberL_S));
@@ -170,6 +185,11 @@ public class ModuleStatistics {
         l_s += (1 - percentage)*(double)newL_s;
     }
 
+    /**
+     * Updates the average of time passed to the module of a single type of query
+     * @param query The query served by the module
+     * @param newModuleTime The total time that the query passed through the module
+     */
     public void updateModuleTime(Query query, double newModuleTime){
         double percentage;
         switch (query.getType()) {

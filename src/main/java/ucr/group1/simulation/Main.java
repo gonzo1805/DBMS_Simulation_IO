@@ -222,12 +222,12 @@ public class Main {
             simulation.getExecutionStatistics().updateL_Q(simulation.getExecution().getNumberOfQueriesOnQueue());
             simulation.getExecutionStatistics().updateL_S(simulation.getExecution().getNumberOfQueriesBeingServed());
         }
-        QueryType queryType = new QueryType(QueryType.type.SELECT);
-        System.out.println(simulation.getValidationStatistics().getAverageTime(queryType));
-        System.out.println(simulation.getValidationStatistics().getL());
-        System.out.println(simulation.getValidationStatistics().getL_q());
-        System.out.println(simulation.getValidationStatistics().getL_s());
-        System.out.println(simulation.getValidationStatistics().getLambda());
-        System.out.println(simulation.getValidationStatistics().getLeisureTime());
     }
 }
+
+/*
+   Las líneas: 31, 34, 44, 61, 69, 73, 83, 92, 103, 107, 117, 126, 137, 140, 150, 159, 170, 174, 184, 193
+   son salidas de bitácora por consola, nada más sustituirlas cuando se quiera hacer la bitácira de la interfaz
+ */
+
+
