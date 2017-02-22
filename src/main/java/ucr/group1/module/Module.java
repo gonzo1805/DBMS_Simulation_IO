@@ -6,6 +6,7 @@ import java.util.Queue;
 import ucr.group1.generator.Generator;
 import ucr.group1.query.*;
 import ucr.group1.simulation.Simulation;
+import ucr.group1.statistics.ModuleStatistics;
 
 /**
  * Created by Gonzalo on 2/8/2017.
@@ -17,6 +18,7 @@ public abstract class Module<E> {
     protected Queue<E> beingServedQueries;
     protected Generator generator;
     protected Simulation simulation;
+    protected ModuleStatistics moduleStatistics;
 
     /**
      * Inserts a Query on queue if there is not free servers, if there are free servers, inserts a Query on
@@ -52,6 +54,10 @@ public abstract class Module<E> {
      * @return the next query from queue to be attended by servers
      */
     public abstract Query nextQueryFromQueueToBeOut();
+
+    public abstract void updateL_sStatistics();
+
+    public abstract void updateL_qStatistics();
 
     /************************************************ Getters *********************************************************/
 

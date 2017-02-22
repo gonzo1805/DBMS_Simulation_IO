@@ -13,21 +13,6 @@ public class Event {
     private double time;
     private eventType eventType;
 
-    public enum eventType {
-        ENTER_CONNECTION,
-        RETURN_TO_CONNECTION,
-        EXIT_CONNECTION,
-        ENTER_SYSTEMCALL,
-        EXIT_SYSTEMCALL,
-        ENTER_VALIDATION,
-        EXIT_VALIDATION,
-        ENTER_STORAGE,
-        EXIT_STORAGE,
-        ENTER_EXECUTION,
-        EXIT_EXECUTION,
-        KILL
-    }
-
     /**
      * Constructor
      *
@@ -61,7 +46,7 @@ public class Event {
     /**
      * @return the event type
      */
-    public Event.eventType getEventType() {
+    public eventType getEventType() {
         return eventType;
     }
 }

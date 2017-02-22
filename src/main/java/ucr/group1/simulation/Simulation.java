@@ -7,7 +7,12 @@ import ucr.group1.query.Query;
 import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
+import java.util.List;
+
+import static ucr.group1.event.eventType.*;
 
 
 /**
@@ -25,18 +30,14 @@ public class Simulation {
     private int tTimeout;
     private boolean slowMode;
     private double timeBetweenEvents;
-    private Module connection;
-    private Module systemCall;
-    private Module validation;
-    private Module storage;
-    private Module execution;
-    private ModuleStatistics connectionStatistics;
-    private ModuleStatistics systemCallStatistics;
-    private ModuleStatistics validationStatistics;
-    private ModuleStatistics storageStatistics;
-    private ModuleStatistics executionStatistics;
+    private /*Module*/ Connection connection;
+    private /*Module*/ SystemCall systemCall;
+    private /*Module*/ Validation validation;
+    private /*Module*/ Storage storage;
+    private /*Module*/ Execution execution;
     private QueryStatistics queryStatistics;
     private Generator generator;
+    private List timeLog;
 
 
     /**
@@ -66,11 +67,79 @@ public class Simulation {
             this.timeBetweenEvents = 0;
         }
         this.generator = new Generator();
+        this.timeLog = new LinkedList<String>();
         buildModulesAndStatistics();
     }
 
+    public void simulate(){
+        int idAsigner = 1;
+        Event firstEvent = new Event(ENTER_CONNECTION ,0, new Query(idAsigner++, generator));
+        addEvent(firstEvent);
+        while(idAsigner < 100/* REVISAR CONDICIÓN DESPUÉS*/){
+            Event actualEvent = getNextEvent();
+            switch(actualEvent.getEventType()) {
+                case ENTER_CONNECTION: // READY
+                    connection.enterConnectionEvent(idAsigner, actualEvent);
+                    idAsigner++;
+                    break;
+                case RETURN_TO_CONNECTION: // READY
+                    connection.returnToConnectionEvent(actualEvent);
+                    break;
+                case EXIT_CONNECTION:
+                    connection.exitConnectionEvent(actualEvent);
+                    break;
+                case ENTER_SYSTEMCALL:
+                    systemCall.enterSystemCallEvent(actualEvent);
+                    break;
+                case EXIT_SYSTEMCALL:
+                    systemCall.exitSystemCallEvent(actualEvent);
+                    break;
+                case ENTER_VALIDATION:
+                    validation.enterValidationEvent(actualEvent);
+                    break;
+                case EXIT_VALIDATION:
+                    validation.exitValidationEvent(actualEvent);
+                    break;
+                case ENTER_STORAGE:
+                    storage.enterStorageEvent(actualEvent);
+                    break;
+                case EXIT_STORAGE:
+                    storage.exitStorageEvent(actualEvent);
+                    break;
+                case ENTER_EXECUTION:
+                    execution.enterExecutionEvent(actualEvent);
+                    break;
+                case EXIT_EXECUTION:
+                    execution.exitExecutionEvent(actualEvent);
+                    break;
+                case KILL:
+                    time = actualEvent.getTime();
+                    if (actualEvent.getQuery().isBeingServed()) {
+                        actualEvent.getQuery().kill();
+                    } else {
+                        Queue queue = getDeadQueryQueue(actualEvent.getQuery());
+                        if (queue != null) {
+                            queue.remove(actualEvent.getQuery());
+                        }
+                        thisQueryWereKilledBeforeReachTheNextEvent(actualEvent.getQuery());
+                        getQueryStatistics().rejectAQuery();
+                    }
+                    addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, it will be kicked out");
+                    break;
+            }
+            updateAllTheLOfStatistics();
+        }
+    }
+
+    public void addLineInTimeLog(String line){
+        timeLog.add(getTimeInHHMMSS() + line);
+    }
 
     /********************************************** GETTERS ***********************************************************/
+
+    public int getTimeOut() {
+        return tTimeout;
+    }
 
     /**
      * @return The generator of the simulation
@@ -89,76 +158,6 @@ public class Simulation {
      */
     public Event getNextEvent() {
         return eventList.poll();
-    }
-
-    /**
-     * @return The connection module
-     */
-    public Module getConnection() {
-        return connection;
-    }
-
-    /**
-     * @return The system call module
-     */
-    public Module getSystemCall() {
-        return systemCall;
-    }
-
-    /**
-     * @return The validation module
-     */
-    public Module getValidation() {
-        return validation;
-    }
-
-    /**
-     * @return The storage module
-     */
-    public Module getStorage() {
-        return storage;
-    }
-
-    /**
-     * @return The execution module
-     */
-    public Module getExecution() {
-        return execution;
-    }
-
-    /**
-     * @return The Statistics of the connection module
-     */
-    public ModuleStatistics getConnectionStatistics() {
-        return connectionStatistics;
-    }
-
-    /**
-     * @return The Statistics of the system call module
-     */
-    public ModuleStatistics getSystemCallStatistics() {
-        return systemCallStatistics;
-    }
-
-    /**
-     * @return The Statistics of the execution module
-     */
-    public ModuleStatistics getExecutionStatistics() {
-        return executionStatistics;
-    }
-
-    /**
-     * @return The Statistics of the storage module
-     */
-    public ModuleStatistics getStorageStatistics() {
-        return storageStatistics;
-    }
-
-    /**
-     * @return The Statistics of the validation module
-     */
-    public ModuleStatistics getValidationStatistics() {
-        return validationStatistics;
     }
 
     /**
@@ -231,11 +230,6 @@ public class Simulation {
         this.validation = new Validation(nConcurrentProcesses,this,generator);
         this.storage = new Storage(mAvailableProcesses,this,generator);
         this.execution = new Execution(pTransactionProcesses,this,generator);
-        this.connectionStatistics = new ModuleStatistics(this.connection, this);
-        this.systemCallStatistics = new ModuleStatistics(this.systemCall, this);
-        this.validationStatistics = new ModuleStatistics(this.validation, this);
-        this.storageStatistics = new ModuleStatistics(this.storage, this);
-        this.executionStatistics = new ModuleStatistics(this.execution, this);
         this.queryStatistics = new QueryStatistics();
     }
 
@@ -265,5 +259,47 @@ public class Simulation {
      */
     public void thisQueryWereKilledBeforeReachTheNextEvent(Query query){
         eventList.remove(query.getNextEvent());
+    }
+
+    public void releaseAConnectionServer(){
+        connection.releaseAServer();
+    }
+
+    public void updateAllTheLOfStatistics(){
+        connection.updateL_sStatistics();
+        systemCall.updateL_sStatistics();
+        systemCall.updateL_qStatistics();
+        validation.updateL_sStatistics();
+        validation.updateL_qStatistics();
+        storage.updateL_sStatistics();
+        storage.updateL_qStatistics();
+        execution.updateL_sStatistics();
+        execution.updateL_qStatistics();
+    }
+
+    public void createATimeLogArchive(String name){
+        name += ".txt";
+        /* Forma que no sirvió
+        Path file = Paths.get(name);
+        Files.write(file, timeLog, Charset.forName("UTF-8"));
+        */
+
+        /* Compiló pero tampoco sirvió
+        try{
+            PrintWriter writer = new PrintWriter("name", "UTF-8");
+            ListIterator<String> it = timeLog.listIterator();
+            while(it.hasNext()) {
+                writer.println(it.next());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Something happened");
+        }
+        */
+
+        ListIterator<String> it = timeLog.listIterator();
+        while(it.hasNext()) {
+            System.out.println(it.next());
+        }
     }
 }

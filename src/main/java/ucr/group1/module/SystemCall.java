@@ -1,11 +1,16 @@
 package ucr.group1.module;
 
+import ucr.group1.event.Event;
 import ucr.group1.generator.Generator;
 import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
+import ucr.group1.statistics.ModuleStatistics;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static ucr.group1.event.eventType.ENTER_VALIDATION;
+import static ucr.group1.event.eventType.EXIT_SYSTEMCALL;
 
 /**
  * Created by Gonzalo on 2/9/2017.
@@ -23,6 +28,7 @@ public class SystemCall extends Module<Query> {
         this.numberOfServers = numberOfFreeServers;
         this.queue = new LinkedBlockingQueue<Query>();
         this.entriesANewQueryFromQueue = false;
+        this.moduleStatistics = new ModuleStatistics(this, this.simulation);
     }
 
     public double entriesANewQuery(Query query) {
@@ -57,7 +63,7 @@ public class SystemCall extends Module<Query> {
         beingServedQuery = null;
         out.setBeingServed(false);
         out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
-        simulation.getSystemCallStatistics().updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
+        moduleStatistics.updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
         if(!queue.isEmpty()){
             aQueryIsServed();
             entriesANewQueryFromQueue = true;
@@ -86,5 +92,55 @@ public class SystemCall extends Module<Query> {
             return 0;
         }
         return 1;
+    }
+
+    public void enterSystemCallEvent(Event actualEvent){
+        simulation.setTime(actualEvent.getTime());
+        moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
+        simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
+                " arrived to systemcall.");
+        double exitTime = entriesANewQuery(actualEvent.getQuery());
+        if(exitTime > -1) {
+            simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
+                    " is now attended in systemcall.");
+            simulation.addEvent(new Event(EXIT_SYSTEMCALL, exitTime, actualEvent.getQuery()));
+        }
+        simulation.finalizeEvent(actualEvent);
+    }
+
+    public void exitSystemCallEvent(Event actualEvent){
+        simulation.setTime(actualEvent.getTime());
+        Query fromModule = aQueryFinished();// De que modulo viene
+        if(!fromModule.getDead()){
+            simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from systemcall.");
+            simulation.addEvent(new Event(ENTER_VALIDATION, simulation.getTime(), fromModule));
+        }
+        else{
+            // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
+            simulation.getQueryStatistics().rejectAQuery();
+            simulation.releaseAConnectionServer();
+        }
+        if(aQueryFromQueueIsNowBeingServed()){
+            Query nextQueryToExit = nextQueryFromQueueToBeOut();
+            simulation.addLineInTimeLog("The query " + nextQueryToExit.getId() +
+                    " is now attended in systemcall.");
+            Event nextEvent = new Event(EXIT_SYSTEMCALL, nextQueryToExit.getDepartureTime(), nextQueryToExit);
+            actualEvent.getQuery().setNextEvent(nextEvent);
+            simulation.addEvent(nextEvent);
+        }
+        simulation.finalizeEvent(actualEvent);
+    }
+
+    public void updateL_sStatistics(){
+        if(beingServedQuery != null){
+            moduleStatistics.updateL_S(1);
+        }
+        else{
+            moduleStatistics.updateL_S(0);
+        }
+    }
+
+    public void updateL_qStatistics(){
+        moduleStatistics.updateL_Q(queue.size());
     }
 }
