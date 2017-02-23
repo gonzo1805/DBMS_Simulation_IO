@@ -2,8 +2,6 @@ package ucr.group1.event;
 
 import ucr.group1.query.Query;
 
-import java.util.Comparator;
-
 /**
  * Created by Gonzalo on 2/11/2017.
  */
@@ -11,7 +9,7 @@ public class Event {
 
     private Query query;
     private double time;
-    private eventType eventType;
+    private EventType EventType;
 
     /**
      * Constructor
@@ -20,8 +18,8 @@ public class Event {
      * @param time            The time at which the event occurs
      * @param associatedQuery A pointer to the query associated to the event
      */
-    public Event(eventType event, double time, Query associatedQuery) {
-        this.eventType = event;
+    public Event(EventType event, double time, Query associatedQuery) {
+        this.EventType = event;
         this.time = time;
         this.query = associatedQuery;
     }
@@ -46,7 +44,7 @@ public class Event {
     /**
      * @return the event type
      */
-    public eventType getEventType() {
-        return eventType;
+    public EventType getEventType() {
+        return EventType;
     }
 }

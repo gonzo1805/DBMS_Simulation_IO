@@ -6,10 +6,15 @@ import ucr.group1.module.*;
 import ucr.group1.query.Query;
 import ucr.group1.statistics.QueryStatistics;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
-import static ucr.group1.event.eventType.*;
+import static ucr.group1.event.EventType.*;
 
 
 /**
@@ -35,20 +40,20 @@ public class Simulation {
     private QueryStatistics queryStatistics;
     private Generator generator;
     private List timeLog;
+    private int timePerSimulation;
 
 
     /**
      * Builds a new simulation
-     *
-     * @param kConnections          The number of servers in the ClientManagementModule module
-     * @param nConcurrentProcesses  The number of servers in the QueriesVerificationModule module
+     * @param kConnections The number of servers in the ClientManagementModule module
+     * @param nConcurrentProcesses The number of servers in the QueriesVerificationModule module
      * @param pTransactionProcesses The number of servers in the QueriesExecutionModule module
-     * @param mAvailableProcesses   The number of servers in the TransactionsModule module
-     * @param tTimeout              The maximum time that a query can be in the system
-     * @param slowMode              A condition that activates the slow mode
-     * @param timeBetweenEvents     The time in seconds between the occurrence of events
+     * @param mAvailableProcesses The number of servers in the TransactionsModule module
+     * @param tTimeout The maximum time that a query can be in the system
+     * @param slowMode A condition that activates the slow mode
+     * @param timeBetweenEvents The time in seconds between the occurrence of events
      */
-    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses, int tTimeout, boolean slowMode, double timeBetweenEvents) {
+    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses, int tTimeout, boolean slowMode, double timeBetweenEvents, int timePerSimulation) {
         time = 0;
         eventList = new PriorityQueue<Event>(1000000, new EventComparator());
         finalizedEvents = new LinkedList<Event>();
@@ -65,6 +70,7 @@ public class Simulation {
         }
         this.generator = new Generator();
         this.timeLog = new LinkedList<String>();
+        this.timePerSimulation = timePerSimulation;
         buildModulesAndStatistics();
     }
 
@@ -72,14 +78,14 @@ public class Simulation {
         int idAsigner = 1;
         Event firstEvent = new Event(ENTER_CONNECTION, 0, new Query(idAsigner++, generator));
         addEvent(firstEvent);
-        while (idAsigner < 100/* REVISAR CONDICIÓN DESPUÉS*/) {
+        while (time < timePerSimulation) {
             Event actualEvent = getNextEvent();
             switch (actualEvent.getEventType()) {
-                case ENTER_CONNECTION: // READY
+                case ENTER_CONNECTION:
                     clientManagementModule.enterConnectionEvent(idAsigner, actualEvent);
                     idAsigner++;
                     break;
-                case RETURN_TO_CONNECTION: // READY
+                case RETURN_TO_CONNECTION:
                     clientManagementModule.returnToConnectionEvent(actualEvent);
                     break;
                 case EXIT_CONNECTION:
@@ -124,6 +130,13 @@ public class Simulation {
                     addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, it will be kicked out");
                     break;
             }
+            //
+            try {
+                Thread.sleep((long) timeBetweenEvents * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //
             updateAllTheLOfStatistics();
         }
     }
@@ -273,27 +286,12 @@ public class Simulation {
 
     public void createATimeLogArchive(String name) {
         name += ".txt";
-        /* Forma que no sirvió
+        Forma que no sirvió
         Path file = Paths.get(name);
-        Files.write(file, timeLog, Charset.forName("UTF-8"));
-        */
-
-        /* Compiló pero tampoco sirvió
-        try{
-            PrintWriter writer = new PrintWriter("name", "UTF-8");
-            ListIterator<String> it = timeLog.listIterator();
-            while(it.hasNext()) {
-                writer.println(it.next());
-            }
-            writer.close();
+        try {
+            Files.write(file, timeLog, Charset.forName("UTF-8"));
         } catch (IOException e) {
-            System.out.println("Something happened");
-        }
-        */
-
-        ListIterator<String> it = timeLog.listIterator();
-        while (it.hasNext()) {
-            System.out.println(it.next());
+            e.printStackTrace();
         }
     }
 }

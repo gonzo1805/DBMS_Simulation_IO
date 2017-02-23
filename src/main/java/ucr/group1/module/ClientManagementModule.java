@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import static ucr.group1.event.eventType.*;
+import static ucr.group1.event.EventType.*;
 
 /**
  * Created by Gonzalo on 2/9/2017.

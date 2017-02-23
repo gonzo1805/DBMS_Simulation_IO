@@ -9,8 +9,8 @@ import ucr.group1.statistics.ModuleStatistics;
 import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static ucr.group1.event.eventType.ENTER_STORAGE;
-import static ucr.group1.event.eventType.EXIT_VALIDATION;
+import static ucr.group1.event.EventType.ENTER_STORAGE;
+import static ucr.group1.event.EventType.EXIT_VALIDATION;
 
 /**
  * Created by Gonzalo on 2/9/2017.

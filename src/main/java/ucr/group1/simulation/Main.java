@@ -5,10 +5,12 @@ package ucr.group1.simulation;
  */
 public class Main {
     public static void main(String[]  args){
-        int timeOut = 3;
-        Simulation simulation = new Simulation(20,8,10,2,
-                timeOut,false, 0);
-        simulation.simulate();
-        simulation.createATimeLogArchive("Bitacora2");
+        for (int i = 1; i <= 15; i++) {
+            int timeOut = 7;
+            Simulation simulation = new Simulation(20, 8, 10, 2,
+                    timeOut, true, 1, 15000);
+            simulation.simulate();
+            simulation.createATimeLogArchive("Bitacora" + i);
+        }
     }
 }

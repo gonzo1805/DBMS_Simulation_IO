@@ -6,11 +6,10 @@ import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.statistics.ModuleStatistics;
 
-import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static ucr.group1.event.eventType.ENTER_VALIDATION;
-import static ucr.group1.event.eventType.EXIT_SYSTEMCALL;
+import static ucr.group1.event.EventType.ENTER_VALIDATION;
+import static ucr.group1.event.EventType.EXIT_SYSTEMCALL;
 
 /**
  * Created by Gonzalo on 2/9/2017.
