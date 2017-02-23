@@ -63,10 +63,9 @@ public class Simulation {
         this.mAvailableProcesses = mAvailableProcesses;
         this.tTimeout = tTimeout;
         this.slowMode = slowMode;
-        if(this.slowMode){
+        if (this.slowMode) {
             this.timeBetweenEvents = timeBetweenEvents;
-        }
-        else{
+        } else {
             this.timeBetweenEvents = 0;
         }
         this.generator = new Generator();
@@ -75,15 +74,19 @@ public class Simulation {
         buildModulesAndStatistics();
     }
 
-    public void simulate(){
+    public void simulate() {
         int idAsigner = 1;
+
         Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING ,0, new Query(idAsigner++, generator));
+
         addEvent(firstEvent);
-        while(time < timePerSimulation){
+        while (time < timePerSimulation) {
             Event actualEvent = getNextEvent();
+
             switch(actualEvent.getEventType()) {
                 case A_NEW_QUERY_IS_REQUESTING:
                     clientManagementModule.newQueryRequestingEvent(idAsigner, actualEvent);
+
                     idAsigner++;
                     break;
                 case RETURN_TO_CLIENT_MANAGEMENT_MODULE:
@@ -133,7 +136,7 @@ public class Simulation {
             }
             //
             try {
-                Thread.sleep((long)timeBetweenEvents*1000);
+                Thread.sleep((long) timeBetweenEvents * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -154,7 +157,9 @@ public class Simulation {
     /**
      * @return The generator of the simulation
      */
-    public Generator getGenerator(){ return generator; }
+    public Generator getGenerator() {
+        return generator;
+    }
 
     /**
      * @return The actual time in the simulation
@@ -181,20 +186,16 @@ public class Simulation {
      * @param query The Query marked as killed
      * @return The queue that has the dead query
      */
-    public Queue getDeadQueryQueue(Query query){
-        if(processesManagementModule.getQueue().contains(query)){
+    public Queue getDeadQueryQueue(Query query) {
+        if (processesManagementModule.getQueue().contains(query)) {
             return processesManagementModule.getQueue();
-        }
-        else if(queriesVerificationModule.getQueue().contains(query)){
+        } else if (queriesVerificationModule.getQueue().contains(query)) {
             return queriesVerificationModule.getQueue();
-        }
-        else if(transactionsModule.getQueue().contains(query)){
+        } else if (transactionsModule.getQueue().contains(query)) {
             return transactionsModule.getQueue();
-        }
-        else if(queriesExecutionModule.getQueue().contains(query)){
+        } else if (queriesExecutionModule.getQueue().contains(query)) {
             return queriesExecutionModule.getQueue();
-        }
-        else{
+        } else {
             return null;
         }
     }
@@ -224,7 +225,6 @@ public class Simulation {
     }
 
     /**
-     *
      * @param time The new time
      */
     public void setTime(double time) {
@@ -234,48 +234,48 @@ public class Simulation {
     /**
      * Builds all the modules and the statistics
      */
-    public void buildModulesAndStatistics(){
-        this.clientManagementModule = new ClientManagementModule(kConnections,this,generator);
+    public void buildModulesAndStatistics() {
+        this.clientManagementModule = new ClientManagementModule(kConnections, this, generator);
         this.processesManagementModule = new ProcessesManagementModule(this, generator);
-        this.queriesVerificationModule = new QueriesVerificationModule(nConcurrentProcesses,this,generator);
-        this.transactionsModule = new TransactionsModule(mAvailableProcesses,this,generator);
-        this.queriesExecutionModule = new QueriesExecutionModule(pTransactionProcesses,this,generator);
+        this.queriesVerificationModule = new QueriesVerificationModule(nConcurrentProcesses, this, generator);
+        this.transactionsModule = new TransactionsModule(mAvailableProcesses, this, generator);
+        this.queriesExecutionModule = new QueriesExecutionModule(pTransactionProcesses, this, generator);
         this.queryStatistics = new QueryStatistics();
     }
 
     /**
      * @param event The event to add to the events list
      */
-    public void addEvent(Event event){
+    public void addEvent(Event event) {
         eventList.add(event);
     }
 
     /**
      * @param toFinalize The event to add in the finalized events list
      */
-    public void finalizeEvent(Event toFinalize){
+    public void finalizeEvent(Event toFinalize) {
         finalizedEvents.add(toFinalize);
     }
 
     /**
      * @param query The query that was finished before reach his killing time
      */
-    public void thisQueryKillNeverHappened(Query query){
+    public void thisQueryKillNeverHappened(Query query) {
         eventList.remove(query.getKillEvent());
     }
 
     /**
      * @param query The query that was killed before reach the next event assigned to it
      */
-    public void thisQueryWereKilledBeforeReachTheNextEvent(Query query){
+    public void thisQueryWereKilledBeforeReachTheNextEvent(Query query) {
         eventList.remove(query.getNextEvent());
     }
 
-    public void releaseAConnectionServer(){
+    public void releaseAConnectionServer() {
         clientManagementModule.releaseAServer();
     }
 
-    public void updateAllTheLOfStatistics(){
+    public void updateAllTheLOfStatistics() {
         clientManagementModule.updateL_sStatistics();
         processesManagementModule.updateL_sStatistics();
         processesManagementModule.updateL_qStatistics();
@@ -287,7 +287,7 @@ public class Simulation {
         queriesExecutionModule.updateL_qStatistics();
     }
 
-    public void createATimeLogArchive(String name){
+    public void createATimeLogArchive(String name) {
         name += ".txt";
         Path file = Paths.get(name);
         try {

@@ -38,8 +38,7 @@ public class ProcessesManagementModule extends Module<Query> {
             query.setDepartureTime(getGenerator().getNormal(1.5, 0.1) + query.getArrivalTime());
             query.setBeingServed(true);
             return query.getDepartureTime();
-        }
-        else{
+        } else {
             queue.add(query);
             return -1;
         }
@@ -57,49 +56,50 @@ public class ProcessesManagementModule extends Module<Query> {
         query.kill();
     }
 
-    public Query aQueryFinished(){
+    public Query aQueryFinished() {
         Query out = beingServedQuery;
         beingServedQuery = null;
         out.setBeingServed(false);
         out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
         moduleStatistics.updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
-        if(!queue.isEmpty()){
+        if (!queue.isEmpty()) {
             aQueryIsServed();
             entriesANewQueryFromQueue = true;
-        }
-        else{
+        } else {
             numberOfFreeServers++;
             entriesANewQueryFromQueue = false;
         }
         return out;
     }
 
-    public boolean aQueryFromQueueIsNowBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed() {
         return entriesANewQueryFromQueue;
     }
 
-    public Query nextQueryFromQueueToBeOut(){
+    public Query nextQueryFromQueueToBeOut() {
         return lastQueryObtainedFromQueue;
     }
 
-    public int getNumberOfQueriesOnQueue(){
+    public int getNumberOfQueriesOnQueue() {
         return queue.size();
     }
 
-    public int getNumberOfQueriesBeingServed(){
-        if(beingServedQuery == null){
+    public int getNumberOfQueriesBeingServed() {
+        if (beingServedQuery == null) {
             return 0;
         }
         return 1;
     }
 
+
     public void enterProcessesManagementModule(Event actualEvent){
+
         simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                 " arrived to systemcall.");
         double exitTime = entriesANewQuery(actualEvent.getQuery());
-        if(exitTime > -1) {
+        if (exitTime > -1) {
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                     " is now attended in systemcall.");
             simulation.addEvent(new Event(EXIT_PROCESSES_MANAGEMENT_MODULE, exitTime, actualEvent.getQuery()));
@@ -107,19 +107,23 @@ public class ProcessesManagementModule extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
+
     public void exitProcessesManagementModule(Event actualEvent){
+
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();// De que modulo viene
-        if(!fromModule.getDead()){
+        if (!fromModule.getDead()) {
             simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from systemcall.");
+
             simulation.addEvent(new Event(ENTER_VERIFICATION_MODULE, simulation.getTime(), fromModule));
         }
         else{
+
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
             simulation.getQueryStatistics().rejectAQuery();
             simulation.releaseAConnectionServer();
         }
-        if(aQueryFromQueueIsNowBeingServed()){
+        if (aQueryFromQueueIsNowBeingServed()) {
             Query nextQueryToExit = nextQueryFromQueueToBeOut();
             simulation.addLineInTimeLog("The query " + nextQueryToExit.getId() +
                     " is now attended in systemcall.");
@@ -130,16 +134,15 @@ public class ProcessesManagementModule extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void updateL_sStatistics(){
-        if(beingServedQuery != null){
+    public void updateL_sStatistics() {
+        if (beingServedQuery != null) {
             moduleStatistics.updateL_S(1);
-        }
-        else{
+        } else {
             moduleStatistics.updateL_S(0);
         }
     }
 
-    public void updateL_qStatistics(){
+    public void updateL_qStatistics() {
         moduleStatistics.updateL_Q(queue.size());
     }
 }

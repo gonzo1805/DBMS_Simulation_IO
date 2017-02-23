@@ -14,9 +14,9 @@ public class Event {
     /**
      * Constructor
      *
-     * @param event             The event type
-     * @param time              The time at which the event occurs
-     * @param associatedQuery   A pointer to the query associated to the event
+     * @param event           The event type
+     * @param time            The time at which the event occurs
+     * @param associatedQuery A pointer to the query associated to the event
      */
     public Event(EventType event, double time, Query associatedQuery) {
         this.EventType = event;
