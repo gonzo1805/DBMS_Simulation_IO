@@ -3,7 +3,7 @@ package ucr.group1.event;
 /**
  * Created by Daniel on 21/2/2017.
  */
-public enum eventType {
+public enum EventType {
     ENTER_CONNECTION,
     RETURN_TO_CONNECTION,
     EXIT_CONNECTION,

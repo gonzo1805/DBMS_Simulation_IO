@@ -9,18 +9,18 @@ import ucr.group1.statistics.ModuleStatistics;
 import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static ucr.group1.event.eventType.ENTER_EXECUTION;
-import static ucr.group1.event.eventType.EXIT_STORAGE;
+import static ucr.group1.event.EventType.ENTER_EXECUTION;
+import static ucr.group1.event.EventType.EXIT_STORAGE;
 
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class Storage extends Module<Query> {
+public class TransactionsModule extends Module<Query> {
 
     private Query lastQueryObtainedFromQueue;
     private boolean entriesANewQueryFromQueue;
 
-    public Storage(int numberOfFreeServers, Simulation simulation, Generator generator) {
+    public TransactionsModule(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;

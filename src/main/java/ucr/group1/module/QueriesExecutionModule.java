@@ -3,33 +3,31 @@ package ucr.group1.module;
 import ucr.group1.event.Event;
 import ucr.group1.generator.Generator;
 import ucr.group1.query.Query;
-import ucr.group1.query.QueryType;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.statistics.ModuleStatistics;
 
 import java.util.PriorityQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
-import static ucr.group1.event.eventType.EXIT_EXECUTION;
-import static ucr.group1.event.eventType.RETURN_TO_CONNECTION;
+import static ucr.group1.event.EventType.EXIT_EXECUTION;
+import static ucr.group1.event.EventType.RETURN_TO_CONNECTION;
 import static ucr.group1.query.QueryType.type.DDL;
 
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class Execution extends Module<Query> {
+public class QueriesExecutionModule extends Module<Query> {
 
     private Query ddlToBeExecuted;
     private boolean aDdlIsWaiting;
     private Query lastQueryObtainedFromQueue;
     private boolean entriesANewQueryFromQueue;
 
-    public Execution(int numberOfFreeServers, Simulation simulation, Generator generator) {
+    public QueriesExecutionModule(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
         this.numberOfServers = numberOfFreeServers;
-        this.queue = new PriorityQueue<Query>(1000000 , new ExecutionComparator());
+        this.queue = new PriorityQueue<Query>(1000000 , new QueriesExecutionModuleComparator());
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
         this.aDdlIsWaiting = false;
         this.entriesANewQueryFromQueue = false;

@@ -11,12 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import static ucr.group1.event.eventType.*;
+import static ucr.group1.event.EventType.*;
 
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class Connection extends Module<Query> {
+public class ClientManagementModule extends Module<Query> {
 
     private List<Query> queriesExpectedToBeReturned;
 
@@ -27,7 +27,7 @@ public class Connection extends Module<Query> {
      * @param simulation            A pointer to the simulation
      * @param generator
      */
-    public Connection(int numberOfFreeServers, Simulation simulation, Generator generator) {
+    public ClientManagementModule(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.numberOfFreeServers = numberOfFreeServers;
         this.numberOfServers = numberOfFreeServers;
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers, new QueryComparator());
@@ -60,7 +60,7 @@ public class Connection extends Module<Query> {
     }
 
     /**
-     * Connection doesn't use this method
+     * ClientManagementModule doesn't use this method
      */
     public void aQueryIsServed() {}
 

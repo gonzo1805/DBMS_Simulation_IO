@@ -4,15 +4,17 @@ import ucr.group1.event.EventComparator;
 import ucr.group1.generator.Generator;
 import ucr.group1.module.*;
 import ucr.group1.query.Query;
-import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
-import static ucr.group1.event.eventType.*;
+import static ucr.group1.event.EventType.*;
 
 
 /**
@@ -30,27 +32,28 @@ public class Simulation {
     private int tTimeout;
     private boolean slowMode;
     private double timeBetweenEvents;
-    private /*Module*/ Connection connection;
-    private /*Module*/ SystemCall systemCall;
-    private /*Module*/ Validation validation;
-    private /*Module*/ Storage storage;
-    private /*Module*/ Execution execution;
+    private /*Module*/ ClientManagementModule clientManagementModule;
+    private /*Module*/ ProcessesManagementModule processesManagementModule;
+    private /*Module*/ QueriesVerificationModule queriesVerificationModule;
+    private /*Module*/ TransactionsModule transactionsModule;
+    private /*Module*/ QueriesExecutionModule queriesExecutionModule;
     private QueryStatistics queryStatistics;
     private Generator generator;
     private List timeLog;
+    private int timePerSimulation;
 
 
     /**
      * Builds a new simulation
-     * @param kConnections The number of servers in the Connection module
-     * @param nConcurrentProcesses The number of servers in the Validation module
-     * @param pTransactionProcesses The number of servers in the Execution module
-     * @param mAvailableProcesses The number of servers in the Storage module
+     * @param kConnections The number of servers in the ClientManagementModule module
+     * @param nConcurrentProcesses The number of servers in the QueriesVerificationModule module
+     * @param pTransactionProcesses The number of servers in the QueriesExecutionModule module
+     * @param mAvailableProcesses The number of servers in the TransactionsModule module
      * @param tTimeout The maximum time that a query can be in the system
      * @param slowMode A condition that activates the slow mode
      * @param timeBetweenEvents The time in seconds between the occurrence of events
      */
-    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses, int tTimeout, boolean slowMode, double timeBetweenEvents) {
+    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses, int tTimeout, boolean slowMode, double timeBetweenEvents, int timePerSimulation) {
         time = 0;
         eventList = new PriorityQueue<Event>(1000000, new EventComparator());
         finalizedEvents = new LinkedList<Event>();
@@ -68,6 +71,7 @@ public class Simulation {
         }
         this.generator = new Generator();
         this.timeLog = new LinkedList<String>();
+        this.timePerSimulation = timePerSimulation;
         buildModulesAndStatistics();
     }
 
@@ -75,42 +79,42 @@ public class Simulation {
         int idAsigner = 1;
         Event firstEvent = new Event(ENTER_CONNECTION ,0, new Query(idAsigner++, generator));
         addEvent(firstEvent);
-        while(idAsigner < 100/* REVISAR CONDICIÓN DESPUÉS*/){
+        while(time < timePerSimulation){
             Event actualEvent = getNextEvent();
             switch(actualEvent.getEventType()) {
-                case ENTER_CONNECTION: // READY
-                    connection.enterConnectionEvent(idAsigner, actualEvent);
+                case ENTER_CONNECTION:
+                    clientManagementModule.enterConnectionEvent(idAsigner, actualEvent);
                     idAsigner++;
                     break;
-                case RETURN_TO_CONNECTION: // READY
-                    connection.returnToConnectionEvent(actualEvent);
+                case RETURN_TO_CONNECTION:
+                    clientManagementModule.returnToConnectionEvent(actualEvent);
                     break;
                 case EXIT_CONNECTION:
-                    connection.exitConnectionEvent(actualEvent);
+                    clientManagementModule.exitConnectionEvent(actualEvent);
                     break;
                 case ENTER_SYSTEMCALL:
-                    systemCall.enterSystemCallEvent(actualEvent);
+                    processesManagementModule.enterSystemCallEvent(actualEvent);
                     break;
                 case EXIT_SYSTEMCALL:
-                    systemCall.exitSystemCallEvent(actualEvent);
+                    processesManagementModule.exitSystemCallEvent(actualEvent);
                     break;
                 case ENTER_VALIDATION:
-                    validation.enterValidationEvent(actualEvent);
+                    queriesVerificationModule.enterValidationEvent(actualEvent);
                     break;
                 case EXIT_VALIDATION:
-                    validation.exitValidationEvent(actualEvent);
+                    queriesVerificationModule.exitValidationEvent(actualEvent);
                     break;
                 case ENTER_STORAGE:
-                    storage.enterStorageEvent(actualEvent);
+                    transactionsModule.enterStorageEvent(actualEvent);
                     break;
                 case EXIT_STORAGE:
-                    storage.exitStorageEvent(actualEvent);
+                    transactionsModule.exitStorageEvent(actualEvent);
                     break;
                 case ENTER_EXECUTION:
-                    execution.enterExecutionEvent(actualEvent);
+                    queriesExecutionModule.enterExecutionEvent(actualEvent);
                     break;
                 case EXIT_EXECUTION:
-                    execution.exitExecutionEvent(actualEvent);
+                    queriesExecutionModule.exitExecutionEvent(actualEvent);
                     break;
                 case KILL:
                     time = actualEvent.getTime();
@@ -127,6 +131,13 @@ public class Simulation {
                     addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, it will be kicked out");
                     break;
             }
+            //
+            try {
+                Thread.sleep((long)timeBetweenEvents*1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //
             updateAllTheLOfStatistics();
         }
     }
@@ -172,17 +183,17 @@ public class Simulation {
      * @return The queue that has the dead query
      */
     public Queue getDeadQueryQueue(Query query){
-        if(systemCall.getQueue().contains(query)){
-            return systemCall.getQueue();
+        if(processesManagementModule.getQueue().contains(query)){
+            return processesManagementModule.getQueue();
         }
-        else if(validation.getQueue().contains(query)){
-            return validation.getQueue();
+        else if(queriesVerificationModule.getQueue().contains(query)){
+            return queriesVerificationModule.getQueue();
         }
-        else if(storage.getQueue().contains(query)){
-            return storage.getQueue();
+        else if(transactionsModule.getQueue().contains(query)){
+            return transactionsModule.getQueue();
         }
-        else if(execution.getQueue().contains(query)){
-            return execution.getQueue();
+        else if(queriesExecutionModule.getQueue().contains(query)){
+            return queriesExecutionModule.getQueue();
         }
         else{
             return null;
@@ -225,11 +236,11 @@ public class Simulation {
      * Builds all the modules and the statistics
      */
     public void buildModulesAndStatistics(){
-        this.connection = new Connection(kConnections,this,generator);
-        this.systemCall = new SystemCall(this, generator);
-        this.validation = new Validation(nConcurrentProcesses,this,generator);
-        this.storage = new Storage(mAvailableProcesses,this,generator);
-        this.execution = new Execution(pTransactionProcesses,this,generator);
+        this.clientManagementModule = new ClientManagementModule(kConnections,this,generator);
+        this.processesManagementModule = new ProcessesManagementModule(this, generator);
+        this.queriesVerificationModule = new QueriesVerificationModule(nConcurrentProcesses,this,generator);
+        this.transactionsModule = new TransactionsModule(mAvailableProcesses,this,generator);
+        this.queriesExecutionModule = new QueriesExecutionModule(pTransactionProcesses,this,generator);
         this.queryStatistics = new QueryStatistics();
     }
 
@@ -262,44 +273,28 @@ public class Simulation {
     }
 
     public void releaseAConnectionServer(){
-        connection.releaseAServer();
+        clientManagementModule.releaseAServer();
     }
 
     public void updateAllTheLOfStatistics(){
-        connection.updateL_sStatistics();
-        systemCall.updateL_sStatistics();
-        systemCall.updateL_qStatistics();
-        validation.updateL_sStatistics();
-        validation.updateL_qStatistics();
-        storage.updateL_sStatistics();
-        storage.updateL_qStatistics();
-        execution.updateL_sStatistics();
-        execution.updateL_qStatistics();
+        clientManagementModule.updateL_sStatistics();
+        processesManagementModule.updateL_sStatistics();
+        processesManagementModule.updateL_qStatistics();
+        queriesVerificationModule.updateL_sStatistics();
+        queriesVerificationModule.updateL_qStatistics();
+        transactionsModule.updateL_sStatistics();
+        transactionsModule.updateL_qStatistics();
+        queriesExecutionModule.updateL_sStatistics();
+        queriesExecutionModule.updateL_qStatistics();
     }
 
     public void createATimeLogArchive(String name){
         name += ".txt";
-        /* Forma que no sirvió
         Path file = Paths.get(name);
-        Files.write(file, timeLog, Charset.forName("UTF-8"));
-        */
-
-        /* Compiló pero tampoco sirvió
-        try{
-            PrintWriter writer = new PrintWriter("name", "UTF-8");
-            ListIterator<String> it = timeLog.listIterator();
-            while(it.hasNext()) {
-                writer.println(it.next());
-            }
-            writer.close();
+        try {
+            Files.write(file, timeLog, Charset.forName("UTF-8"));
         } catch (IOException e) {
-            System.out.println("Something happened");
-        }
-        */
-
-        ListIterator<String> it = timeLog.listIterator();
-        while(it.hasNext()) {
-            System.out.println(it.next());
+            e.printStackTrace();
         }
     }
 }

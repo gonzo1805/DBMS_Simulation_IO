@@ -6,22 +6,21 @@ import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.statistics.ModuleStatistics;
 
-import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static ucr.group1.event.eventType.ENTER_VALIDATION;
-import static ucr.group1.event.eventType.EXIT_SYSTEMCALL;
+import static ucr.group1.event.EventType.ENTER_VALIDATION;
+import static ucr.group1.event.EventType.EXIT_SYSTEMCALL;
 
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class SystemCall extends Module<Query> {
+public class ProcessesManagementModule extends Module<Query> {
 
     public Query beingServedQuery;
     private Query lastQueryObtainedFromQueue;
     private boolean entriesANewQueryFromQueue;
 
-    public SystemCall(Simulation simulation, Generator generator) {
+    public ProcessesManagementModule(Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = 1;
