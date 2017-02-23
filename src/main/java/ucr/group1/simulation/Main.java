@@ -8,7 +8,7 @@ public class Main {
         for (int i = 1; i <= 15; i++) {
             int timeOut = 7;
             Simulation simulation = new Simulation(20, 8, 10, 2,
-                    timeOut, true, 1, 15000);
+                    timeOut, false, 1, 15000);
             simulation.simulate();
             simulation.createATimeLogArchive("Bitacora" + i);
         }

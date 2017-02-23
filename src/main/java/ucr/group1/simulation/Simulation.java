@@ -286,7 +286,6 @@ public class Simulation {
 
     public void createATimeLogArchive(String name) {
         name += ".txt";
-        Forma que no sirvió
         Path file = Paths.get(name);
         try {
             Files.write(file, timeLog, Charset.forName("UTF-8"));
