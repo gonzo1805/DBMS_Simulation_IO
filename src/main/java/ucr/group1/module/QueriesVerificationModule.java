@@ -9,8 +9,8 @@ import ucr.group1.statistics.ModuleStatistics;
 import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static ucr.group1.event.EventType.ENTER_STORAGE;
-import static ucr.group1.event.EventType.EXIT_VALIDATION;
+import static ucr.group1.event.EventType.ENTER_TRANSACTIONS_MODULE;
+import static ucr.group1.event.EventType.EXIT_VERIFICATION_MODULE;
 
 /**
  * Created by Gonzalo on 2/9/2017.
@@ -120,7 +120,9 @@ public class QueriesVerificationModule extends Module<Query> {
         return beingServedQueries.size();
     }
 
-    public void enterValidationEvent(Event actualEvent) {
+
+    public void enterVerificationModuleEvent(Event actualEvent){
+
         simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
@@ -129,17 +131,19 @@ public class QueriesVerificationModule extends Module<Query> {
         if (exitTime > -1) {
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                     " is now attended in validation.");
-            simulation.addEvent(new Event(EXIT_VALIDATION, exitTime, actualEvent.getQuery()));
+            simulation.addEvent(new Event(EXIT_VERIFICATION_MODULE, exitTime, actualEvent.getQuery()));
         }
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void exitValidationEvent(Event actualEvent) {
+
+    public void exitVerificationModuleEvent(Event actualEvent){
+
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();// De que modulo viene
         if (!fromModule.getDead()) {
             simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from validation.");
-            simulation.addEvent(new Event(ENTER_STORAGE, simulation.getTime(), fromModule));
+            simulation.addEvent(new Event(ENTER_TRANSACTIONS_MODULE, simulation.getTime(), fromModule));
         } else {
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
             simulation.getQueryStatistics().rejectAQuery();
@@ -149,7 +153,7 @@ public class QueriesVerificationModule extends Module<Query> {
             Query nextQueryToExit = nextQueryFromQueueToBeOut();
             simulation.addLineInTimeLog("The query " + nextQueryToExit.getId() +
                     " is now attended in validation.");
-            Event nextEvent = new Event(EXIT_VALIDATION, nextQueryToExit.getDepartureTime(), nextQueryToExit);
+            Event nextEvent = new Event(EXIT_VERIFICATION_MODULE, nextQueryToExit.getDepartureTime(), nextQueryToExit);
             actualEvent.getQuery().setNextEvent(nextEvent);
             simulation.addEvent(nextEvent);
         }

@@ -76,44 +76,48 @@ public class Simulation {
 
     public void simulate() {
         int idAsigner = 1;
-        Event firstEvent = new Event(ENTER_CONNECTION, 0, new Query(idAsigner++, generator));
+
+        Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING ,0, new Query(idAsigner++, generator));
+
         addEvent(firstEvent);
         while (time < timePerSimulation) {
             Event actualEvent = getNextEvent();
-            switch (actualEvent.getEventType()) {
-                case ENTER_CONNECTION:
-                    clientManagementModule.enterConnectionEvent(idAsigner, actualEvent);
+
+            switch(actualEvent.getEventType()) {
+                case A_NEW_QUERY_IS_REQUESTING:
+                    clientManagementModule.newQueryRequestingEvent(idAsigner, actualEvent);
+
                     idAsigner++;
                     break;
-                case RETURN_TO_CONNECTION:
-                    clientManagementModule.returnToConnectionEvent(actualEvent);
+                case RETURN_TO_CLIENT_MANAGEMENT_MODULE:
+                    clientManagementModule.returnToClientManagementModuleEvent(actualEvent);
                     break;
-                case EXIT_CONNECTION:
-                    clientManagementModule.exitConnectionEvent(actualEvent);
+                case A_QUERY_IS_FINISHED:
+                    clientManagementModule.aQueryIsFinishedEvent(actualEvent);
                     break;
-                case ENTER_SYSTEMCALL:
-                    processesManagementModule.enterSystemCallEvent(actualEvent);
+                case ENTER_PROCESSES_MANAGEMENT_MODULE:
+                    processesManagementModule.enterProcessesManagementModule(actualEvent);
                     break;
-                case EXIT_SYSTEMCALL:
-                    processesManagementModule.exitSystemCallEvent(actualEvent);
+                case EXIT_PROCESSES_MANAGEMENT_MODULE:
+                    processesManagementModule.exitProcessesManagementModule(actualEvent);
                     break;
-                case ENTER_VALIDATION:
-                    queriesVerificationModule.enterValidationEvent(actualEvent);
+                case ENTER_VERIFICATION_MODULE:
+                    queriesVerificationModule.enterVerificationModuleEvent(actualEvent);
                     break;
-                case EXIT_VALIDATION:
-                    queriesVerificationModule.exitValidationEvent(actualEvent);
+                case EXIT_VERIFICATION_MODULE:
+                    queriesVerificationModule.exitVerificationModuleEvent(actualEvent);
                     break;
-                case ENTER_STORAGE:
-                    transactionsModule.enterStorageEvent(actualEvent);
+                case ENTER_TRANSACTIONS_MODULE:
+                    transactionsModule.enterTransactionsModuleEvent(actualEvent);
                     break;
-                case EXIT_STORAGE:
-                    transactionsModule.exitStorageEvent(actualEvent);
+                case EXIT_TRANSACTIONS_MODULE:
+                    transactionsModule.exitTransactionsModuleEvent(actualEvent);
                     break;
-                case ENTER_EXECUTION:
-                    queriesExecutionModule.enterExecutionEvent(actualEvent);
+                case ENTER_EXECUTION_MODULE:
+                    queriesExecutionModule.enterExecutionModuleEvent(actualEvent);
                     break;
-                case EXIT_EXECUTION:
-                    queriesExecutionModule.exitExecutionEvent(actualEvent);
+                case EXIT_EXECUTION_MODULE:
+                    queriesExecutionModule.exitExecutionModuleEvent(actualEvent);
                     break;
                 case KILL:
                     time = actualEvent.getTime();
@@ -136,7 +140,6 @@ public class Simulation {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            //
             updateAllTheLOfStatistics();
         }
     }
