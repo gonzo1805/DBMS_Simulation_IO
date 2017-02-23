@@ -8,8 +8,8 @@ import ucr.group1.statistics.ModuleStatistics;
 
 import java.util.PriorityQueue;
 
-import static ucr.group1.event.EventType.EXIT_EXECUTION;
-import static ucr.group1.event.EventType.RETURN_TO_CONNECTION;
+import static ucr.group1.event.EventType.EXIT_EXECUTION_MODULE;
+import static ucr.group1.event.EventType.RETURN_TO_CLIENT_MANAGEMENT_MODULE;
 import static ucr.group1.query.QueryType.type.DDL;
 
 /**
@@ -141,7 +141,7 @@ public class QueriesExecutionModule extends Module<Query> {
         return beingServedQueries.size();
     }
 
-    public void enterExecutionEvent(Event actualEvent){
+    public void enterExecutionModuleEvent(Event actualEvent){
         simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(actualEvent.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
@@ -150,17 +150,17 @@ public class QueriesExecutionModule extends Module<Query> {
         if (exitTime > -1) {
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                     " is now attended in execution.");
-            simulation.addEvent(new Event(EXIT_EXECUTION, exitTime, actualEvent.getQuery()));
+            simulation.addEvent(new Event(EXIT_EXECUTION_MODULE, exitTime, actualEvent.getQuery()));
         }
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void exitExecutionEvent(Event actualEvent){
+    public void exitExecutionModuleEvent(Event actualEvent){
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();// De que modulo viene
         if (!fromModule.getDead()) {
             simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from execution.");
-            simulation.addEvent(new Event(RETURN_TO_CONNECTION, simulation.getTime(), fromModule));
+            simulation.addEvent(new Event(RETURN_TO_CLIENT_MANAGEMENT_MODULE, simulation.getTime(), fromModule));
         } else {
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
             simulation.getQueryStatistics().rejectAQuery();
@@ -170,7 +170,7 @@ public class QueriesExecutionModule extends Module<Query> {
             Query nextQueryToExit = nextQueryFromQueueToBeOut();
             simulation.addLineInTimeLog("The query " + nextQueryToExit.getId() +
                     " is now attended in execution.");
-            Event nextEvent = new Event(EXIT_EXECUTION, nextQueryToExit.getDepartureTime(), nextQueryToExit);
+            Event nextEvent = new Event(EXIT_EXECUTION_MODULE, nextQueryToExit.getDepartureTime(), nextQueryToExit);
             actualEvent.getQuery().setNextEvent(nextEvent);
             simulation.addEvent(nextEvent);
         }

@@ -8,8 +8,8 @@ import ucr.group1.statistics.ModuleStatistics;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static ucr.group1.event.EventType.ENTER_VALIDATION;
-import static ucr.group1.event.EventType.EXIT_SYSTEMCALL;
+import static ucr.group1.event.EventType.ENTER_VERIFICATION_MODULE;
+import static ucr.group1.event.EventType.EXIT_PROCESSES_MANAGEMENT_MODULE;
 
 /**
  * Created by Gonzalo on 2/9/2017.
@@ -93,7 +93,7 @@ public class ProcessesManagementModule extends Module<Query> {
         return 1;
     }
 
-    public void enterSystemCallEvent(Event actualEvent){
+    public void enterProcessesManagementModule(Event actualEvent){
         simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
@@ -102,17 +102,17 @@ public class ProcessesManagementModule extends Module<Query> {
         if(exitTime > -1) {
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                     " is now attended in systemcall.");
-            simulation.addEvent(new Event(EXIT_SYSTEMCALL, exitTime, actualEvent.getQuery()));
+            simulation.addEvent(new Event(EXIT_PROCESSES_MANAGEMENT_MODULE, exitTime, actualEvent.getQuery()));
         }
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void exitSystemCallEvent(Event actualEvent){
+    public void exitProcessesManagementModule(Event actualEvent){
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();// De que modulo viene
         if(!fromModule.getDead()){
             simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from systemcall.");
-            simulation.addEvent(new Event(ENTER_VALIDATION, simulation.getTime(), fromModule));
+            simulation.addEvent(new Event(ENTER_VERIFICATION_MODULE, simulation.getTime(), fromModule));
         }
         else{
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
@@ -123,7 +123,7 @@ public class ProcessesManagementModule extends Module<Query> {
             Query nextQueryToExit = nextQueryFromQueueToBeOut();
             simulation.addLineInTimeLog("The query " + nextQueryToExit.getId() +
                     " is now attended in systemcall.");
-            Event nextEvent = new Event(EXIT_SYSTEMCALL, nextQueryToExit.getDepartureTime(), nextQueryToExit);
+            Event nextEvent = new Event(EXIT_PROCESSES_MANAGEMENT_MODULE, nextQueryToExit.getDepartureTime(), nextQueryToExit);
             actualEvent.getQuery().setNextEvent(nextEvent);
             simulation.addEvent(nextEvent);
         }

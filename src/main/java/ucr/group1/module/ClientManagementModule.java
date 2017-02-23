@@ -108,7 +108,7 @@ public class ClientManagementModule extends Module<Query> {
         numberOfFreeServers++;
     }
 
-    public void enterConnectionEvent(int idAsigner, Event actualEvent){
+    public void newQueryRequestingEvent(int idAsigner, Event actualEvent){
         simulation.setTime(actualEvent.getTime());
         simulation.addLineInTimeLog("A new query is trying to get a connection");
         double exitTime = entriesANewQuery(actualEvent.getQuery());
@@ -116,7 +116,7 @@ public class ClientManagementModule extends Module<Query> {
             moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                     " is connected with the database");
-            Event nextEvent = new Event(ENTER_SYSTEMCALL, exitTime, actualEvent.getQuery());
+            Event nextEvent = new Event(ENTER_PROCESSES_MANAGEMENT_MODULE, exitTime, actualEvent.getQuery());
             actualEvent.getQuery().setNextEvent(nextEvent);
             simulation.addEvent(nextEvent);
             Event killEvent = new Event(KILL, simulation.getTimeOut() + actualEvent.getTime(), actualEvent.getQuery());
@@ -128,19 +128,19 @@ public class ClientManagementModule extends Module<Query> {
                     "connections, the new query is rejected");
             simulation.getQueryStatistics().rejectAQuery();
         }
-        simulation.addEvent(new Event(ENTER_CONNECTION, simulation.getTime() + simulation.getGenerator().getExponential(1.7142),
+        simulation.addEvent(new Event(A_NEW_QUERY_IS_REQUESTING, simulation.getTime() + simulation.getGenerator().getExponential(1.7142),
                 new Query(idAsigner++, simulation.getGenerator())));
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void returnToConnectionEvent(Event actualEvent){
+    public void returnToClientManagementModuleEvent(Event actualEvent){
         simulation.setTime(actualEvent.getTime());
         aQueryHasReturned(actualEvent.getQuery());
-        simulation.addEvent(new Event(EXIT_CONNECTION, actualEvent.getQuery().getDepartureTime(), actualEvent.getQuery()));
+        simulation.addEvent(new Event(A_QUERY_IS_FINISHED, actualEvent.getQuery().getDepartureTime(), actualEvent.getQuery()));
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void exitConnectionEvent(Event actualEvent){
+    public void aQueryIsFinishedEvent(Event actualEvent){
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();
         simulation.addLineInTimeLog(simulation.getTimeInHHMMSS()+"The query " + fromModule.getId() + " is out from connection.");
