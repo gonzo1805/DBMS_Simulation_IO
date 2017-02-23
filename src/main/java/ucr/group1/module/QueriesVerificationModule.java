@@ -1,10 +1,15 @@
 package ucr.group1.module;
+import ucr.group1.event.Event;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.generator.Generator;
 import ucr.group1.query.Query;
+import ucr.group1.statistics.ModuleStatistics;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import static ucr.group1.event.eventType.ENTER_STORAGE;
+import static ucr.group1.event.eventType.EXIT_VALIDATION;
 
 /**
  * Created by Gonzalo on 2/9/2017.
@@ -18,9 +23,11 @@ public class Validation extends Module<Query> {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
+        this.numberOfServers = numberOfFreeServers;
         this.queue = new LinkedBlockingQueue<Query>();
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
         this.entriesANewQueryFromQueue = false;
+        this.moduleStatistics = new ModuleStatistics(this, this.simulation);
     }
 
     public double entriesANewQuery(Query query) {
@@ -50,6 +57,11 @@ public class Validation extends Module<Query> {
         query.getDead();
     }
 
+    /**
+     *
+     * @param query The query to calculate the service duration
+     * @return      A single service duration in the module
+     */
     public double getServiceDuration(Query query) {
         double duration = 0;
         // LEXIC VALIDATION
@@ -79,7 +91,8 @@ public class Validation extends Module<Query> {
     public Query aQueryFinished() {
         Query out = beingServedQueries.poll();
         out.setBeingServed(true);
-        out.setValidationDuration(simulation.getTime() - out.getArrivalTime());
+        out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
+        moduleStatistics.updateModuleTime(out,simulation.getTime() - out.getArrivalTime());
         if(!queue.isEmpty()){
             aQueryIsServed();
             entriesANewQueryFromQueue = true;
@@ -91,15 +104,63 @@ public class Validation extends Module<Query> {
         return out;
     }
 
-    public boolean confirmAliveQuery(Query query) {
-        return !query.getDead();
-    }
-
-    public boolean isAQueryBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed(){
         return entriesANewQueryFromQueue;
     }
 
     public Query nextQueryFromQueueToBeOut(){
         return lastQueryObtainedFromQueue;
+    }
+
+    public int getNumberOfQueriesOnQueue(){
+        return queue.size();
+    }
+
+    public int getNumberOfQueriesBeingServed(){
+        return beingServedQueries.size();
+    }
+
+    public void enterValidationEvent(Event actualEvent){
+        simulation.setTime(actualEvent.getTime());
+        moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
+        simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
+                " arrived to validation.");
+        double exitTime = entriesANewQuery(actualEvent.getQuery());
+        if (exitTime > -1) {
+            simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
+                    " is now attended in validation.");
+            simulation.addEvent(new Event(EXIT_VALIDATION, exitTime, actualEvent.getQuery()));
+        }
+        simulation.finalizeEvent(actualEvent);
+    }
+
+    public void exitValidationEvent(Event actualEvent){
+        simulation.setTime(actualEvent.getTime());
+        Query fromModule = aQueryFinished();// De que modulo viene
+        if (!fromModule.getDead()) {
+            simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from validation.");
+            simulation.addEvent(new Event(ENTER_STORAGE, simulation.getTime(), fromModule));
+        } else {
+            // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
+            simulation.getQueryStatistics().rejectAQuery();
+            simulation.releaseAConnectionServer();
+        }
+        if (aQueryFromQueueIsNowBeingServed()) {
+            Query nextQueryToExit = nextQueryFromQueueToBeOut();
+            simulation.addLineInTimeLog("The query " + nextQueryToExit.getId() +
+                    " is now attended in validation.");
+            Event nextEvent = new Event(EXIT_VALIDATION, nextQueryToExit.getDepartureTime(), nextQueryToExit);
+            actualEvent.getQuery().setNextEvent(nextEvent);
+            simulation.addEvent(nextEvent);
+        }
+        simulation.finalizeEvent(actualEvent);
+    }
+
+    public void updateL_sStatistics(){
+        moduleStatistics.updateL_S(beingServedQueries.size());
+    }
+
+    public void updateL_qStatistics(){
+        moduleStatistics.updateL_Q(queue.size());
     }
 }

@@ -1,0 +1,19 @@
+package ucr.group1.event;
+
+/**
+ * Created by Daniel on 21/2/2017.
+ */
+public enum eventType {
+    ENTER_CONNECTION,
+    RETURN_TO_CONNECTION,
+    EXIT_CONNECTION,
+    ENTER_SYSTEMCALL,
+    EXIT_SYSTEMCALL,
+    ENTER_VALIDATION,
+    EXIT_VALIDATION,
+    ENTER_STORAGE,
+    EXIT_STORAGE,
+    ENTER_EXECUTION,
+    EXIT_EXECUTION,
+    KILL
+}
