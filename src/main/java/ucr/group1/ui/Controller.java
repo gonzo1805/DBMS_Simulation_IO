@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import ucr.group1.simulation.Simulation;
 
 import javax.swing.*;
 import java.net.URL;
@@ -14,8 +15,19 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
-    ObservableList<String> modules = FXCollections.observableArrayList("Connection", "System Call", "Validation",
-            "Storage", "Execution");
+    int kConcurrentConection;
+    int nVerificationServers;
+    int pExecutionServers;
+    int mTransactionServers;
+    int tTimeout;
+    boolean slowMode;
+    int timeBetEvents;
+    int simulationTime;
+    int amountOfRuns;
+    Simulation simulation;
+
+    ObservableList<String> modules = FXCollections.observableArrayList("ClientManagementModule", "System Call", "QueriesVerificationModule",
+            "TransactionsModule", "QueriesExecutionModule");
 
     @FXML
     private Label labelMConsults;
@@ -25,8 +37,6 @@ public class Controller implements Initializable {
 
     @FXML
     private TextField txtTimePerRun;
-
-
 
     @FXML
     private TextField txtTimeBetEvents;
@@ -136,6 +146,7 @@ public class Controller implements Initializable {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
+            kConcurrentConection = Integer.parseInt(txtKConnection.getText());
             labelKConnection.setText(txtKConnection.getText());
         }
     }
@@ -146,6 +157,7 @@ public class Controller implements Initializable {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
+            mTransactionServers = Integer.parseInt(txtMConsults.getText());
             labelMConsults.setText(txtMConsults.getText());
         }
     }
@@ -156,6 +168,7 @@ public class Controller implements Initializable {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
+            nVerificationServers = Integer.parseInt(txtNProc.getText());
             labelNProc.setText(txtNProc.getText());
         }
     }
@@ -166,6 +179,7 @@ public class Controller implements Initializable {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
+            pExecutionServers = Integer.parseInt(txtPTrans.getText());
             labelPTrans.setText(txtPTrans.getText());
         }
     }
@@ -176,6 +190,7 @@ public class Controller implements Initializable {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
+            amountOfRuns = Integer.parseInt(txtRuns.getText());
             labelRuns.setText(txtRuns.getText());
         }
     }
@@ -186,6 +201,7 @@ public class Controller implements Initializable {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
+            timeBetEvents = Integer.parseInt(txtTimeBetEvents.getText());
             labelTimeBetEvents.setText(txtTimeBetEvents.getText());
         }
     }
@@ -196,6 +212,7 @@ public class Controller implements Initializable {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
+            simulationTime = Integer.parseInt(txtTimePerRun.getText());
             labelTimePerRun.setText(txtTimePerRun.getText());
         }
     }
@@ -206,6 +223,7 @@ public class Controller implements Initializable {
             JOptionPane.showMessageDialog(null, "Debe insertar numeros nada más", "Error de inserción",
                     JOptionPane.ERROR_MESSAGE);
         } else {
+            tTimeout = Integer.parseInt(txtTimeout.getText());
             labelTimeout.setText(txtTimeout.getText());
         }
     }
@@ -213,7 +231,13 @@ public class Controller implements Initializable {
     @FXML
     void clickBotonStarSimulation(ActionEvent event) {
         setAllTextAreasDisabled();
-        buttonDefault.setText("Cancelar");
+        for (int i = 1; i <= 15; i++) {
+            simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
+                    mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime);
+            simulation.simulate();
+            simulation.createATimeLogArchive("Bitacora" + i);
+        }
+        setAllTextAreasEnabled();
     }
 
 
@@ -229,21 +253,41 @@ public class Controller implements Initializable {
 
     @FXML
     void clickDefault(ActionEvent event) {
-        if (buttonDefault.getText().equals("Cancelar")) {
-            setAllTextAreasEnabled();
-            buttonDefault.setText("Default");
-        } else {
+        setAllLabels(15, 20, 10, 2, 8, 0, 15000, 15);
+        amountOfRuns = 15;
+        kConcurrentConection = 20;
+        pExecutionServers = 10;
+        mTransactionServers = 2;
+        nVerificationServers = 8;
+        timeBetEvents = 0;
+        simulationTime = 15000;
+        tTimeout = 15;
+        slowMode = false;
+        radioButtonNo.isSelected();
+    }
 
-        }
+    private void setAllLabels(int amountOfRuns, int kConcurrentConection, int pExecutionServers, int mTransactionServers,
+                              int nVerificationServers, int timeBetEvents, int simulationTime,
+                              int tTimeout) {
+        labelTimeout.setText(String.valueOf(tTimeout));
+        labelRuns.setText(String.valueOf(amountOfRuns));
+        labelPTrans.setText(String.valueOf(pExecutionServers));
+        labelKConnection.setText(String.valueOf(kConcurrentConection));
+        labelMConsults.setText(String.valueOf(mTransactionServers));
+        labelNProc.setText(String.valueOf(nVerificationServers));
+        labelTimeBetEvents.setText(String.valueOf(timeBetEvents));
+        labelTimePerRun.setText(String.valueOf(simulationTime));
     }
 
     @FXML
     void clickRadioButtonNo(ActionEvent event) {
+        slowMode = false;
         txtTimeBetEvents.setDisable(true);
     }
 
     @FXML
     void clickRadioButtonYes(ActionEvent event) {
+        slowMode = true;
         txtTimeBetEvents.setDisable(false);
     }
 

@@ -22,7 +22,7 @@ public class Generator {
     }
 
     /**
-     * @return          Random real number based in the normal distribution
+     * @return Random real number based in the normal distribution
      * @param mean      The mean of the normal distribution
      * @param variance  The variance of the normal distribution
      */
@@ -39,7 +39,7 @@ public class Generator {
     }
 
     /**
-     * @return      Random real number between an interval
+     * @return Random real number between an interval
      * @param min   The minimum value of the interval (inclusive)
      * @param max   The maximum value of the interval (exclusive)
      */
@@ -51,7 +51,7 @@ public class Generator {
     }
 
     /**
-     * @return      Random real number based in the exponential distribution
+     * @return Random real number based in the exponential distribution
      * @param mean  The mean of the exponential distribution
      */
     public double getExponential(double mean){

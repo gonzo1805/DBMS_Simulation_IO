@@ -30,10 +30,11 @@ public class ModuleStatistics {
 
     /**
      * Builds a new ModuleStatistics
-     * @param module        The module of the statistics
-     * @param simulation    A pointer to the simulation
+     *
+     * @param module     The module of the statistics
+     * @param simulation A pointer to the simulation
      */
-    public ModuleStatistics(Module module, Simulation simulation){
+    public ModuleStatistics(Module module, Simulation simulation) {
         this.module = module;
         this.simulation = simulation;
         this.timeBetweenArrives = 0;
@@ -55,72 +56,72 @@ public class ModuleStatistics {
     /**
      * @return The lambda of the module
      */
-    public double getLambda(){
-        return  (1/timeBetweenArrives);
+    public double getLambda() {
+        return (1 / timeBetweenArrives);
     }
 
     /**
      * @return The mu of the module
      */
-    public double getMu(){
-        return (1/getW_s());
+    public double getMu() {
+        return (1 / getW_s());
     }
 
     /**
      * @return The rho of the module
      */
-    public double getRho(){
-        return (getW_s()/(module.getNumberOfServers()*timeBetweenArrives));
+    public double getRho() {
+        return (getW_s() / (module.getNumberOfServers() * timeBetweenArrives));
     }
 
     /**
      * @return The average amount of queries on module
      */
-    public double getL(){
+    public double getL() {
         return (getL_q() + getL_s());
     }
 
     /**
      * @return The average amount of queries that are being attended
      */
-    public double getL_s(){
+    public double getL_s() {
         return l_s;
     }
 
     /**
      * @return The average amount of queries that are on queue
      */
-    public double getL_q(){
+    public double getL_q() {
         return l_q;
     }
 
     /**
      * @return The average spended time of a single query on module
      */
-    public double getW(){
-        return (getL()*timeBetweenArrives);
+    public double getW() {
+        return (getL() * timeBetweenArrives);
     }
 
     /**
      * @return The average spended time of a single query being served
      */
-    public double getW_s(){
-        return (getL_s()*timeBetweenArrives);
+    public double getW_s() {
+        return (getL_s() * timeBetweenArrives);
     }
 
     /**
      * @return The average spended time of a single query on queue
      */
-    public double getW_q(){
-        return (getL_q()*timeBetweenArrives);
+    public double getW_q() {
+        return (getL_q() * timeBetweenArrives);
     }
 
     /**
-     * @param type
-     * @return
+     * @param type The type of query that is wanted to get the average time through the module
+     * @return The average time in module of a specified type of query
      */
-    public double getAverageTime(QueryType type){
-        switch(type.getType()){
+    public double getAverageTime(QueryType type) {
+        switch (type.getType()) {
             case DDL:
                 return ddlMT;
             case JOIN:
@@ -134,68 +135,88 @@ public class ModuleStatistics {
         }
     }
 
-    public double getLeisureTime(){
+    /**
+     * @return The leisure time of the module
+     */
+    public double getLeisureTime() {
         double rho = getRho();
-        if(rho < 1) {
+        if (rho < 1) {
             return ((1 - rho) * simulation.getTime());
-        }
-        else {
+        } else {
             return 0;
         }
     }
 
+    /**
+     * @return The total of queries that passed through the module
+     */
     public int getAmountOfServedQueries() {
         return amountOfServedQueries;
     }
 
-    public void updateTimeBetweenArrives(double newTimeBetweenArrives){
+    /**
+     * @param newTimeBetweenArrives The time of a new arrival to the module
+     */
+    public void updateTimeBetweenArrives(double newTimeBetweenArrives) {
         numberTimeBetweenArrives++;
-        double percentage = (1 -(1/numberTimeBetweenArrives));
+        double percentage = (1 - (1 / numberTimeBetweenArrives));
         timeBetweenArrives *= percentage;
-        timeBetweenArrives += (1 - percentage)*(newTimeBetweenArrives-lastArrive);
+        timeBetweenArrives += (1 - percentage) * (newTimeBetweenArrives - lastArrive);
         lastArrive = newTimeBetweenArrives;
     }
 
-    public void updateL_Q(int newL_q){
+    /**
+     * @param newL_q The size of the queue at a moment
+     */
+    public void updateL_Q(int newL_q) {
         numberL_Q++;
-        double percentage = (1 -(1/numberL_Q));
+        double percentage = (1 - (1 / numberL_Q));
         l_q *= percentage;
-        l_q += (1 - percentage)*(double)newL_q;
+        l_q += (1 - percentage) * (double) newL_q;
     }
 
-    public void updateL_S(int newL_s){
+    /**
+     * @param newL_s The number of being served queries at a moment
+     */
+    public void updateL_S(int newL_s) {
         numberL_S++;
-        double percentage = (1 -(1/numberL_S));
+        double percentage = (1 - (1 / numberL_S));
         l_s *= percentage;
-        l_s += (1 - percentage)*(double)newL_s;
+        l_s += (1 - percentage) * (double) newL_s;
     }
 
-    public void updateModuleTime(Query query, double newModuleTime){
+    /**
+     * Updates the average of time passed to the module of a single type of query
+     *
+     * @param query         The query served by the module
+     * @param newModuleTime The total time that the query passed through the module
+     */
+    public void updateModuleTime(Query query, double newModuleTime) {
         double percentage;
         switch (query.getType()) {
             case DDL:
                 numberDdlMT++;
-                percentage = (1-(1/numberDdlMT));
+                percentage = (1 - (1 / numberDdlMT));
                 ddlMT *= percentage;
-                ddlMT += (1 - percentage)*newModuleTime;
+                ddlMT += (1 - percentage) * newModuleTime;
                 break;
             case UPDATE:
                 numberUpdateMT++;
-                percentage = (1-(1/numberUpdateMT));
+                percentage = (1 - (1 / numberUpdateMT));
                 updateMT *= percentage;
-                updateMT += (1 - percentage)*newModuleTime;
+                updateMT += (1 - percentage) * newModuleTime;
                 break;
             case SELECT:
                 numberSelectMT++;
-                percentage = (1-(1/numberSelectMT));
+                percentage = (1 - (1 / numberSelectMT));
                 selectMT *= percentage;
-                selectMT += (1 - percentage)*newModuleTime;
+                selectMT += (1 - percentage) * newModuleTime;
                 break;
             case JOIN:
                 numberJoinMT++;
-                percentage = (1-(1/numberJoinMT));
+                percentage = (1 - (1 / numberJoinMT));
                 joinMT *= percentage;
-                joinMT += (1 - percentage)*newModuleTime;
+                joinMT += (1 - percentage) * newModuleTime;
                 break;
         }
         amountOfServedQueries++;

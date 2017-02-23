@@ -19,8 +19,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="grupo1_main" target="1.5" />
-      <module name="grupo1_test" target="1.5" />
+      <module name="grupo1_main" target="1.8" />
+      <module name="grupo1_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
