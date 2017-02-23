@@ -62,8 +62,6 @@ public class Controller implements Initializable {
     @FXML
     private Label labelTimePerRun;
 
-
-
     @FXML
     private Label labelTimeBetEvents;
 
