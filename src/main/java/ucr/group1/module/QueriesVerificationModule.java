@@ -1,4 +1,5 @@
 package ucr.group1.module;
+
 import ucr.group1.event.Event;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.generator.Generator;
@@ -14,12 +15,12 @@ import static ucr.group1.event.eventType.EXIT_VALIDATION;
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class Validation extends Module<Query> {
+public class QueriesVerificationModule extends Module<Query> {
 
     private Query lastQueryObtainedFromQueue;
     private boolean entriesANewQueryFromQueue;
 
-    public Validation(int numberOfFreeServers, Simulation simulation, Generator generator) {
+    public QueriesVerificationModule(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
@@ -58,9 +59,8 @@ public class Validation extends Module<Query> {
     }
 
     /**
-     *
      * @param query The query to calculate the service duration
-     * @return      A single service duration in the module
+     * @return A single service duration in the module
      */
     public double getServiceDuration(Query query) {
         double duration = 0;
@@ -92,8 +92,8 @@ public class Validation extends Module<Query> {
         Query out = beingServedQueries.poll();
         out.setBeingServed(true);
         out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
-        moduleStatistics.updateModuleTime(out,simulation.getTime() - out.getArrivalTime());
-        if(!queue.isEmpty()){
+        moduleStatistics.updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
+        if (!queue.isEmpty()) {
             aQueryIsServed();
             entriesANewQueryFromQueue = true;
         }
@@ -104,7 +104,7 @@ public class Validation extends Module<Query> {
         return out;
     }
 
-    public boolean aQueryFromQueueIsNowBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed() {
         return entriesANewQueryFromQueue;
     }
 
@@ -112,15 +112,15 @@ public class Validation extends Module<Query> {
         return lastQueryObtainedFromQueue;
     }
 
-    public int getNumberOfQueriesOnQueue(){
+    public int getNumberOfQueriesOnQueue() {
         return queue.size();
     }
 
-    public int getNumberOfQueriesBeingServed(){
+    public int getNumberOfQueriesBeingServed() {
         return beingServedQueries.size();
     }
 
-    public void enterValidationEvent(Event actualEvent){
+    public void enterValidationEvent(Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
@@ -134,7 +134,7 @@ public class Validation extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void exitValidationEvent(Event actualEvent){
+    public void exitValidationEvent(Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();// De que modulo viene
         if (!fromModule.getDead()) {
@@ -156,11 +156,11 @@ public class Validation extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void updateL_sStatistics(){
+    public void updateL_sStatistics() {
         moduleStatistics.updateL_S(beingServedQueries.size());
     }
 
-    public void updateL_qStatistics(){
+    public void updateL_qStatistics() {
         moduleStatistics.updateL_Q(queue.size());
     }
 }

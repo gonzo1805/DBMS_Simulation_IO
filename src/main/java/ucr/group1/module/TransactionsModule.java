@@ -15,12 +15,12 @@ import static ucr.group1.event.eventType.EXIT_STORAGE;
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class Storage extends Module<Query> {
+public class TransactionsModule extends Module<Query> {
 
     private Query lastQueryObtainedFromQueue;
     private boolean entriesANewQueryFromQueue;
 
-    public Storage(int numberOfFreeServers, Simulation simulation, Generator generator) {
+    public TransactionsModule(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
@@ -75,9 +75,8 @@ public class Storage extends Module<Query> {
     }
 
     /**
-     *
      * @param query The query to calculate the service duration
-     * @return      A single service duration in the module
+     * @return A single service duration in the module
      */
     public double getServiceDuration(Query query) {
         double duration = 0;
@@ -112,7 +111,7 @@ public class Storage extends Module<Query> {
         return duration;
     }
 
-    public boolean aQueryFromQueueIsNowBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed() {
         return entriesANewQueryFromQueue;
     }
 
@@ -120,15 +119,15 @@ public class Storage extends Module<Query> {
         return lastQueryObtainedFromQueue;
     }
 
-    public int getNumberOfQueriesOnQueue(){
+    public int getNumberOfQueriesOnQueue() {
         return queue.size();
     }
 
-    public int getNumberOfQueriesBeingServed(){
+    public int getNumberOfQueriesBeingServed() {
         return beingServedQueries.size();
     }
 
-    public void enterStorageEvent(Event actualEvent){
+    public void enterStorageEvent(Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " arrived to storage.");
@@ -141,7 +140,7 @@ public class Storage extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void exitStorageEvent(Event actualEvent){
+    public void exitStorageEvent(Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();// De que modulo viene
         if (!fromModule.getDead()) {
@@ -163,11 +162,11 @@ public class Storage extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void updateL_sStatistics(){
+    public void updateL_sStatistics() {
         moduleStatistics.updateL_S(beingServedQueries.size());
     }
 
-    public void updateL_qStatistics(){
+    public void updateL_qStatistics() {
         moduleStatistics.updateL_Q(queue.size());
     }
 }

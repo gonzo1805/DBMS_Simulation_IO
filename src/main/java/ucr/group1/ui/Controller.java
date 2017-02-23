@@ -14,8 +14,8 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
-    ObservableList<String> modules = FXCollections.observableArrayList("Connection", "System Call", "Validation",
-            "Storage", "Execution");
+    ObservableList<String> modules = FXCollections.observableArrayList("ClientManagementModule", "System Call", "QueriesVerificationModule",
+            "TransactionsModule", "QueriesExecutionModule");
 
     @FXML
     private Label labelMConsults;

@@ -16,30 +16,31 @@ import static ucr.group1.event.eventType.*;
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class Connection extends Module<Query> {
+public class ClientManagementModule extends Module<Query> {
 
     private List<Query> queriesExpectedToBeReturned;
 
     /**
      * Constructor
      *
-     * @param numberOfFreeServers   The amount of concurrent connections that the module can handle at once-
-     * @param simulation            A pointer to the simulation
+     * @param numberOfFreeServers The amount of concurrent connections that the module can handle at once-
+     * @param simulation          A pointer to the simulation
      * @param generator
      */
-    public Connection(int numberOfFreeServers, Simulation simulation, Generator generator) {
+    public ClientManagementModule(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.numberOfFreeServers = numberOfFreeServers;
         this.numberOfServers = numberOfFreeServers;
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers, new QueryComparator());
         this.simulation = simulation;
         this.generator = generator;
         this.queriesExpectedToBeReturned = new LinkedList<Query>();
-        this.moduleStatistics = new ModuleStatistics(this,this.simulation);
+        this.moduleStatistics = new ModuleStatistics(this, this.simulation);
     }
 
     /**
      * Enters a new query on the servers if there are at least one free server, if not, reject the query
      * Also returns the departure time of the query
+     *
      * @param query the Query to insert on queue
      * @return the time that the query is going to finish it´s time on the server, it returns -1
      * if there are no free servers
@@ -60,9 +61,10 @@ public class Connection extends Module<Query> {
     }
 
     /**
-     * Connection doesn't use this method
+     * ClientManagementModule doesn't use this method
      */
-    public void aQueryIsServed() {}
+    public void aQueryIsServed() {
+    }
 
     public void rejectQuery(Query query) {
         query.kill();
@@ -78,41 +80,41 @@ public class Connection extends Module<Query> {
     }
 
     /**
-     *@param query A query is back to the control of the connection to finish
+     * @param query A query is back to the control of the connection to finish
      */
     public void aQueryHasReturned(Query query) {
         queriesExpectedToBeReturned.remove(query);
         query.setBeingServed(true);
         query.setArrivalTime(simulation.getTime());
-        query.setDepartureTime(simulation.getTime() + (query.getChargedBlocks()/6));
+        query.setDepartureTime(simulation.getTime() + (query.getChargedBlocks() / 6));
         beingServedQueries.add(query);
     }
 
-    public boolean aQueryFromQueueIsNowBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed() {
         return !beingServedQueries.isEmpty();
     }
 
-    public Query nextQueryFromQueueToBeOut(){
+    public Query nextQueryFromQueueToBeOut() {
         return beingServedQueries.peek();
     }
 
-    public int getNumberOfQueriesOnQueue(){
+    public int getNumberOfQueriesOnQueue() {
         return 0;
     }
 
-    public int getNumberOfQueriesBeingServed(){
+    public int getNumberOfQueriesBeingServed() {
         return beingServedQueries.size();
     }
 
-    public void releaseAServer(){
+    public void releaseAServer() {
         numberOfFreeServers++;
     }
 
-    public void enterConnectionEvent(int idAsigner, Event actualEvent){
+    public void enterConnectionEvent(int idAsigner, Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         simulation.addLineInTimeLog("A new query is trying to get a connection");
         double exitTime = entriesANewQuery(actualEvent.getQuery());
-        if(exitTime > -1) {
+        if (exitTime > -1) {
             moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                     " is connected with the database");
@@ -122,8 +124,7 @@ public class Connection extends Module<Query> {
             Event killEvent = new Event(KILL, simulation.getTimeOut() + actualEvent.getTime(), actualEvent.getQuery());
             actualEvent.getQuery().setKillEvent(killEvent);
             simulation.addEvent(killEvent);
-        }
-        else{
+        } else {
             simulation.addLineInTimeLog("The system reached the maximum of simultaneous " +
                     "connections, the new query is rejected");
             simulation.getQueryStatistics().rejectAQuery();
@@ -133,27 +134,27 @@ public class Connection extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void returnToConnectionEvent(Event actualEvent){
+    public void returnToConnectionEvent(Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         aQueryHasReturned(actualEvent.getQuery());
         simulation.addEvent(new Event(EXIT_CONNECTION, actualEvent.getQuery().getDepartureTime(), actualEvent.getQuery()));
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void exitConnectionEvent(Event actualEvent){
+    public void exitConnectionEvent(Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();
-        simulation.addLineInTimeLog(simulation.getTimeInHHMMSS()+"The query " + fromModule.getId() + " is out from connection.");
+        simulation.addLineInTimeLog(simulation.getTimeInHHMMSS() + "The query " + fromModule.getId() + " is out from connection.");
         simulation.thisQueryKillNeverHappened(fromModule);
         simulation.getQueryStatistics().addFinishedQuery(fromModule);
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void updateL_sStatistics(){
+    public void updateL_sStatistics() {
         moduleStatistics.updateL_S(beingServedQueries.size());
     }
 
-    public void updateL_qStatistics(){
+    public void updateL_qStatistics() {
         // Nothing happens because this module hasn't a queue
     }
 }

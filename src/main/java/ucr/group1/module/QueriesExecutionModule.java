@@ -3,12 +3,10 @@ package ucr.group1.module;
 import ucr.group1.event.Event;
 import ucr.group1.generator.Generator;
 import ucr.group1.query.Query;
-import ucr.group1.query.QueryType;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.statistics.ModuleStatistics;
 
 import java.util.PriorityQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static ucr.group1.event.eventType.EXIT_EXECUTION;
 import static ucr.group1.event.eventType.RETURN_TO_CONNECTION;
@@ -17,23 +15,23 @@ import static ucr.group1.query.QueryType.type.DDL;
 /**
  * Created by Gonzalo on 2/9/2017.
  */
-public class Execution extends Module<Query> {
+public class QueriesExecutionModule extends Module<Query> {
 
     private Query ddlToBeExecuted;
     private boolean aDdlIsWaiting;
     private Query lastQueryObtainedFromQueue;
     private boolean entriesANewQueryFromQueue;
 
-    public Execution(int numberOfFreeServers, Simulation simulation, Generator generator) {
+    public QueriesExecutionModule(int numberOfFreeServers, Simulation simulation, Generator generator) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
         this.numberOfServers = numberOfFreeServers;
-        this.queue = new PriorityQueue<Query>(1000000 , new ExecutionComparator());
+        this.queue = new PriorityQueue<Query>(1000000, new QueriesExecutionModuleComparator());
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
         this.aDdlIsWaiting = false;
         this.entriesANewQueryFromQueue = false;
-        this.moduleStatistics = new ModuleStatistics(this,this.simulation);
+        this.moduleStatistics = new ModuleStatistics(this, this.simulation);
     }
 
     public double entriesANewQuery(Query query) {
@@ -42,13 +40,13 @@ public class Execution extends Module<Query> {
                 numberOfFreeServers--;
                 query.setArrivalTime(simulation.getTime());
                 beingServedQueries.add(query);
-                query.setDepartureTime(((numberOfServers - numberOfFreeServers)*0.03) + query.getArrivalTime());
+                query.setDepartureTime(((numberOfServers - numberOfFreeServers) * 0.03) + query.getArrivalTime());
                 query.setBeingServed(true);
                 return query.getDepartureTime();
             }
             else{
                 aDdlIsWaiting = true;
-                if(numberOfFreeServers == numberOfServers){
+                if (numberOfFreeServers == numberOfServers) {
                     numberOfFreeServers--;
                     query.setArrivalTime(simulation.getTime());
                     beingServedQueries.add(query);
@@ -91,12 +89,12 @@ public class Execution extends Module<Query> {
                     beingServedQueries.add(query);
                     lastQueryObtainedFromQueue = query;
                     query.setBeingServed(true);
-                    query.setDepartureTime(((numberOfServers - numberOfFreeServers)*0.03) + simulation.getTime());
+                    query.setDepartureTime(((numberOfServers - numberOfFreeServers) * 0.03) + simulation.getTime());
                     entriesANewQueryFromQueue = true;
                 }
                 else{
                     aDdlIsWaiting = true;
-                    if(numberOfFreeServers == numberOfServers){
+                    if (numberOfFreeServers == numberOfServers) {
                         numberOfFreeServers--;
                         lastQueryObtainedFromQueue = query;
                         beingServedQueries.add(query);
@@ -113,8 +111,7 @@ public class Execution extends Module<Query> {
             else{
                 entriesANewQueryFromQueue = false;
             }
-        }
-        else if(numberOfFreeServers == numberOfServers){
+        } else if (numberOfFreeServers == numberOfServers) {
             numberOfFreeServers--;
             lastQueryObtainedFromQueue = ddlToBeExecuted;
             beingServedQueries.add(ddlToBeExecuted);
@@ -127,7 +124,7 @@ public class Execution extends Module<Query> {
         return out;
     }
 
-    public boolean aQueryFromQueueIsNowBeingServed(){
+    public boolean aQueryFromQueueIsNowBeingServed() {
         return entriesANewQueryFromQueue;
     }
 
@@ -135,15 +132,15 @@ public class Execution extends Module<Query> {
         return lastQueryObtainedFromQueue;
     }
 
-    public int getNumberOfQueriesOnQueue(){
+    public int getNumberOfQueriesOnQueue() {
         return queue.size();
     }
 
-    public int getNumberOfQueriesBeingServed(){
+    public int getNumberOfQueriesBeingServed() {
         return beingServedQueries.size();
     }
 
-    public void enterExecutionEvent(Event actualEvent){
+    public void enterExecutionEvent(Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(actualEvent.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
@@ -157,7 +154,7 @@ public class Execution extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void exitExecutionEvent(Event actualEvent){
+    public void exitExecutionEvent(Event actualEvent) {
         simulation.setTime(actualEvent.getTime());
         Query fromModule = aQueryFinished();// De que modulo viene
         if (!fromModule.getDead()) {
@@ -179,11 +176,11 @@ public class Execution extends Module<Query> {
         simulation.finalizeEvent(actualEvent);
     }
 
-    public void updateL_sStatistics(){
+    public void updateL_sStatistics() {
         moduleStatistics.updateL_S(beingServedQueries.size());
     }
 
-    public void updateL_qStatistics(){
+    public void updateL_qStatistics() {
         moduleStatistics.updateL_Q(queue.size());
     }
 }

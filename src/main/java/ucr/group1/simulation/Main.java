@@ -1,12 +1,5 @@
 package ucr.group1.simulation;
 
-import ucr.group1.event.Event;
-import ucr.group1.module.Connection;
-import ucr.group1.query.Query;
-import ucr.group1.query.QueryType;
-
-import java.util.Queue;
-
 /**
  * Created by Daniel on 12/2/2017.
  */
