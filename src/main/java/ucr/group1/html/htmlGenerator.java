@@ -40,7 +40,7 @@ public class htmlGenerator {
         /*  create a context and add data */
         VelocityContext context = new VelocityContext();
         context.put("whichSimulation", whichSimulation);
-        context.put("ifIndex", "");
+        context.put("ifIndex", "<a href=\"index.html\">Regresar</a>");
         insertGeneralParameters(context);
         /* now render the template into a StringWriter */
         StringWriter writer = new StringWriter();
