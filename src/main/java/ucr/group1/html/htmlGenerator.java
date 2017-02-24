@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 /**
  * Created by Gonzalo on 2/20/2017.
@@ -30,7 +31,38 @@ public class htmlGenerator {
     int amountOfRuns;
     Simulation simulation;
 
-    public void crea() {
+    public void crea(String fileName, String whichSimulation) {
+         /*  first, get and initialize an engine  */
+        VelocityEngine ve = new VelocityEngine();
+        ve.init();
+        /*  next, get the Template  */
+        Template t = ve.getTemplate("./src/main/resources/htmlGenerator.vcss");
+        /*  create a context and add data */
+        VelocityContext context = new VelocityContext();
+        context.put("whichSimulation", whichSimulation);
+        context.put("ifIndex", "");
+        insertGeneralParameters(context);
+        /* now render the template into a StringWriter */
+        StringWriter writer = new StringWriter();
+        t.merge(context, writer);
+
+        StringWriter finalWriter = new StringWriter();
+        ve.mergeTemplate("./src/main/resources/htmlGenerator.vcss", "utf-8", context, finalWriter);
+        String html = finalWriter.toString();
+
+
+        try {
+            File file = new File("./src/main/resources/" + fileName + ".html");
+            file.delete();
+            file.createNewFile();
+            Files.write(Paths.get("./src/main/resources/" + fileName + ".html"), html.getBytes(), StandardOpenOption.APPEND);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void createIndex(List<String> links) {
          /*  first, get and initialize an engine  */
         VelocityEngine ve = new VelocityEngine();
         ve.init();
@@ -42,12 +74,9 @@ public class htmlGenerator {
         insertGeneralParameters(context);
         /* now render the template into a StringWriter */
         StringWriter writer = new StringWriter();
+        context.put("ifIndex", "<h1>Estadísticas específicas por corrida</h1>");
+        context.put("listOfSimulations", links);
         t.merge(context, writer);
-
-        /* Aqui debemos llenar el #foreach con la lista de simulaciones
-        cada una con su nombre personal
-        */
-
         StringWriter finalWriter = new StringWriter();
         ve.mergeTemplate("./src/main/resources/htmlGenerator.vcss", "utf-8", context, finalWriter);
         String html = finalWriter.toString();
@@ -77,6 +106,14 @@ public class htmlGenerator {
         this.timeBetEvents = timeBetEvents;
         this.simulationTime = simulationTime;
         this.amountOfRuns = amountOfRuns;
+    }
+
+    public void createLinks(List<htmlGenerator> list) {
+
+    }
+
+    public void fillStats(Simulation simulation) {
+
     }
 
     private void insertGeneralParameters(VelocityContext context) {
