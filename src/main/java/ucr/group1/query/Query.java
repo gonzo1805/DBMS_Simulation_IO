@@ -6,16 +6,14 @@ import ucr.group1.generator.Generator;
  * Created by Daniel on 8/2/2017.
  */
 public class Query {
+    private int id;
     private QueryType type;
     private double lifespan;
     private double departureTime;
     private double arrivalTime;
-    private int id;
     private boolean dead;
     private boolean beingServed;
     private int chargedBlocks;
-    private Event nextEvent;
-    private Event killEvent;
 
     public Query(int ID, Generator gener){
         id = ID;
@@ -105,20 +103,6 @@ public class Query {
     }
 
     /**
-     * @return The event that kills the query
-     */
-    public Event getKillEvent() {
-        return killEvent;
-    }
-
-    /**
-     * @return The next event that is involved with the query
-     */
-    public Event getNextEvent() {
-        return nextEvent;
-    }
-
-    /**
      * @return True if and only if the query is being served
      */
     public boolean isBeingServed() {
@@ -154,19 +138,5 @@ public class Query {
      */
     public void setChargedBlocks(int chargedBlocks) {
         this.chargedBlocks = chargedBlocks;
-    }
-
-    /**
-     * @param killEvent Defines the event that gonna kill the query
-     */
-    public void setKillEvent(Event killEvent) {
-        this.killEvent = killEvent;
-    }
-
-    /**
-     * @param nextEvent Defines the next event with which the query will be involved
-     */
-    public void setNextEvent(Event nextEvent) {
-        this.nextEvent = nextEvent;
     }
 }

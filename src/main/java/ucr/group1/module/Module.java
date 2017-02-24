@@ -19,6 +19,7 @@ public abstract class Module<E> {
     protected Generator generator;
     protected Simulation simulation;
     protected ModuleStatistics moduleStatistics;
+    protected Module<E> nextModule;
 
     /**
      * Inserts a Query on queue if there is not free servers, if there are free servers, inserts a Query on
@@ -30,11 +31,6 @@ public abstract class Module<E> {
     public abstract double entriesANewQuery(Query query);
 
     /**
-     * Gets the next Query from queue and inserts on beignServedQuerys
-     */
-    public abstract void aQueryIsServed();
-
-    /**
      * Gets Query and marks it as dead query.
      */
     public abstract void rejectQuery(Query query);
@@ -44,16 +40,6 @@ public abstract class Module<E> {
      * @return the next Query from beingServedQueries
      */
     public abstract Query aQueryFinished();
-
-    /**
-     * @return true if and only if the last query to be added to beingServedQueries came from queue
-     */
-    public abstract boolean aQueryFromQueueIsNowBeingServed();
-
-    /**
-     * @return the next query from queue to be attended by servers
-     */
-    public abstract Query nextQueryFromQueueToBeOut();
 
     public abstract void updateL_sStatistics();
 
