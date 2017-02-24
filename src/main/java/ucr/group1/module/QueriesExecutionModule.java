@@ -11,7 +11,6 @@ import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static ucr.group1.event.EventType.EXIT_EXECUTION_MODULE;
-import static ucr.group1.event.EventType.RETURN_TO_CLIENT_MANAGEMENT_MODULE;
 import static ucr.group1.query.QueryType.type.DDL;
 
 /**
@@ -21,10 +20,8 @@ public class QueriesExecutionModule extends Module<Query> {
 
     private Query ddlToBeExecuted;
     private boolean aDdlIsWaiting;
-    private Query lastQueryObtainedFromQueue;
-    private boolean entriesANewQueryFromQueue;
 
-    public QueriesExecutionModule(int numberOfFreeServers, Simulation simulation, Generator generator) {
+    public QueriesExecutionModule(int numberOfFreeServers, Simulation simulation, Generator generator, Module nextModule) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = numberOfFreeServers;
@@ -32,8 +29,8 @@ public class QueriesExecutionModule extends Module<Query> {
         this.queue = new PriorityQueue<Query>(1000000, new QueriesExecutionModuleComparator());
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers , new QueryComparator());
         this.aDdlIsWaiting = false;
-        this.entriesANewQueryFromQueue = false;
         this.moduleStatistics = new ModuleStatistics(this, this.simulation);
+        this.nextModule = nextModule;
     }
 
     public double entriesANewQuery(Query query) {
@@ -72,8 +69,6 @@ public class QueriesExecutionModule extends Module<Query> {
         query.kill();
     }
 
-    public void aQueryIsServed(){}
-
     public Query aQueryFinished() {
         Query out = beingServedQueries.poll();
         out.setBeingServed(false);
@@ -83,55 +78,7 @@ public class QueriesExecutionModule extends Module<Query> {
         out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
         moduleStatistics.updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
         numberOfFreeServers++;
-        if(!aDdlIsWaiting){
-            if(!queue.isEmpty()){
-                Query query = queue.poll();
-                if(query.getType() != DDL){
-                    numberOfFreeServers--;
-                    beingServedQueries.add(query);
-                    lastQueryObtainedFromQueue = query;
-                    query.setBeingServed(true);
-                    query.setDepartureTime(((numberOfServers - numberOfFreeServers) * 0.03) + simulation.getTime());
-                    entriesANewQueryFromQueue = true;
-                }
-                else{
-                    aDdlIsWaiting = true;
-                    if (numberOfFreeServers == numberOfServers) {
-                        numberOfFreeServers--;
-                        lastQueryObtainedFromQueue = query;
-                        beingServedQueries.add(query);
-                        query.setBeingServed(true);
-                        query.setDepartureTime(0.03 + simulation.getTime());
-                        entriesANewQueryFromQueue = true;
-                    }
-                    else{
-                        ddlToBeExecuted = query;
-                        entriesANewQueryFromQueue = false;
-                    }
-                }
-            }
-            else{
-                entriesANewQueryFromQueue = false;
-            }
-        } else if (numberOfFreeServers == numberOfServers) {
-            numberOfFreeServers--;
-            lastQueryObtainedFromQueue = ddlToBeExecuted;
-            beingServedQueries.add(ddlToBeExecuted);
-            ddlToBeExecuted.setDepartureTime(0.03 + simulation.getTime());
-            entriesANewQueryFromQueue = true;
-        }
-        else{
-            entriesANewQueryFromQueue = false;
-        }
         return out;
-    }
-
-    public boolean aQueryFromQueueIsNowBeingServed() {
-        return entriesANewQueryFromQueue;
-    }
-
-    public Query nextQueryFromQueueToBeOut(){
-        return lastQueryObtainedFromQueue;
     }
 
     public int getNumberOfQueriesOnQueue() {
@@ -142,44 +89,68 @@ public class QueriesExecutionModule extends Module<Query> {
         return beingServedQueries.size();
     }
 
-
     public void enterExecutionModuleEvent(Event actualEvent){
-
-        simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(actualEvent.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
-                " arrived to execution.");
+                " arrived to the queries execution module");
         double exitTime = entriesANewQuery(actualEvent.getQuery());
         if (exitTime > -1) {
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
-                    " is now attended in execution.");
+                    " is now being executed");
             simulation.addEvent(new Event(EXIT_EXECUTION_MODULE, exitTime, actualEvent.getQuery()));
         }
-        simulation.finalizeEvent(actualEvent);
     }
 
-
     public void exitExecutionModuleEvent(Event actualEvent){
-
-        simulation.setTime(actualEvent.getTime());
-        Query fromModule = aQueryFinished();// De que modulo viene
+        Query fromModule = aQueryFinished();
         if (!fromModule.getDead()) {
-            simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from execution.");
-            simulation.addEvent(new Event(RETURN_TO_CLIENT_MANAGEMENT_MODULE, simulation.getTime(), fromModule));
+            simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from the queries execution " +
+            "module");
+            ((ClientManagementModule)nextModule).returnToClientManagementModuleEvent(actualEvent);
         } else {
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
             simulation.getQueryStatistics().rejectAQuery();
             simulation.releaseAConnectionServer();
         }
-        if (aQueryFromQueueIsNowBeingServed()) {
-            Query nextQueryToExit = nextQueryFromQueueToBeOut();
-            simulation.addLineInTimeLog("The query " + nextQueryToExit.getId() +
-                    " is now attended in execution.");
-            Event nextEvent = new Event(EXIT_EXECUTION_MODULE, nextQueryToExit.getDepartureTime(), nextQueryToExit);
-            actualEvent.getQuery().setNextEvent(nextEvent);
-            simulation.addEvent(nextEvent);
+        if(!aDdlIsWaiting){
+            if(!queue.isEmpty()){
+                Query query = queue.poll();
+                if(query.getType() != DDL){
+                    numberOfFreeServers--;
+                    beingServedQueries.add(query);
+                    query.setBeingServed(true);
+                    query.setDepartureTime(((numberOfServers - numberOfFreeServers) * 0.03) + simulation.getTime());
+                    aQueryIsNowBeingServed(query);
+                }
+                else{
+                    aDdlIsWaiting = true;
+                    if (numberOfFreeServers == numberOfServers) {
+                        numberOfFreeServers--;
+                        beingServedQueries.add(query);
+                        query.setBeingServed(true);
+                        query.setDepartureTime(0.03 + simulation.getTime());
+                        aQueryIsNowBeingServed(query);
+                    }
+                    else{
+                        ddlToBeExecuted = query;
+                    }
+                }
+            }
+            else{
+            }
+        } else if (numberOfFreeServers == numberOfServers) {
+            numberOfFreeServers--;
+            beingServedQueries.add(ddlToBeExecuted);
+            ddlToBeExecuted.setDepartureTime(0.03 + simulation.getTime());
+            aQueryIsNowBeingServed(ddlToBeExecuted);
         }
-        simulation.finalizeEvent(actualEvent);
+    }
+
+    public void aQueryIsNowBeingServed(Query toBeServed){
+        simulation.addLineInTimeLog("The query " + toBeServed.getId() +
+                " is now being executed");
+        Event nextEvent = new Event(EXIT_EXECUTION_MODULE, toBeServed.getDepartureTime(), toBeServed);
+        simulation.addEvent(nextEvent);
     }
 
     public void updateL_sStatistics() {
