@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<h1>Estadísticas globales de la simulación</h1>
+<h1>Estadísticas de la simulación $whichSimulation</h1>
 <h2>Parámetros:</h2>
 
 <p>
@@ -120,7 +120,11 @@
     W<sub>q</sub>: $wqFifthModule<br>
     W<sub>s</sub>: $wsFifthModule<br>
 </p>
-<h1>Estadísticas específicas por corrida</h1>
-    $newLine
+    $ifIndex
+<ul>
+    #foreach( $individualSimulation in $listOfSimulations )
+        <li><a href="$individualSimulation">$individualSimulation</a></li>
+    #end
+</ul>
 </body>
 </html>

@@ -11,18 +11,18 @@
 </head>
 <body>
 
-<h1>Estadísticas globales de la simulación</h1>
+<h1>Estadísticas de la simulación en General</h1>
 <h2>Parámetros:</h2>
 
 <p>
-    K conexiones concurrentes: $kConcurrentConnections<br>
-    N servidores de verificación: $nVerificationServers<br>
-    P servidores para ejecuciones: $pExecutionServers<br>
-    M servidores para transacciones: $mTransactionServers<br>
-    Tiempo máximo por consulta (timeout): $tTimeout<br>
-    Modo lento: $slowMode<br>
-    Tiempo entre eventos (solo para modo lento): $timeBetEvents<br>
-    Duración de la simulación: $simulationTime<br>
+    K conexiones concurrentes: 20<br>
+    N servidores de verificación: 8<br>
+    P servidores para ejecuciones: 10<br>
+    M servidores para transacciones: 2<br>
+    Tiempo máximo por consulta (timeout): 15<br>
+    Modo lento: Desactivado<br>
+    Tiempo entre eventos (solo para modo lento): 0<br>
+    Duración de la simulación: 15000<br>
 </p>
 
 <h2>Estadísticas:</h2>
@@ -30,7 +30,7 @@
 <h3>Generales:</h3>
 
 <p>
-    Número promedio de conexiones rechazadas: PERRO<br>
+    Número promedio de conexiones rechazadas: $avgRejectedConections<br>
     Tiempo promedio de la vida de una conexión: $avgTimePerConection<br>
 </p>
 
@@ -40,7 +40,7 @@
     <li>Módulo de Administración de Clientes:</li>
 </h4>
 <p>
-    Estabilidad: Gonzalo<br>
+    Estabilidad: $stabilityFirstModule<br>
     Tamaño promedio de la cola: $avgSizeOfTheQueueFirstModule<br>
     &lambda;: $lambdaFirstModule<br>
     &mu;: $muFirstModule<br>
@@ -121,6 +121,22 @@
     W<sub>s</sub>: $wsFifthModule<br>
 </p>
 <h1>Estadísticas específicas por corrida</h1>
-<li><a href=http://brackets.io>Brackets.io</a></li>
+<ul>
+    <li><a href="simulation1.html">simulation1.html</a></li>
+    <li><a href="simulation2.html">simulation2.html</a></li>
+    <li><a href="simulation3.html">simulation3.html</a></li>
+    <li><a href="simulation4.html">simulation4.html</a></li>
+    <li><a href="simulation5.html">simulation5.html</a></li>
+    <li><a href="simulation6.html">simulation6.html</a></li>
+    <li><a href="simulation7.html">simulation7.html</a></li>
+    <li><a href="simulation8.html">simulation8.html</a></li>
+    <li><a href="simulation9.html">simulation9.html</a></li>
+    <li><a href="simulation10.html">simulation10.html</a></li>
+    <li><a href="simulation11.html">simulation11.html</a></li>
+    <li><a href="simulation12.html">simulation12.html</a></li>
+    <li><a href="simulation13.html">simulation13.html</a></li>
+    <li><a href="simulation14.html">simulation14.html</a></li>
+    <li><a href="simulation15.html">simulation15.html</a></li>
+</ul>
 </body>
 </html>

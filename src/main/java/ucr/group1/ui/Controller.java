@@ -7,10 +7,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import ucr.group1.html.htmlGenerator;
 import ucr.group1.simulation.Simulation;
 
 import javax.swing.*;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -228,14 +231,29 @@ public class Controller implements Initializable {
 
     @FXML
     void clickBotonStarSimulation(ActionEvent event) {
+        List<String> simulationList = new LinkedList<>();
         setAllTextAreasDisabled();
-        for (int i = 1; i <= 15; i++) {
+
+        for (int i = 1; i <= amountOfRuns; i++) {
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
                     mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime);
             simulation.simulate();
+            htmlGenerator personalHtml = new htmlGenerator();
+            personalHtml.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
+                    nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
+            personalHtml.crea("simulation" + i, String.valueOf(i));
+            simulationList.add("simulation" + i + ".html");
+
             simulation.createATimeLogArchive("Bitacora" + i);
         }
+        htmlGenerator htmlGenerator = new htmlGenerator();
+        htmlGenerator.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
+                nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
+        htmlGenerator.createIndex(simulationList);
         setAllTextAreasEnabled();
+
+
+        JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
     }
 
 
