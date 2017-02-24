@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import ucr.group1.html.htmlGenerator;
 import ucr.group1.simulation.Simulation;
+import ucr.group1.statistics.SimulationsStatistics;
 
 import javax.swing.*;
 import java.net.URL;
@@ -249,7 +250,7 @@ public class Controller implements Initializable {
         htmlGenerator htmlGenerator = new htmlGenerator();
         htmlGenerator.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                 nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
-        htmlGenerator.createIndex(simulationList);
+        htmlGenerator.createIndex(simulationList, new SimulationsStatistics());
         setAllTextAreasEnabled();
 
 
