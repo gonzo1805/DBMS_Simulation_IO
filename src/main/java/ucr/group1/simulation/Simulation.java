@@ -39,8 +39,9 @@ public class Simulation {
     private /*Module*/ QueriesExecutionModule queriesExecutionModule;
     private QueryStatistics queryStatistics;
     private Generator generator;
-    private List timeLog;
+    private List<String> timeLog;
     private int timePerSimulation;
+    private HashMap<Query,Event> killsMap;
 
 
     /**
@@ -71,50 +72,33 @@ public class Simulation {
         this.generator = new Generator();
         this.timeLog = new LinkedList<String>();
         this.timePerSimulation = timePerSimulation;
+        this.killsMap = new HashMap<>(kConnections);
         buildModulesAndStatistics();
     }
 
     public void simulate() {
-        int idAsigner = 1;
-
-        Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING ,0, new Query(idAsigner++, generator));
-
+        int idAssigner = 1;
+        Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING ,0, new Query(idAssigner++, generator));
         addEvent(firstEvent);
         while (time < timePerSimulation) {
             Event actualEvent = getNextEvent();
-
+            this.time = actualEvent.getTime();
             switch(actualEvent.getEventType()) {
                 case A_NEW_QUERY_IS_REQUESTING:
-                    clientManagementModule.newQueryRequestingEvent(idAsigner, actualEvent);
-
-                    idAsigner++;
-                    break;
-                case RETURN_TO_CLIENT_MANAGEMENT_MODULE:
-                    clientManagementModule.returnToClientManagementModuleEvent(actualEvent);
+                    clientManagementModule.newQueryRequestingEvent(idAssigner, actualEvent);
+                    idAssigner++;
                     break;
                 case A_QUERY_IS_FINISHED:
-                    clientManagementModule.aQueryIsFinishedEvent(actualEvent);
-                    break;
-                case ENTER_PROCESSES_MANAGEMENT_MODULE:
-                    processesManagementModule.enterProcessesManagementModule(actualEvent);
+                    clientManagementModule.aQueryIsFinishedEvent();
                     break;
                 case EXIT_PROCESSES_MANAGEMENT_MODULE:
                     processesManagementModule.exitProcessesManagementModule(actualEvent);
                     break;
-                case ENTER_VERIFICATION_MODULE:
-                    queriesVerificationModule.enterVerificationModuleEvent(actualEvent);
-                    break;
                 case EXIT_VERIFICATION_MODULE:
                     queriesVerificationModule.exitVerificationModuleEvent(actualEvent);
                     break;
-                case ENTER_TRANSACTIONS_MODULE:
-                    transactionsModule.enterTransactionsModuleEvent(actualEvent);
-                    break;
                 case EXIT_TRANSACTIONS_MODULE:
                     transactionsModule.exitTransactionsModuleEvent(actualEvent);
-                    break;
-                case ENTER_EXECUTION_MODULE:
-                    queriesExecutionModule.enterExecutionModuleEvent(actualEvent);
                     break;
                 case EXIT_EXECUTION_MODULE:
                     queriesExecutionModule.exitExecutionModuleEvent(actualEvent);
@@ -128,19 +112,19 @@ public class Simulation {
                         if (queue != null) {
                             queue.remove(actualEvent.getQuery());
                         }
-                        thisQueryWereKilledBeforeReachTheNextEvent(actualEvent.getQuery());
                         getQueryStatistics().rejectAQuery();
                     }
-                    addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, it will be kicked out");
+                    addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, " +
+                            "it will be kicked out");
                     break;
             }
-            //
             try {
                 Thread.sleep((long) timeBetweenEvents * 1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             updateAllTheLOfStatistics();
+            finalizeEvent(actualEvent);
         }
     }
 
@@ -225,21 +209,15 @@ public class Simulation {
     }
 
     /**
-     * @param time The new time
-     */
-    public void setTime(double time) {
-        this.time = time;
-    }
-
-    /**
      * Builds all the modules and the statistics
      */
     public void buildModulesAndStatistics() {
         this.clientManagementModule = new ClientManagementModule(kConnections, this, generator);
-        this.processesManagementModule = new ProcessesManagementModule(this, generator);
-        this.queriesVerificationModule = new QueriesVerificationModule(nConcurrentProcesses, this, generator);
-        this.transactionsModule = new TransactionsModule(mAvailableProcesses, this, generator);
-        this.queriesExecutionModule = new QueriesExecutionModule(pTransactionProcesses, this, generator);
+        this.queriesExecutionModule = new QueriesExecutionModule(pTransactionProcesses, this, generator, this.clientManagementModule);
+        this.transactionsModule = new TransactionsModule(mAvailableProcesses, this, generator, this.queriesExecutionModule);
+        this.queriesVerificationModule = new QueriesVerificationModule(nConcurrentProcesses, this, generator, this.transactionsModule);
+        this.processesManagementModule = new ProcessesManagementModule(this, generator, this.queriesVerificationModule);
+        this.clientManagementModule.setNextModule(processesManagementModule);
         this.queryStatistics = new QueryStatistics();
     }
 
@@ -257,22 +235,20 @@ public class Simulation {
         finalizedEvents.add(toFinalize);
     }
 
+    public void releaseAConnectionServer() {
+        clientManagementModule.releaseAServer();
+    }
+
+    public void addKillEventToMap(Query query, Event killEvent){
+        killsMap.put(query,killEvent);
+    }
+
     /**
      * @param query The query that was finished before reach his killing time
      */
-    public void thisQueryKillNeverHappened(Query query) {
-        eventList.remove(query.getKillEvent());
-    }
-
-    /**
-     * @param query The query that was killed before reach the next event assigned to it
-     */
-    public void thisQueryWereKilledBeforeReachTheNextEvent(Query query) {
-        eventList.remove(query.getNextEvent());
-    }
-
-    public void releaseAConnectionServer() {
-        clientManagementModule.releaseAServer();
+    public void removeKillEventFromList(Query query){
+        Event killEvent = killsMap.remove(query);
+        eventList.remove(killEvent);
     }
 
     public void updateAllTheLOfStatistics() {

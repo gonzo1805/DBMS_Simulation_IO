@@ -8,7 +8,6 @@ import ucr.group1.statistics.ModuleStatistics;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import static ucr.group1.event.EventType.ENTER_VERIFICATION_MODULE;
 import static ucr.group1.event.EventType.EXIT_PROCESSES_MANAGEMENT_MODULE;
 
 /**
@@ -17,17 +16,15 @@ import static ucr.group1.event.EventType.EXIT_PROCESSES_MANAGEMENT_MODULE;
 public class ProcessesManagementModule extends Module<Query> {
 
     public Query beingServedQuery;
-    private Query lastQueryObtainedFromQueue;
-    private boolean entriesANewQueryFromQueue;
 
-    public ProcessesManagementModule(Simulation simulation, Generator generator) {
+    public ProcessesManagementModule(Simulation simulation, Generator generator, Module nextModule) {
         this.generator = generator;
         this.simulation = simulation;
         this.numberOfFreeServers = 1;
         this.numberOfServers = numberOfFreeServers;
         this.queue = new LinkedBlockingQueue<Query>();
-        this.entriesANewQueryFromQueue = false;
         this.moduleStatistics = new ModuleStatistics(this, this.simulation);
+        this.nextModule = nextModule;
     }
 
     public double entriesANewQuery(Query query) {
@@ -44,14 +41,6 @@ public class ProcessesManagementModule extends Module<Query> {
         }
     }
 
-    public void aQueryIsServed() {
-        Query toBeServed = queue.poll();
-        lastQueryObtainedFromQueue = toBeServed;
-        toBeServed.setDepartureTime(simulation.getTime() + getGenerator().getNormal(1.5, 0.1));
-        toBeServed.setBeingServed(true);
-        beingServedQuery = toBeServed;
-    }
-
     public void rejectQuery(Query query) {
         query.kill();
     }
@@ -62,22 +51,7 @@ public class ProcessesManagementModule extends Module<Query> {
         out.setBeingServed(false);
         out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
         moduleStatistics.updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
-        if (!queue.isEmpty()) {
-            aQueryIsServed();
-            entriesANewQueryFromQueue = true;
-        } else {
-            numberOfFreeServers++;
-            entriesANewQueryFromQueue = false;
-        }
         return out;
-    }
-
-    public boolean aQueryFromQueueIsNowBeingServed() {
-        return entriesANewQueryFromQueue;
-    }
-
-    public Query nextQueryFromQueueToBeOut() {
-        return lastQueryObtainedFromQueue;
     }
 
     public int getNumberOfQueriesOnQueue() {
@@ -93,45 +67,41 @@ public class ProcessesManagementModule extends Module<Query> {
 
 
     public void enterProcessesManagementModule(Event actualEvent){
-
-        simulation.setTime(actualEvent.getTime());
         moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
         simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
-                " arrived to systemcall.");
+                " arrived to the processes management module");
         double exitTime = entriesANewQuery(actualEvent.getQuery());
         if (exitTime > -1) {
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
-                    " is now attended in systemcall.");
+                    " is now being processed");
             simulation.addEvent(new Event(EXIT_PROCESSES_MANAGEMENT_MODULE, exitTime, actualEvent.getQuery()));
         }
-        simulation.finalizeEvent(actualEvent);
     }
 
 
     public void exitProcessesManagementModule(Event actualEvent){
-
-        simulation.setTime(actualEvent.getTime());
-        Query fromModule = aQueryFinished();// De que modulo viene
+        Query fromModule = aQueryFinished();
         if (!fromModule.getDead()) {
-            simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from systemcall.");
-
-            simulation.addEvent(new Event(ENTER_VERIFICATION_MODULE, simulation.getTime(), fromModule));
+            simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from the processes " +
+                    "management module");
+            ((QueriesVerificationModule)nextModule).enterVerificationModuleEvent(actualEvent);
         }
         else{
-
-            // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
             simulation.getQueryStatistics().rejectAQuery();
             simulation.releaseAConnectionServer();
         }
-        if (aQueryFromQueueIsNowBeingServed()) {
-            Query nextQueryToExit = nextQueryFromQueueToBeOut();
-            simulation.addLineInTimeLog("The query " + nextQueryToExit.getId() +
-                    " is now attended in systemcall.");
-            Event nextEvent = new Event(EXIT_PROCESSES_MANAGEMENT_MODULE, nextQueryToExit.getDepartureTime(), nextQueryToExit);
-            actualEvent.getQuery().setNextEvent(nextEvent);
+        if (!queue.isEmpty()) {
+            Query toBeServed = queue.poll();
+            toBeServed.setDepartureTime(simulation.getTime() + getGenerator().getNormal(1.5, 0.1));
+            toBeServed.setBeingServed(true);
+            beingServedQuery = toBeServed;
+            simulation.addLineInTimeLog("The query " + toBeServed.getId() +
+                    " is now being processed");
+            Event nextEvent = new Event(EXIT_PROCESSES_MANAGEMENT_MODULE, toBeServed.getDepartureTime(), toBeServed);
             simulation.addEvent(nextEvent);
+        } else {
+            numberOfFreeServers++;
         }
-        simulation.finalizeEvent(actualEvent);
     }
 
     public void updateL_sStatistics() {
