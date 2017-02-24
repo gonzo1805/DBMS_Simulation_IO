@@ -1,6 +1,7 @@
 package ucr.group1.statistics;
 
 
+import ucr.group1.query.Query;
 import ucr.group1.query.QueryType;
 
 /**
@@ -253,5 +254,24 @@ public class SimulationsStatistics {
         double percentage = (1 - (1 / numberLeisureTime[nModule]));
         leisureTime[nModule] *= percentage;
         leisureTime[nModule] += (1 - percentage) * newLeisureTime;
+    }
+
+    public double getAvgLifespanOfQuery(){
+        return averageLifespan;
+    }
+
+    public int getNumberOfRejectedQueries(){
+        return numberRejectedQueries;
+    }
+
+    public void rejectAQuery(){
+        numberRejectedQueries++;
+    }
+
+    public void addFinishedQuery(Query q){
+        numberAverageLifespan++;
+        double percentage = (numberAverageLifespan-1)/(numberAverageLifespan);
+        averageLifespan *= percentage;
+        averageLifespan += (1 - percentage)*q.getLifespan();
     }
 }
