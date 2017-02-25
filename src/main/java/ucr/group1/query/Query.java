@@ -65,7 +65,7 @@ public class Query {
     /**
      * @return The type of the query
      */
-    public QueryType.type getType() { return type.getType(); }
+    public QueryLabel getType() { return type.getType(); }
 
     /**
      * @return The lifespan of the query

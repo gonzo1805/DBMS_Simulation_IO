@@ -1,5 +1,6 @@
 package ucr.group1.query;
 import ucr.group1.generator.Generator;
+import static ucr.group1.query.QueryLabel.*;
 
 /**
  * Created by Daniel on 8/2/2017.
@@ -7,16 +8,9 @@ import ucr.group1.generator.Generator;
 
 
 public class QueryType {
-    private type qType;
+    private QueryLabel qType;
     private int priority;
     private boolean readOnly;
-
-    public enum type {
-        DDL,
-        UPDATE,
-        JOIN,
-        SELECT;
-    }
 
     /**
      * Builds a new QueryType with a random type
@@ -26,22 +20,22 @@ public class QueryType {
     public QueryType(Generator generator) {
         double randomNumber = generator.getProbability();
         if(randomNumber < 0.33){
-            qType = type.JOIN;
+            qType = JOIN;
             priority = 3;
             readOnly = true;
         }
         else if(randomNumber < 0.65){
-            qType = type.SELECT;
+            qType = SELECT;
             priority = 4;
             readOnly = true;
         }
         else if(randomNumber < 0.93){
-            qType = type.UPDATE;
+            qType = UPDATE;
             priority = 2;
             readOnly = false;
         }
         else{
-            qType = type.DDL;
+            qType = DDL;
             priority = 1;
             readOnly = false;
         }
@@ -50,27 +44,24 @@ public class QueryType {
     /**
      * Builds a new QueryType with a specified type
      *
-     * @param type The type of the QueryType to build
+     * @param label The type of the QueryType to build
      */
-    public QueryType(type type) {
-        switch (type) {
+    public QueryType(QueryLabel label) {
+        qType = label;
+        switch (label) {
             case JOIN:
-                qType = type.JOIN;
                 priority = 3;
                 readOnly = true;
                 break;
             case SELECT:
-                qType = type.SELECT;
                 priority = 4;
                 readOnly = true;
                 break;
             case UPDATE:
-                qType = type.UPDATE;
                 priority = 2;
                 readOnly = false;
                 break;
             case DDL:
-                qType = type.DDL;
                 priority = 1;
                 readOnly = false;
                 break;
@@ -83,7 +74,7 @@ public class QueryType {
     /**
      * @return The type of the queryType
      */
-    public type getType() {
+    public QueryLabel getType() {
         return qType;
     }
 

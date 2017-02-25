@@ -11,7 +11,7 @@ import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static ucr.group1.event.EventType.EXIT_EXECUTION_MODULE;
-import static ucr.group1.query.QueryType.type.DDL;
+import static ucr.group1.query.QueryLabel.DDL;
 
 /**
  * Created by Gonzalo on 2/9/2017.
