@@ -321,6 +321,11 @@ public class Controller implements Initializable {
 
     }
 
+    /**
+     * Set the parameters by a default value, chosen by us
+     *
+     * @param event
+     */
     @FXML
     void clickDefault(ActionEvent event) {
         setAllLabels(15, 20, 10, 2, 8, 0, 15000, 15);
@@ -336,6 +341,18 @@ public class Controller implements Initializable {
         radioButtonNo.isSelected();
     }
 
+    /**
+     * Set all the labels with the parameters
+     *
+     * @param amountOfRuns         the amount of runs of the simulation
+     * @param kConcurrentConection the k concurrent conections of the simulation
+     * @param pExecutionServers    the p execution servers of the simulation
+     * @param mTransactionServers  the m transaction servers of the simulation
+     * @param nVerificationServers the n verification servers of the simulation
+     * @param timeBetEvents        the time between events
+     * @param simulationTime       the simulation time
+     * @param tTimeout             the t timeout of the simulation
+     */
     private void setAllLabels(int amountOfRuns, int kConcurrentConection, int pExecutionServers, int mTransactionServers,
                               int nVerificationServers, int timeBetEvents, int simulationTime,
                               int tTimeout) {
@@ -349,19 +366,31 @@ public class Controller implements Initializable {
         labelTimePerRun.setText(String.valueOf(simulationTime));
     }
 
+    /**
+     * Block the textField of the timeBetEvents, because it is only used on the slowMode
+     * @param event
+     */
     @FXML
     void clickRadioButtonNo(ActionEvent event) {
         slowMode = false;
         txtTimeBetEvents.setDisable(true);
     }
 
+    /**
+     * Unblock the textField of the timeBetEvents, because it is only used on the slowMode
+     * @param event
+     */
     @FXML
     void clickRadioButtonYes(ActionEvent event) {
         slowMode = true;
         txtTimeBetEvents.setDisable(false);
     }
 
-
+    /**
+     * Initializer
+     * @param location
+     * @param resources
+     */
     public void initialize(URL location, ResourceBundle resources) {
         comboBoxModule.setValue("Modulo");
         comboBoxModule.setItems(modules);
@@ -371,6 +400,9 @@ public class Controller implements Initializable {
 
     }
 
+    /**
+     * Disable all the textFields of the UI
+     */
     private void setAllTextAreasDisabled() {
         txtKConnection.setDisable(true);
         txtPTrans.setDisable(true);
@@ -384,6 +416,9 @@ public class Controller implements Initializable {
         radioButtonNo.setDisable(true);
     }
 
+    /**
+     * Enable all the textFields of the UI
+     */
     private void setAllTextAreasEnabled() {
         txtKConnection.setDisable(false);
         txtPTrans.setDisable(false);

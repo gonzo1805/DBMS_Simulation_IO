@@ -226,6 +226,8 @@ public class htmlGenerator {
         context.put("wq" + stringModule + "Module", stats.getW_q(module));
         // Avg time of clients on service
         context.put("ws" + stringModule + "Module", stats.getL_s(module));
+        // Leisure time of the module
+        context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime(module));
     }
 
     private void fillStatsPerModuleWithModuleStats(ModuleStatistics stats, VelocityContext context, int module,
@@ -280,6 +282,8 @@ public class htmlGenerator {
         context.put("wq" + stringModule + "Module", stats.getW_q());
         // Avg time of clients on service
         context.put("ws" + stringModule + "Module", stats.getL_s());
+        // Leisure Time of the module
+        context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime());
     }
 
     /**
