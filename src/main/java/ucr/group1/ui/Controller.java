@@ -19,6 +19,9 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
+    /**
+     * Parameters of the simulation
+     */
     int kConcurrentConection;
     int nVerificationServers;
     int pExecutionServers;
@@ -30,6 +33,7 @@ public class Controller implements Initializable {
     int amountOfRuns;
     Simulation simulation;
 
+    // A list for the comboBox of the UI
     ObservableList<String> modules = FXCollections.observableArrayList("ClientManagementModule", "System Call", "QueriesVerificationModule",
             "TransactionsModule", "QueriesExecutionModule");
 
@@ -102,6 +106,9 @@ public class Controller implements Initializable {
     @FXML
     private RadioButton radioButtonNo;
 
+    ///////////////////////////////////Begin of click methods on textArea///////////////////////////////////////////////
+
+    // Methods for the action of click on a txtArea, erase all the text that the area have on it
     @FXML
     void clickKConnection(MouseEvent event) {
         txtKConnection.setText("");
@@ -141,6 +148,8 @@ public class Controller implements Initializable {
     void clickTimeout(MouseEvent event) {
         txtTimeout.setText("");
     }
+
+    ///////////////////////////////////////End of click methods on textArea/////////////////////////////////////////////
 
     @FXML
     void enterKConnection(ActionEvent event) {
@@ -234,23 +243,26 @@ public class Controller implements Initializable {
     void clickBotonStarSimulation(ActionEvent event) {
         List<String> simulationList = new LinkedList<>();
         setAllTextAreasDisabled();
-
+        SimulationsStatistics simulationsStatistics = new SimulationsStatistics();
         for (int i = 1; i <= amountOfRuns; i++) {
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
                     mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime);
             simulation.simulate();
+            simulationsStatistics.addSimulation(simulation);
             htmlGenerator personalHtml = new htmlGenerator();
             personalHtml.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                     nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
-            personalHtml.crea("simulation" + i, String.valueOf(i));
+            personalHtml.crea("simulation" + i, String.valueOf(i), simulation);
             simulationList.add("simulation" + i + ".html");
 
             simulation.createATimeLogArchive("Bitacora" + i);
+
+
         }
         htmlGenerator htmlGenerator = new htmlGenerator();
         htmlGenerator.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                 nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
-        htmlGenerator.createIndex(simulationList, new SimulationsStatistics());
+        htmlGenerator.createIndex(simulationList, simulationsStatistics);
         setAllTextAreasEnabled();
 
 
