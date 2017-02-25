@@ -141,55 +141,55 @@ public class SimulationsStatistics {
         return averageKilledQueries;
     }
 
-    public void updateLambda(double newLambda, int nModule) {
+    private void updateLambda(double newLambda, int nModule) {
         double percentage = (1-(1/totalSimulations));
         lambda[nModule] *= percentage;
         lambda[nModule] += (1 - percentage) * newLambda;
     }
 
-    public void updateMu(double newMu, int nModule) {
+    private void updateMu(double newMu, int nModule) {
         double percentage = (1-(1/totalSimulations));
         lambda[nModule] *= percentage;
         lambda[nModule] += (1 - percentage) * newMu;
     }
 
-    public void updateL_Q(double newL_q, int nModule) {
+    private void updateL_Q(double newL_q, int nModule) {
         double percentage = (1-(1/totalSimulations));
         l_q[nModule] *= percentage;
         l_q[nModule] += (1 - percentage) * newL_q;
     }
 
-    public void updateL_S(double newL_s, int nModule) {
+    private void updateL_S(double newL_s, int nModule) {
         double percentage = (1-(1/totalSimulations));
         l_s[nModule] *= percentage;
         l_s[nModule] += (1 - percentage) * newL_s;
     }
 
-    public void updateL(double newL, int nModule) {
+    private void updateL(double newL, int nModule) {
         double percentage = (1-(1/totalSimulations));
         l[nModule] *= percentage;
         l[nModule] += (1 - percentage) * newL;
     }
 
-    public void updateW_Q(double newW_q, int nModule) {
+    private void updateW_Q(double newW_q, int nModule) {
         double percentage = (1-(1/totalSimulations));
         w_q[nModule] *= percentage;
         w_q[nModule] += (1 - percentage) * newW_q;
     }
 
-    public void updateW_S(double newW_s, int nModule) {
+    private void updateW_S(double newW_s, int nModule) {
         double percentage = (1-(1/totalSimulations));
         w_s[nModule] *= percentage;
         w_s[nModule] += (1 - percentage) * newW_s;
     }
 
-    public void updateW(double newW, int nModule) {
+    private void updateW(double newW, int nModule) {
         double percentage = (1-(1/totalSimulations));
         w[nModule] *= percentage;
         w[nModule] += (1 - percentage) * newW;
     }
 
-    public void updateModuleTime(QueryLabel label, double newModuleTime, int nModule) {
+    private void updateModuleTime(QueryLabel label, double newModuleTime, int nModule) {
         double percentage;
         switch (label) {
             case DDL:
@@ -215,19 +215,19 @@ public class SimulationsStatistics {
         }
     }
 
-    public void updateAverageServedQueries(double newServed, int nModule){
+    private void updateAverageServedQueries(double newServed, int nModule){
         double percentage = (1-(1/totalSimulations));
         averageServedQueries[nModule] *= percentage;
         averageServedQueries[nModule] += (1 - percentage)*newServed;
     }
 
-    public void updateRho(double newRho, int nModule){
+    private void updateRho(double newRho, int nModule){
         double percentage = (1-(1/totalSimulations));
         rho[nModule] *= percentage;
         rho[nModule] += (1 - percentage) * newRho;
     }
 
-    public void updateLeisureTime(double newLeisureTime, int nModule){
+    private void updateLeisureTime(double newLeisureTime, int nModule){
         double percentage = (1-(1/totalSimulations));
         leisureTime[nModule] *= percentage;
         leisureTime[nModule] += (1 - percentage) * newLeisureTime;
@@ -333,5 +333,9 @@ public class SimulationsStatistics {
         updateModuleTime(SELECT,simulation.getQueriesExecutionStatistics().getAverageTime(SELECT),4);
         updateModuleTime(JOIN,simulation.getQueriesExecutionStatistics().getAverageTime(JOIN),4);
         updateAverageServedQueries(simulation.getQueriesExecutionStatistics().getAmountOfServedQueries(),4);
+        // GENERAL QUERIES
+        updateAverageRejectedQueries(simulation.getQueryStatistics().getNumberOfRejectedQueries());
+        updateAverageKilledQueries(simulation.getQueryStatistics().getNumberKilledQueries());
+        updateAverageLifespan(simulation.getQueryStatistics().getAvgLifespanOfQuery());
     }
 }
