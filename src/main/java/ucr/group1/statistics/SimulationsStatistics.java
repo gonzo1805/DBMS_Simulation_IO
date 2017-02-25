@@ -149,8 +149,8 @@ public class SimulationsStatistics {
 
     private void updateMu(double newMu, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
-        lambda[nModule] *= percentage;
-        lambda[nModule] += (1.0 - percentage) * newMu;
+        mu[nModule] *= percentage;
+        mu[nModule] += (1.0 - percentage) * newMu;
     }
 
     private void updateL_Q(double newL_q, int nModule) {
