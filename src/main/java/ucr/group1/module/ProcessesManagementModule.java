@@ -87,7 +87,7 @@ public class ProcessesManagementModule extends Module<Query> {
             ((QueriesVerificationModule)nextModule).enterVerificationModuleEvent(actualEvent);
         }
         else{
-            simulation.getQueryStatistics().rejectAQuery();
+            simulation.getQueryStatistics().aQueryIsKilled();
             simulation.releaseAConnectionServer();
         }
         if (!queue.isEmpty()) {

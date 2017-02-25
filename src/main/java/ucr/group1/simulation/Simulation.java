@@ -4,6 +4,7 @@ import ucr.group1.event.EventComparator;
 import ucr.group1.generator.Generator;
 import ucr.group1.module.*;
 import ucr.group1.query.Query;
+import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
 
 import java.io.IOException;
@@ -32,31 +33,32 @@ public class Simulation {
     private int tTimeout;
     private boolean slowMode;
     private double timeBetweenEvents;
-    private /*Module*/ ClientManagementModule clientManagementModule;
-    private /*Module*/ ProcessesManagementModule processesManagementModule;
-    private /*Module*/ QueriesVerificationModule queriesVerificationModule;
-    private /*Module*/ TransactionsModule transactionsModule;
-    private /*Module*/ QueriesExecutionModule queriesExecutionModule;
+    private ClientManagementModule clientManagementModule;
+    private ProcessesManagementModule processesManagementModule;
+    private QueriesVerificationModule queriesVerificationModule;
+    private TransactionsModule transactionsModule;
+    private QueriesExecutionModule queriesExecutionModule;
     private QueryStatistics queryStatistics;
     private Generator generator;
     private List<String> timeLog;
     private int timePerSimulation;
-    private HashMap<Query,Event> killsMap;
+    private HashMap<Query, Event> killsMap;
 
 
     /**
      * Builds a new simulation
-     * @param kConnections The number of servers in the ClientManagementModule module
-     * @param nConcurrentProcesses The number of servers in the QueriesVerificationModule module
+     *
+     * @param kConnections          The number of servers in the ClientManagementModule module
+     * @param nConcurrentProcesses  The number of servers in the QueriesVerificationModule module
      * @param pTransactionProcesses The number of servers in the QueriesExecutionModule module
-     * @param mAvailableProcesses The number of servers in the TransactionsModule module
-     * @param tTimeout The maximum time that a query can be in the system
-     * @param slowMode A condition that activates the slow mode
-     * @param timeBetweenEvents The time in seconds between the occurrence of events
+     * @param mAvailableProcesses   The number of servers in the TransactionsModule module
+     * @param tTimeout              The maximum time that a query can be in the system
+     * @param slowMode              A condition that activates the slow mode
+     * @param timeBetweenEvents     The time in seconds between the occurrence of events
      */
     public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses, int tTimeout, boolean slowMode, double timeBetweenEvents, int timePerSimulation) {
         time = 0;
-        eventList = new PriorityQueue<Event>(1000000, new EventComparator());
+        eventList = new PriorityQueue<Event>(kConnections * 2, new EventComparator());
         finalizedEvents = new LinkedList<Event>();
         this.kConnections = kConnections;
         this.nConcurrentProcesses = nConcurrentProcesses;
@@ -78,12 +80,12 @@ public class Simulation {
 
     public void simulate() {
         int idAssigner = 1;
-        Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING ,0, new Query(idAssigner++, generator));
+        Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING, 0, new Query(idAssigner++, generator));
         addEvent(firstEvent);
         while (time < timePerSimulation) {
             Event actualEvent = getNextEvent();
             this.time = actualEvent.getTime();
-            switch(actualEvent.getEventType()) {
+            switch (actualEvent.getEventType()) {
                 case A_NEW_QUERY_IS_REQUESTING:
                     clientManagementModule.newQueryRequestingEvent(idAssigner, actualEvent);
                     idAssigner++;
@@ -104,15 +106,11 @@ public class Simulation {
                     queriesExecutionModule.exitExecutionModuleEvent(actualEvent);
                     break;
                 case KILL:
-                    time = actualEvent.getTime();
                     if (actualEvent.getQuery().isBeingServed()) {
                         actualEvent.getQuery().kill();
                     } else {
-                        Queue queue = getDeadQueryQueue(actualEvent.getQuery());
-                        if (queue != null) {
-                            queue.remove(actualEvent.getQuery());
-                        }
-                        getQueryStatistics().rejectAQuery();
+                        kickTheQueryFromAQueue(actualEvent.getQuery());
+                        getQueryStatistics().aQueryIsKilled();
                     }
                     addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, " +
                             "it will be kicked out");
@@ -128,7 +126,7 @@ public class Simulation {
         }
     }
 
-    public void addLineInTimeLog(String line){
+    public void addLineInTimeLog(String line) {
         timeLog.add(getTimeInHHMMSS() + line);
     }
 
@@ -167,42 +165,37 @@ public class Simulation {
     }
 
     /**
-     * @param query The Query marked as killed
-     * @return The queue that has the dead query
+     * Removes the query
+     *
+     * @param query The Query
      */
-    public Queue getDeadQueryQueue(Query query) {
-        if (processesManagementModule.getQueue().contains(query)) {
-            return processesManagementModule.getQueue();
-        } else if (queriesVerificationModule.getQueue().contains(query)) {
-            return queriesVerificationModule.getQueue();
-        } else if (transactionsModule.getQueue().contains(query)) {
-            return transactionsModule.getQueue();
-        } else if (queriesExecutionModule.getQueue().contains(query)) {
-            return queriesExecutionModule.getQueue();
-        } else {
-            return null;
+    public void kickTheQueryFromAQueue(Query query) {
+        if (processesManagementModule.kickAQueryFromQueue(query)) {
+        } else if (queriesVerificationModule.kickAQueryFromQueue(query)) {
+        } else if (transactionsModule.kickAQueryFromQueue(query)) {
+        } else if (queriesExecutionModule.kickAQueryFromQueue(query)) {
         }
     }
 
     /**
      * @return A string with the actual time in the format: [HH:MM:SS]
      */
-    public String getTimeInHHMMSS(){
-        int seconds = (int)time;
-        int minutes = (seconds/60);
-        seconds -= (60*minutes);
-        int hours = (minutes/60);
-        minutes -= (60*hours);
+    public String getTimeInHHMMSS() {
+        int seconds = (int) time;
+        int minutes = (seconds / 60);
+        seconds -= (60 * minutes);
+        int hours = (minutes / 60);
+        minutes -= (60 * hours);
         String secondsString = String.valueOf(seconds);
         String minutesString = String.valueOf(minutes);
         String hoursString = String.valueOf(hours);
-        if(seconds < 10){
+        if (seconds < 10) {
             secondsString = "0" + secondsString;
         }
-        if(minutes < 10){
+        if (minutes < 10) {
             minutesString = "0" + minutesString;
         }
-        if(hours < 10){
+        if (hours < 10) {
             hoursString = "0" + hoursString;
         }
         return ("[" + hoursString + ":" + minutesString + ":" + secondsString + "] ");
@@ -239,16 +232,36 @@ public class Simulation {
         clientManagementModule.releaseAServer();
     }
 
-    public void addKillEventToMap(Query query, Event killEvent){
-        killsMap.put(query,killEvent);
+    public void addKillEventToMap(Query query, Event killEvent) {
+        killsMap.put(query, killEvent);
     }
 
     /**
      * @param query The query that was finished before reach his killing time
      */
-    public void removeKillEventFromList(Query query){
+    public void removeKillEventFromList(Query query) {
         Event killEvent = killsMap.remove(query);
         eventList.remove(killEvent);
+    }
+
+    public ModuleStatistics getClientManagementStatistics(){
+        return clientManagementModule.getStatistics();
+    }
+
+    public ModuleStatistics getProcessesManagementStatistics(){
+        return processesManagementModule.getStatistics();
+    }
+
+    public ModuleStatistics getQueriesVerificationStatistics(){
+        return queriesVerificationModule.getStatistics();
+    }
+
+    public ModuleStatistics getTransactionsStatistics(){
+        return transactionsModule.getStatistics();
+    }
+
+    public ModuleStatistics getQueriesExecutionStatistics(){
+        return queriesExecutionModule.getStatistics();
     }
 
     public void updateAllTheLOfStatistics() {

@@ -3,17 +3,32 @@ package ucr.group1.statistics;
 
 import ucr.group1.query.Query;
 import ucr.group1.query.QueryType;
+import ucr.group1.module.ModuleType.*;
 
 /**
  * Created by Daniel on 23/2/2017.
  */
 public class SimulationsStatistics {
-    private double[] timeBetweenArrives;
-    private int[] numberTimeBetweenArrives;
+    private double[] lambda;
+    private int[] numberLambda;
+    private double[] mu;
+    private int[] numberMu;
     private double[] l_s;
     private int[] numberL_S;
     private double[] l_q;
     private int[] numberL_Q;
+    private double[] l;
+    private int[] numberL;
+    private double[] w_s;
+    private int[] numberW_S;
+    private double[] w_q;
+    private int[] numberW_Q;
+    private double[] w;
+    private int[] numberW;
+    private double[] rho;
+    private int[] numberRho;
+    private double[] leisureTime;
+    private int[] numberLeisureTime;
     private double[] ddlMT;
     private int[] numberDdlMT;
     private double[] updateMT;
@@ -22,22 +37,32 @@ public class SimulationsStatistics {
     private int[] numberJoinMT;
     private double[] selectMT;
     private int[] numberSelectMT;
-    private int[] amountOfServedQueries;
-    private double[] rho;
-    private int[] numberRho;
-    private double[] leisureTime;
-    private int[] numberLeisureTime;
+    private double[] averageServedQueries;
+    private int[] numberServedQueries;
+    private double averageRejectedQueries;
     private int numberRejectedQueries;
+    private double averageKilledQueries;
+    private int numberKilledQueries;
     private double averageLifespan;
     private int numberAverageLifespan;
 
     public SimulationsStatistics(){
-        timeBetweenArrives = new double[5];
-        numberTimeBetweenArrives = new int[5];
+        lambda = new double[5];
+        numberLambda = new int[5];
+        mu = new double[5];
+        numberMu = new int[5];
         l_s = new double[5];
         numberL_S = new int[5];
         l_q = new double[5];
         numberL_Q = new int[5];
+        l = new double[5];
+        numberL = new int[5];
+        w_s = new double[5];
+        numberW_S = new int[5];
+        w_q = new double[5];
+        numberW_Q = new int[5];
+        w = new double[5];
+        numberW = new int[5];
         ddlMT = new double[5];
         numberDdlMT = new int[5];
         updateMT = new double[5];
@@ -47,18 +72,29 @@ public class SimulationsStatistics {
         numberJoinMT = new int[5];
         selectMT = new double[5];
         numberSelectMT = new int[5];
-        amountOfServedQueries = new int[5];
+        averageServedQueries = new double[5];
+        numberServedQueries = new int[5];
         rho = new double[5];
         numberRho = new int[5];
         leisureTime = new double[5];
         numberLeisureTime = new int[5];
         for(int i = 0; i < 5; i++){
-            timeBetweenArrives[i] = 0;
-            numberTimeBetweenArrives[i] = 0;
+            lambda[i] = 0;
+            numberLambda[i] = 0;
+            mu[i] = 0;
+            numberMu[i] = 0;
             l_s[i] = 0;
             numberL_S[i] = 0;
             l_q[i] = 0;
             numberL_Q[i] = 0;
+            l[i] = 0;
+            numberL[i] = 0;
+            w_s[i] = 0;
+            numberW_S[i] = 0;
+            w_q[i] = 0;
+            numberW_Q[i] = 0;
+            w[i] = 0;
+            numberW[i] = 0;
             ddlMT[i] = 0;
             numberDdlMT[i] = 0;
             updateMT[i] = 0;
@@ -68,84 +104,57 @@ public class SimulationsStatistics {
             numberJoinMT[i] = 0;
             selectMT[i] = 0;
             numberSelectMT[i] = 0;
-            amountOfServedQueries[i] = 0;
+            averageServedQueries[i] = 0;
+            numberServedQueries[i] = 0;
             rho[i] = 0;
             numberRho[i] = 0;
             leisureTime[i] = 0;
             numberLeisureTime[i] = 0;
         }
+        averageRejectedQueries = 0;
         numberRejectedQueries = 0;
+        averageKilledQueries = 0;
+        numberKilledQueries = 0;
         averageLifespan = 0;
         numberAverageLifespan = 0;
     }
 
-    /**
-     * @return The lambda of the module
-     */
     public double getLambda(int nModule) {
-        return (1 / timeBetweenArrives[nModule]);
+        return lambda[nModule];
     }
 
-    /**
-     * @return The mu of the module
-     */
     public double getMu(int nModule) {
-        return (1 / getW_s(nModule));
+        return mu[nModule];
     }
 
-    /**
-     * @return The rho of the module
-     */
     public double getRho(int nModule) {
         return rho[nModule];
     }
 
-    /**
-     * @return The average amount of queries on module
-     */
     public double getL(int nModule) {
-        return (getL_q(nModule) + getL_s(nModule));
+        return l[nModule];
     }
 
-    /**
-     * @return The average amount of queries that are being attended
-     */
     public double getL_s(int nModule) {
         return l_s[nModule];
     }
 
-    /**
-     * @return The average amount of queries that are on queue
-     */
     public double getL_q(int nModule) {
         return l_q[nModule];
     }
 
-    /**
-     * @return The average spended time of a single query on module
-     */
     public double getW(int nModule) {
-        return (getL(nModule) * timeBetweenArrives[nModule]);
+        return w[nModule];
     }
 
-    /**
-     * @return The average spended time of a single query being served
-     */
     public double getW_s(int nModule) {
-        return (getL_s(nModule) * timeBetweenArrives[nModule]);
+        return w_s[nModule];
     }
 
-    /**
-     * @return The average spended time of a single query on queue
-     */
     public double getW_q(int nModule) {
-        return (getL_q(nModule) * timeBetweenArrives[nModule]);
+        return w_q[nModule];
     }
 
-    /**
-     * @param type The type of query that is wanted to get the average time through the module
-     * @return The average time in module of a specified type of query
-     */
     public double getAverageTime(QueryType type, int nModule) {
         switch (type.getType()) {
             case DDL:
@@ -161,56 +170,71 @@ public class SimulationsStatistics {
         }
     }
 
-    /**
-     * @return The leisure time of the module
-     */
     public double getLeisureTime(int nModule) {
         return leisureTime[nModule];
     }
 
-    /**
-     * @return The total of queries that passed through the module
-     */
-    public int getAmountOfServedQueries(int nModule) {
-        return amountOfServedQueries[nModule];
+    public double getAmountOfServedQueries(int nModule) {
+        return averageServedQueries[nModule];
     }
 
-    /**
-     * @param newTimeBetweenArrives The time of a new arrival to the module
-     */
-    public void updateTimeBetweenArrives(double newTimeBetweenArrives, int nModule) {
-        numberTimeBetweenArrives[nModule]++;
-        double percentage = (1 - (1 / numberTimeBetweenArrives[nModule]));
-        timeBetweenArrives[nModule] *= percentage;
-        timeBetweenArrives[nModule] += (1 - percentage) * newTimeBetweenArrives;
+    public double getAvgLifespanOfQuery(){
+        return averageLifespan;
     }
 
-    /**
-     * @param newL_q The size of the queue at a moment
-     */
-    public void updateL_Q(int newL_q, int nModule) {
+    public double getNumberOfRejectedQueries(){
+        return averageRejectedQueries;
+    }
+
+    public void updateLambda(double newLambda, int nModule) {
+        lambda[nModule]++;
+        double percentage = (1 - (1 / lambda[nModule]));
+        lambda[nModule] *= percentage;
+        lambda[nModule] += (1 - percentage) * newLambda;
+    }
+
+    public void updateL_Q(double newL_q, int nModule) {
         numberL_Q[nModule]++;
         double percentage = (1 - (1 / numberL_Q[nModule]));
         l_q[nModule] *= percentage;
-        l_q[nModule] += (1 - percentage) * (double) newL_q;
+        l_q[nModule] += (1 - percentage) * newL_q;
     }
 
-    /**
-     * @param newL_s The number of being served queries at a moment
-     */
-    public void updateL_S(int newL_s, int nModule) {
+    public void updateL_S(double newL_s, int nModule) {
         numberL_S[nModule]++;
         double percentage = (1 - (1 / numberL_S[nModule]));
         l_s[nModule] *= percentage;
-        l_s[nModule] += (1 - percentage) * (double) newL_s;
+        l_s[nModule] += (1 - percentage) * newL_s;
     }
 
-    /**
-     * Updates the average of time passed to the module of a single type of query
-     *
-     * @param queryType         The query served by the module
-     * @param newModuleTime The total time that the query passed through the module
-     */
+    public void updateL(double newL, int nModule) {
+        numberL[nModule]++;
+        double percentage = (1 - (1 / numberL[nModule]));
+        l[nModule] *= percentage;
+        l[nModule] += (1 - percentage) * newL;
+    }
+
+    public void updateW_Q(double newW_q, int nModule) {
+        numberW_Q[nModule]++;
+        double percentage = (1 - (1 / numberW_Q[nModule]));
+        w_q[nModule] *= percentage;
+        w_q[nModule] += (1 - percentage) * newW_q;
+    }
+
+    public void updateW_S(double newW_s, int nModule) {
+        numberW_S[nModule]++;
+        double percentage = (1 - (1 / numberW_S[nModule]));
+        w_s[nModule] *= percentage;
+        w_s[nModule] += (1 - percentage) * newW_s;
+    }
+
+    public void updateW(double newW, int nModule) {
+        numberW[nModule]++;
+        double percentage = (1 - (1 / numberW[nModule]));
+        w[nModule] *= percentage;
+        w[nModule] += (1 - percentage) * newW;
+    }
+
     public void updateModuleTime(QueryType queryType, double newModuleTime, int nModule) {
         double percentage;
         switch (queryType.getType()) {
@@ -239,7 +263,13 @@ public class SimulationsStatistics {
                 joinMT[nModule] += (1 - percentage) * newModuleTime;
                 break;
         }
-        amountOfServedQueries[nModule]++;
+    }
+
+    public void updateAverageServedQueries(double newServed, int nModule){
+        numberServedQueries[nModule]++;
+        double percentage = (1-(1/numberServedQueries[nModule]));
+        averageServedQueries[nModule] *= percentage;
+        averageServedQueries[nModule] += (1 - percentage)*newServed;
     }
 
     public void updateRho(double newRho, int nModule){
@@ -256,22 +286,24 @@ public class SimulationsStatistics {
         leisureTime[nModule] += (1 - percentage) * newLeisureTime;
     }
 
-    public double getAvgLifespanOfQuery(){
-        return averageLifespan;
-    }
-
-    public int getNumberOfRejectedQueries(){
-        return numberRejectedQueries;
-    }
-
-    public void rejectAQuery(){
+    public void updateAverageRejectedQueries(double newRejected){
         numberRejectedQueries++;
+        double percentage = (1-(1/numberRejectedQueries));
+        averageLifespan *= percentage;
+        averageLifespan += (1 - percentage)*newRejected;
     }
 
-    public void addFinishedQuery(Query q){
+    public void updateAverageKilledQueries(double newKilled){
+        numberKilledQueries++;
+        double percentage = (1-(1/numberKilledQueries));
+        averageKilledQueries *= percentage;
+        averageKilledQueries += (1 - percentage)*newKilled;
+    }
+
+    public void updateAverageLifespan(double newLifespan){
         numberAverageLifespan++;
-        double percentage = (numberAverageLifespan-1)/(numberAverageLifespan);
+        double percentage = (1-(1/numberAverageLifespan));
         averageLifespan *= percentage;
-        averageLifespan += (1 - percentage)*q.getLifespan();
+        averageLifespan += (1 - percentage)*newLifespan;
     }
 }

@@ -109,7 +109,7 @@ public class QueriesExecutionModule extends Module<Query> {
             ((ClientManagementModule)nextModule).returnToClientManagementModuleEvent(actualEvent);
         } else {
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
-            simulation.getQueryStatistics().rejectAQuery();
+            simulation.getQueryStatistics().aQueryIsKilled();
             simulation.releaseAConnectionServer();
         }
         if(!aDdlIsWaiting){
