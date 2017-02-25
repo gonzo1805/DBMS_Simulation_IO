@@ -59,14 +59,14 @@ public class ModuleStatistics {
      * @return The lambda of the module
      */
     public double getLambda() {
-        return (1 / timeBetweenArrives);
+        return (1.0 / timeBetweenArrives);
     }
 
     /**
      * @return The mu of the module
      */
     public double getMu() {
-        return (1 / getW_s());
+        return (1.0 / getW_s());
     }
 
     /**
@@ -143,7 +143,7 @@ public class ModuleStatistics {
     public double getLeisureTime() {
         double rho = getRho();
         if (rho < 1) {
-            return ((1 - rho) * simulation.getTime());
+            return ((1.0 - rho) * simulation.getTime());
         } else {
             return 0;
         }
