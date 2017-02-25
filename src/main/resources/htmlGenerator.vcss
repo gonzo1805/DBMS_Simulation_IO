@@ -42,6 +42,7 @@
 <p>
     Estabilidad: $stabilityFirstModule<br>
     Tamaño promedio de la cola: $avgSizeOfTheQueueFirstModule<br>
+    Tiempo de ocio del servidor: $leisureTimeFirstModule<br>
     &lambda;: $lambdaFirstModule<br>
     &mu;: $muFirstModule<br>
     &rho;: $rhoFirstModule<br>
@@ -59,6 +60,7 @@
 <p>
     Estabilidad: $stabilitySecondModule<br>
     Tamaño promedio de la cola: $avgSizeOfTheQueueSecondModule<br>
+    Tiempo de ocio del servidor: $leisureTimeSecondModule<br>
     &lambda;: $lambdaSecondModule<br>
     &mu;: $muSecondModule<br>
     &rho;: $rhoSecondModule<br>
@@ -76,6 +78,7 @@
 <p>
     Estabilidad: $stabilityThirdModule<br>
     Tamaño promedio de la cola: $avgSizeOfTheQueueThirdModule<br>
+    Tiempo de ocio del servidor: $leisureTimeThirdModule<br>
     &lambda;: $lambdaThirdModule<br>
     &mu;: $muThirdModule<br>
     &rho;: $rhoThirdModule<br>
@@ -93,6 +96,7 @@
 <p>
     Estabilidad: $stabilityFourthModule<br>
     Tamaño promedio de la cola: $avgSizeOfTheQueueFourthModule<br>
+    Tiempo de ocio del servidor: $leisureTimeFourthModule<br>
     &lambda;: $lambdaFourthModule<br>
     &mu;: $muFourthModule<br>
     &rho;: $rhoFourthModule<br>
@@ -110,6 +114,7 @@
 <p>
     Estabilidad: $stabilityFifthModule<br>
     Tamaño promedio de la cola: $avgSizeOfTheQueueFifthModule<br>
+    Tiempo de ocio del servidor: $leisureTimeFifthModule<br>
     &lambda;: $lambdaFifthModule<br>
     &mu;: $muFifthModule<br>
     &rho;: $rhoFifthModule<br>
