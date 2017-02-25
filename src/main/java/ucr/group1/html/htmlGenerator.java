@@ -156,7 +156,7 @@ public class htmlGenerator {
      * @param stats the stats of the simulation
      * @param context the simulation template to fill the stats
      */
-    public void fillStats(SimulationsStatistics stats, VelocityContext context) {
+    private void fillStats(SimulationsStatistics stats, VelocityContext context) {
         // There are 5 modules, so we need to fill 5 times per simulation
         for (int i = 0; i < 5; i++) {
             fillStatsPerModule(stats, context, i /*The module*/);
@@ -228,8 +228,8 @@ public class htmlGenerator {
         context.put("ws" + stringModule + "Module", stats.getL_s(module));
     }
 
-    public void fillStatsPerModuleWithModuleStats(ModuleStatistics stats, VelocityContext context, int module,
-                                                  QueryStatistics queryStatistics) {
+    private void fillStatsPerModuleWithModuleStats(ModuleStatistics stats, VelocityContext context, int module,
+                                                   QueryStatistics queryStatistics) {
         // Switch to bypass the implementation of the parameters of the velocity template
         String stringModule = "";
         switch (module) {

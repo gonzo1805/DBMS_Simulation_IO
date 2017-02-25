@@ -37,8 +37,9 @@ public class Controller implements Initializable {
     ObservableList<String> modules = FXCollections.observableArrayList("ClientManagementModule", "System Call", "QueriesVerificationModule",
             "TransactionsModule", "QueriesExecutionModule");
 
-    @FXML
-    private Label labelMConsults;
+    /**
+     * All the Text Fields of the UI
+     */
 
     @FXML
     private TextField txtRuns;
@@ -64,6 +65,10 @@ public class Controller implements Initializable {
     @FXML
     private TextField txtMConsults;
 
+    /**
+     * All the Labels of the UI
+     */
+
     @FXML
     private Label labelRuns;
 
@@ -86,7 +91,18 @@ public class Controller implements Initializable {
     private Label labelPTrans;
 
     @FXML
+    private Label labelMConsults;
+
+    /**
+     * The Combo Box of the UI
+     */
+
+    @FXML
     private ComboBox<String> comboBoxModule;
+
+    /**
+     * Buttons and Radio Buttons of the UI
+     */
 
     @FXML
     private Button botonStartSimulation;
@@ -106,9 +122,9 @@ public class Controller implements Initializable {
     @FXML
     private RadioButton radioButtonNo;
 
-    ///////////////////////////////////Begin of click methods on textArea///////////////////////////////////////////////
+    //////////////////////////////////Begin of click methods on textFields//////////////////////////////////////////////
 
-    // Methods for the action of click on a txtArea, erase all the text that the area have on it
+    // Methods for the action of click on a txtField, erase all the text that the text field have on it
     @FXML
     void clickKConnection(MouseEvent event) {
         txtKConnection.setText("");
@@ -149,8 +165,13 @@ public class Controller implements Initializable {
         txtTimeout.setText("");
     }
 
-    ///////////////////////////////////////End of click methods on textArea/////////////////////////////////////////////
+    ////////////////////////////////////End of click methods on textField///////////////////////////////////////////////
 
+
+    ///////////////////////////////Begin of the press enter methods on textField////////////////////////////////////////
+
+    // Methods for the action of press enter on the textField, put the label assigned to the textField on the value of
+    // the textField, also it do data verification, it uses a simple regex to know if the inserted data is valid or not
     @FXML
     void enterKConnection(ActionEvent event) {
         if (!txtKConnection.getText().matches("[0-9]+$")) {
@@ -239,33 +260,53 @@ public class Controller implements Initializable {
         }
     }
 
+    //////////////////////////////////End of the press enter methods on textField///////////////////////////////////////
+
+
+    /**
+     * Completely starts the simulation with the parameters on the textFields, it also gather the stats from the
+     * simulation and stacks it for .html, when the button is clicked, all the textField got blocked and when the
+     * simulation finishes it all got unlocked
+     *
+     * @param event
+     */
     @FXML
     void clickBotonStarSimulation(ActionEvent event) {
+        // A list of all the names of the simulations, for purposes of the .html
         List<String> simulationList = new LinkedList<>();
+        // Blocks the textFields
         setAllTextAreasDisabled();
+        // The stats for each simulation
         SimulationsStatistics simulationsStatistics = new SimulationsStatistics();
+        // For every run (the parameter)
         for (int i = 1; i <= amountOfRuns; i++) {
+            // A new simulation
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
                     mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime);
+            // Start it
             simulation.simulate();
+            // Get the stats of the simulation
             simulationsStatistics.addSimulation(simulation);
+            // Create the personal html for this simulation
             htmlGenerator personalHtml = new htmlGenerator();
+            // Fill the html with the general simulation parameters
             personalHtml.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                     nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
+            // Create the html
             personalHtml.crea("simulation" + i, String.valueOf(i), simulation);
+            // Create the list for the links on the main
             simulationList.add("simulation" + i + ".html");
 
             simulation.createATimeLogArchive("Bitacora" + i);
-
-
         }
+        // The index html
         htmlGenerator htmlGenerator = new htmlGenerator();
         htmlGenerator.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                 nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
+        // Create the index html
         htmlGenerator.createIndex(simulationList, simulationsStatistics);
         setAllTextAreasEnabled();
-
-
+        // It`s finished
         JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
     }
 
