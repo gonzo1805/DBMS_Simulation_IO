@@ -40,8 +40,8 @@ public class QueryStatistics {
 
     public void addFinishedQuery(Query q){
         numberAverageLifespan++;
-        double percentage = (1-(1/numberAverageLifespan));
+        double percentage = (1.0-(1.0/numberAverageLifespan));
         averageLifespan *= percentage;
-        averageLifespan += (1 - percentage)*q.getLifespan();
+        averageLifespan += (1.0 - percentage)*q.getLifespan();
     }
 }

@@ -142,113 +142,113 @@ public class SimulationsStatistics {
     }
 
     private void updateLambda(double newLambda, int nModule) {
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         lambda[nModule] *= percentage;
-        lambda[nModule] += (1 - percentage) * newLambda;
+        lambda[nModule] += (1.0 - percentage) * newLambda;
     }
 
     private void updateMu(double newMu, int nModule) {
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         lambda[nModule] *= percentage;
-        lambda[nModule] += (1 - percentage) * newMu;
+        lambda[nModule] += (1.0 - percentage) * newMu;
     }
 
     private void updateL_Q(double newL_q, int nModule) {
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         l_q[nModule] *= percentage;
-        l_q[nModule] += (1 - percentage) * newL_q;
+        l_q[nModule] += (1.0 - percentage) * newL_q;
     }
 
     private void updateL_S(double newL_s, int nModule) {
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         l_s[nModule] *= percentage;
-        l_s[nModule] += (1 - percentage) * newL_s;
+        l_s[nModule] += (1.0 - percentage) * newL_s;
     }
 
     private void updateL(double newL, int nModule) {
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         l[nModule] *= percentage;
-        l[nModule] += (1 - percentage) * newL;
+        l[nModule] += (1.0 - percentage) * newL;
     }
 
     private void updateW_Q(double newW_q, int nModule) {
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         w_q[nModule] *= percentage;
-        w_q[nModule] += (1 - percentage) * newW_q;
+        w_q[nModule] += (1.0 - percentage) * newW_q;
     }
 
     private void updateW_S(double newW_s, int nModule) {
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         w_s[nModule] *= percentage;
-        w_s[nModule] += (1 - percentage) * newW_s;
+        w_s[nModule] += (1.0 - percentage) * newW_s;
     }
 
     private void updateW(double newW, int nModule) {
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         w[nModule] *= percentage;
-        w[nModule] += (1 - percentage) * newW;
+        w[nModule] += (1.0 - percentage) * newW;
     }
 
     private void updateModuleTime(QueryLabel label, double newModuleTime, int nModule) {
         double percentage;
         switch (label) {
             case DDL:
-                percentage = (1-(1/totalSimulations));
+                percentage = (1.0-(1.0/totalSimulations));
                 ddlMT[nModule] *= percentage;
-                ddlMT[nModule] += (1 - percentage) * newModuleTime;
+                ddlMT[nModule] += (1.0 - percentage) * newModuleTime;
                 break;
             case UPDATE:
-                percentage = (1-(1/totalSimulations));
+                percentage = (1.0-(1.0/totalSimulations));
                 updateMT[nModule] *= percentage;
-                updateMT[nModule] += (1 - percentage) * newModuleTime;
+                updateMT[nModule] += (1.0 - percentage) * newModuleTime;
                 break;
             case SELECT:
-                percentage = (1-(1/totalSimulations));
+                percentage = (1.0-(1.0/totalSimulations));
                 selectMT[nModule] *= percentage;
-                selectMT[nModule] += (1 - percentage) * newModuleTime;
+                selectMT[nModule] += (1.0 - percentage) * newModuleTime;
                 break;
             case JOIN:
-                percentage = (1-(1/totalSimulations));
+                percentage = (1.0-(1.0/totalSimulations));
                 joinMT[nModule] *= percentage;
-                joinMT[nModule] += (1 - percentage) * newModuleTime;
+                joinMT[nModule] += (1.0 - percentage) * newModuleTime;
                 break;
         }
     }
 
     private void updateAverageServedQueries(double newServed, int nModule){
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         averageServedQueries[nModule] *= percentage;
-        averageServedQueries[nModule] += (1 - percentage)*newServed;
+        averageServedQueries[nModule] += (1.0 - percentage)*newServed;
     }
 
     private void updateRho(double newRho, int nModule){
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         rho[nModule] *= percentage;
-        rho[nModule] += (1 - percentage) * newRho;
+        rho[nModule] += (1.0 - percentage) * newRho;
     }
 
     private void updateLeisureTime(double newLeisureTime, int nModule){
-        double percentage = (1-(1/totalSimulations));
+        double percentage = (1.0-(1.0/totalSimulations));
         leisureTime[nModule] *= percentage;
-        leisureTime[nModule] += (1 - percentage) * newLeisureTime;
+        leisureTime[nModule] += (1.0 - percentage) * newLeisureTime;
     }
 
-    public void updateAverageRejectedQueries(double newRejected){
-        double percentage = (1-(1/totalSimulations));
+    private void updateAverageRejectedQueries(double newRejected){
+        double percentage = (1.0-(1.0/totalSimulations));
         averageLifespan *= percentage;
         averageLifespan += (1 - percentage)*newRejected;
     }
 
-    public void updateAverageKilledQueries(double newKilled){
-        double percentage = (1-(1/totalSimulations));
+    private void updateAverageKilledQueries(double newKilled){
+        double percentage = (1.0-(1.0/totalSimulations));
         averageKilledQueries *= percentage;
-        averageKilledQueries += (1 - percentage)*newKilled;
+        averageKilledQueries += (1.0 - percentage)*newKilled;
     }
 
-    public void updateAverageLifespan(double newLifespan){
-        double percentage = (1-(1/totalSimulations));
+    private void updateAverageLifespan(double newLifespan){
+        double percentage = (1.0-(1.0/totalSimulations));
         averageLifespan *= percentage;
-        averageLifespan += (1 - percentage)*newLifespan;
+        averageLifespan += (1.0 - percentage)*newLifespan;
     }
 
     public void addSimulation(Simulation simulation){
