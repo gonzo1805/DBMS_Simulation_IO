@@ -161,9 +161,9 @@ public class ModuleStatistics {
      */
     public void updateTimeBetweenArrives(double newTimeBetweenArrives) {
         numberTimeBetweenArrives++;
-        double percentage = (1 - (1 / numberTimeBetweenArrives));
+        double percentage = (1.0 - (1.0 / numberTimeBetweenArrives));
         timeBetweenArrives *= percentage;
-        timeBetweenArrives += (1 - percentage) * (newTimeBetweenArrives - lastArrive);
+        timeBetweenArrives += (1.0 - percentage) * (newTimeBetweenArrives - lastArrive);
         lastArrive = newTimeBetweenArrives;
     }
 
@@ -172,7 +172,7 @@ public class ModuleStatistics {
      */
     public void updateL_Q(int newL_q) {
         numberL_Q++;
-        double percentage = (1 - (1 / numberL_Q));
+        double percentage = (1.0 - (1.0 / numberL_Q));
         l_q *= percentage;
         l_q += (1 - percentage) * (double) newL_q;
     }
@@ -182,7 +182,7 @@ public class ModuleStatistics {
      */
     public void updateL_S(int newL_s) {
         numberL_S++;
-        double percentage = (1 - (1 / numberL_S));
+        double percentage = (1.0 - (1.0 / numberL_S));
         l_s *= percentage;
         l_s += (1 - percentage) * (double) newL_s;
     }
@@ -198,27 +198,27 @@ public class ModuleStatistics {
         switch (query.getType()) {
             case DDL:
                 numberDdlMT++;
-                percentage = (1 - (1 / numberDdlMT));
+                percentage = (1.0 - (1.0 / numberDdlMT));
                 ddlMT *= percentage;
                 ddlMT += (1 - percentage) * newModuleTime;
                 break;
             case UPDATE:
                 numberUpdateMT++;
-                percentage = (1 - (1 / numberUpdateMT));
+                percentage = (1.0 - (1.0 / numberUpdateMT));
                 updateMT *= percentage;
-                updateMT += (1 - percentage) * newModuleTime;
+                updateMT += (1.0 - percentage) * newModuleTime;
                 break;
             case SELECT:
                 numberSelectMT++;
-                percentage = (1 - (1 / numberSelectMT));
+                percentage = (1.0 - (1.0 / numberSelectMT));
                 selectMT *= percentage;
-                selectMT += (1 - percentage) * newModuleTime;
+                selectMT += (1.0 - percentage) * newModuleTime;
                 break;
             case JOIN:
                 numberJoinMT++;
-                percentage = (1 - (1 / numberJoinMT));
+                percentage = (1.0 - (1.0 / numberJoinMT));
                 joinMT *= percentage;
-                joinMT += (1 - percentage) * newModuleTime;
+                joinMT += (1.0 - percentage) * newModuleTime;
                 break;
         }
         amountOfServedQueries++;
