@@ -91,7 +91,10 @@ public class Simulation {
                     idAssigner++;
                     break;
                 case A_QUERY_IS_FINISHED:
-                    clientManagementModule.aQueryIsFinishedEvent();
+                    clientManagementModule.aQueryIsFinishedEvent(actualEvent);
+                    break;
+                case EXIT_CLIENT_MANAGEMENT_MODULE:
+                    clientManagementModule.exitClientManagementEvent(actualEvent);
                     break;
                 case EXIT_PROCESSES_MANAGEMENT_MODULE:
                     processesManagementModule.exitProcessesManagementModule(actualEvent);
