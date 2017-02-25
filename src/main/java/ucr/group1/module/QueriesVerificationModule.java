@@ -111,7 +111,7 @@ public class QueriesVerificationModule extends Module<Query> {
             ((TransactionsModule)nextModule).enterTransactionsModuleEvent(actualEvent);
         } else {
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
-            simulation.getQueryStatistics().rejectAQuery();
+            simulation.getQueryStatistics().aQueryIsKilled();
             simulation.releaseAConnectionServer();
         }
         if (!queue.isEmpty()) {

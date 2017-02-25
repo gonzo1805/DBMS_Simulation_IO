@@ -2,8 +2,10 @@ package ucr.group1.statistics;
 
 import ucr.group1.module.Module;
 import ucr.group1.query.Query;
-import ucr.group1.query.QueryType;
+import ucr.group1.query.QueryLabel;
 import ucr.group1.simulation.Simulation;
+
+import static ucr.group1.query.QueryLabel.*;
 
 /**
  * Created by Daniel on 18/2/2017.
@@ -117,11 +119,11 @@ public class ModuleStatistics {
     }
 
     /**
-     * @param type The type of query that is wanted to get the average time through the module
+     * @param label The type of query that is wanted to get the average time through the module
      * @return The average time in module of a specified type of query
      */
-    public double getAverageTime(QueryType type) {
-        switch (type.getType()) {
+    public double getAverageTime(QueryLabel label) {
+        switch (label) {
             case DDL:
                 return ddlMT;
             case JOIN:

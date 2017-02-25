@@ -11,7 +11,7 @@ import java.util.PriorityQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static ucr.group1.event.EventType.EXIT_EXECUTION_MODULE;
-import static ucr.group1.query.QueryType.type.DDL;
+import static ucr.group1.query.QueryLabel.DDL;
 
 /**
  * Created by Gonzalo on 2/9/2017.
@@ -109,7 +109,7 @@ public class QueriesExecutionModule extends Module<Query> {
             ((ClientManagementModule)nextModule).returnToClientManagementModuleEvent(actualEvent);
         } else {
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
-            simulation.getQueryStatistics().rejectAQuery();
+            simulation.getQueryStatistics().aQueryIsKilled();
             simulation.releaseAConnectionServer();
         }
         if(!aDdlIsWaiting){

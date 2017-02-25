@@ -7,11 +7,13 @@ import ucr.group1.query.Query;
 public class QueryStatistics {
 
     private int numberRejectedQueries;
+    private int numberKilledQueries;
     private double averageLifespan;
     private int numberAverageLifespan;
 
     public QueryStatistics(){
         numberRejectedQueries = 0;
+        numberKilledQueries = 0;
         averageLifespan = 0;
         numberAverageLifespan = 0;
     }
@@ -24,13 +26,21 @@ public class QueryStatistics {
         return numberRejectedQueries;
     }
 
-    public void rejectAQuery(){
+    public int getNumberKilledQueries() {
+        return numberKilledQueries;
+    }
+
+    public void aNewQueryIsRejected(){
         numberRejectedQueries++;
+    }
+
+    public void aQueryIsKilled() {
+        numberKilledQueries++;
     }
 
     public void addFinishedQuery(Query q){
         numberAverageLifespan++;
-        double percentage = (numberAverageLifespan-1)/(numberAverageLifespan);
+        double percentage = (1-(1/numberAverageLifespan));
         averageLifespan *= percentage;
         averageLifespan += (1 - percentage)*q.getLifespan();
     }

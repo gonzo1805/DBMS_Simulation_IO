@@ -124,7 +124,7 @@ public class ClientManagementModule extends Module<Query> {
         } else {
             simulation.addLineInTimeLog("The system reached the maximum simultaneous " +
                     "connections, the new query is rejected");
-            simulation.getQueryStatistics().rejectAQuery();
+            simulation.getQueryStatistics().aNewQueryIsRejected();
         }
         simulation.addEvent(new Event(A_NEW_QUERY_IS_REQUESTING, simulation.getTime() + simulation.getGenerator().getExponential(1.7142),
                 new Query(idAssigner, simulation.getGenerator())));

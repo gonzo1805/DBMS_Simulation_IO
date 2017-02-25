@@ -123,7 +123,7 @@ public class TransactionsModule extends Module<Query> {
             ((QueriesExecutionModule)nextModule).enterExecutionModuleEvent(actualEvent);
         } else {
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
-            simulation.getQueryStatistics().rejectAQuery();
+            simulation.getQueryStatistics().aQueryIsKilled();
             simulation.releaseAConnectionServer();
         }
         if(!queue.isEmpty()){
