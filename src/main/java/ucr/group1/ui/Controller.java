@@ -323,7 +323,7 @@ public class Controller implements Initializable {
         JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
     }
 
-    private void updateTextArea(String toWrite) {
+    public void updateTextArea(String toWrite) {
         mainTextArea.setText((mainTextArea.getText() + toWrite));
     }
 
