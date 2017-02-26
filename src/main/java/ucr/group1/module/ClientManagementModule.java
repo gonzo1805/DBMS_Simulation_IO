@@ -10,6 +10,7 @@ import ucr.group1.statistics.ModuleStatistics;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 import static ucr.group1.event.EventType.*;
 
@@ -18,7 +19,7 @@ import static ucr.group1.event.EventType.*;
  */
 public class ClientManagementModule extends Module<Query> {
 
-    private List<Query> queriesExpectedToBeReturned;
+    private Queue<Query> beingServedFirstPhase;
 
     /**
      * Constructor
@@ -33,7 +34,7 @@ public class ClientManagementModule extends Module<Query> {
         this.beingServedQueries = new PriorityQueue<Query>(numberOfFreeServers, new QueryComparator());
         this.simulation = simulation;
         this.generator = generator;
-        this.queriesExpectedToBeReturned = new LinkedList<Query>();
+        this.beingServedFirstPhase = new PriorityQueue<Query>(numberOfFreeServers,new QueryComparator());
         this.moduleStatistics = new ModuleStatistics(this, this.simulation);
     }
 
@@ -49,7 +50,7 @@ public class ClientManagementModule extends Module<Query> {
         if (numberOfFreeServers > 0) {
             numberOfFreeServers--;
             query.setArrivalTime(simulation.getTime());
-            queriesExpectedToBeReturned.add(query);
+            beingServedFirstPhase.add(query);
             query.setDepartureTime(getGenerator().getRandomUniform(0.01, 0.05) + query.getArrivalTime());
             query.addLifeSpan(query.getDepartureTime() - query.getArrivalTime());
             moduleStatistics.updateModuleTime(query, query.getDepartureTime() - query.getArrivalTime());
@@ -58,12 +59,6 @@ public class ClientManagementModule extends Module<Query> {
             rejectQuery(query);
             return -1;
         }
-    }
-
-    /**
-     * ClientManagementModule doesn't use this method
-     */
-    public void aQueryIsServed() {
     }
 
     public void rejectQuery(Query query) {
@@ -83,19 +78,10 @@ public class ClientManagementModule extends Module<Query> {
      * @param query A query is back to the control of the connection to finish
      */
     public void aQueryHasReturned(Query query) {
-        queriesExpectedToBeReturned.remove(query);
         query.setBeingServed(true);
         query.setArrivalTime(simulation.getTime());
         query.setDepartureTime(simulation.getTime() + (query.getChargedBlocks() / 6));
         beingServedQueries.add(query);
-    }
-
-    public boolean aQueryFromQueueIsNowBeingServed() {
-        return !beingServedQueries.isEmpty();
-    }
-
-    public Query nextQueryFromQueueToBeOut() {
-        return beingServedQueries.peek();
     }
 
     public int getNumberOfQueriesOnQueue() {
@@ -124,7 +110,7 @@ public class ClientManagementModule extends Module<Query> {
         } else {
             simulation.addLineInTimeLog("The system reached the maximum simultaneous " +
                     "connections, the new query is rejected");
-            simulation.getQueryStatistics().rejectAQuery();
+            simulation.getQueryStatistics().aNewQueryIsRejected();
         }
         simulation.addEvent(new Event(A_NEW_QUERY_IS_REQUESTING, simulation.getTime() + simulation.getGenerator().getExponential(1.7142),
                 new Query(idAssigner, simulation.getGenerator())));
@@ -136,8 +122,22 @@ public class ClientManagementModule extends Module<Query> {
         simulation.addEvent(new Event(A_QUERY_IS_FINISHED, actualEvent.getQuery().getDepartureTime(), actualEvent.getQuery()));
     }
 
+    public void exitClientManagementEvent(Event actualEvent){
+        Query fromModule = beingServedFirstPhase.poll();
+        fromModule.setBeingServed(false);
+        fromModule.addLifeSpan(simulation.getTime() - fromModule.getArrivalTime());
+        moduleStatistics.updateModuleTime(fromModule, simulation.getTime() - fromModule.getArrivalTime());
+        if (!fromModule.getDead()) {
+            simulation.addLineInTimeLog("The query " + fromModule.getId() + " is out from client management module.");
+            ((ProcessesManagementModule)nextModule).enterProcessesManagementModule(actualEvent);
+        } else {
+            // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
+            simulation.getQueryStatistics().aQueryIsKilled();
+            simulation.releaseAConnectionServer();
+        }
+    }
 
-    public void aQueryIsFinishedEvent(){
+    public void aQueryIsFinishedEvent(Event actualEvent){
         Query fromModule = aQueryFinished();
         simulation.addLineInTimeLog("The query " + fromModule.getId() + " was requested successful.");
         simulation.removeKillEventFromList(fromModule);

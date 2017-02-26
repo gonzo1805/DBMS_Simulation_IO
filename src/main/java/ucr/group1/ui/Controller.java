@@ -19,6 +19,9 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
 
+    /**
+     * Parameters of the simulation
+     */
     int kConcurrentConection;
     int nVerificationServers;
     int pExecutionServers;
@@ -30,11 +33,13 @@ public class Controller implements Initializable {
     int amountOfRuns;
     Simulation simulation;
 
+    // A list for the comboBox of the UI
     ObservableList<String> modules = FXCollections.observableArrayList("ClientManagementModule", "System Call", "QueriesVerificationModule",
             "TransactionsModule", "QueriesExecutionModule");
 
-    @FXML
-    private Label labelMConsults;
+    /**
+     * All the Text Fields of the UI
+     */
 
     @FXML
     private TextField txtRuns;
@@ -60,6 +65,10 @@ public class Controller implements Initializable {
     @FXML
     private TextField txtMConsults;
 
+    /**
+     * All the Labels of the UI
+     */
+
     @FXML
     private Label labelRuns;
 
@@ -82,7 +91,18 @@ public class Controller implements Initializable {
     private Label labelPTrans;
 
     @FXML
+    private Label labelMConsults;
+
+    /**
+     * The Combo Box of the UI
+     */
+
+    @FXML
     private ComboBox<String> comboBoxModule;
+
+    /**
+     * Buttons and Radio Buttons of the UI
+     */
 
     @FXML
     private Button botonStartSimulation;
@@ -102,6 +122,9 @@ public class Controller implements Initializable {
     @FXML
     private RadioButton radioButtonNo;
 
+    //////////////////////////////////Begin of click methods on textFields//////////////////////////////////////////////
+
+    // Methods for the action of click on a txtField, erase all the text that the text field have on it
     @FXML
     void clickKConnection(MouseEvent event) {
         txtKConnection.setText("");
@@ -142,6 +165,13 @@ public class Controller implements Initializable {
         txtTimeout.setText("");
     }
 
+    ////////////////////////////////////End of click methods on textField///////////////////////////////////////////////
+
+
+    ///////////////////////////////Begin of the press enter methods on textField////////////////////////////////////////
+
+    // Methods for the action of press enter on the textField, put the label assigned to the textField on the value of
+    // the textField, also it do data verification, it uses a simple regex to know if the inserted data is valid or not
     @FXML
     void enterKConnection(ActionEvent event) {
         if (!txtKConnection.getText().matches("[0-9]+$")) {
@@ -230,30 +260,53 @@ public class Controller implements Initializable {
         }
     }
 
+    //////////////////////////////////End of the press enter methods on textField///////////////////////////////////////
+
+
+    /**
+     * Completely starts the simulation with the parameters on the textFields, it also gather the stats from the
+     * simulation and stacks it for .html, when the button is clicked, all the textField got blocked and when the
+     * simulation finishes it all got unlocked
+     *
+     * @param event
+     */
     @FXML
     void clickBotonStarSimulation(ActionEvent event) {
+        // A list of all the names of the simulations, for purposes of the .html
         List<String> simulationList = new LinkedList<>();
+        // Blocks the textFields
         setAllTextAreasDisabled();
-
+        // The stats for each simulation
+        SimulationsStatistics simulationsStatistics = new SimulationsStatistics();
+        // For every run (the parameter)
         for (int i = 1; i <= amountOfRuns; i++) {
+            // A new simulation
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
                     mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime);
+            // Start it
             simulation.simulate();
+            // Get the stats of the simulation
+            simulationsStatistics.addSimulation(simulation);
+            // Create the personal html for this simulation
             htmlGenerator personalHtml = new htmlGenerator();
+            // Fill the html with the general simulation parameters
             personalHtml.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                     nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
-            personalHtml.crea("simulation" + i, String.valueOf(i));
+            // Create the html
+            personalHtml.crea("simulation" + i, String.valueOf(i), simulation);
+            // Create the list for the links on the main
             simulationList.add("simulation" + i + ".html");
 
             simulation.createATimeLogArchive("Bitacora" + i);
         }
+        // The index html
         htmlGenerator htmlGenerator = new htmlGenerator();
         htmlGenerator.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                 nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
-        htmlGenerator.createIndex(simulationList, new SimulationsStatistics());
+        // Create the index html
+        htmlGenerator.createIndex(simulationList, simulationsStatistics);
         setAllTextAreasEnabled();
-
-
+        // It`s finished
         JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
     }
 
@@ -268,6 +321,11 @@ public class Controller implements Initializable {
 
     }
 
+    /**
+     * Set the parameters by a default value, chosen by us
+     *
+     * @param event
+     */
     @FXML
     void clickDefault(ActionEvent event) {
         setAllLabels(15, 20, 10, 2, 8, 0, 15000, 15);
@@ -283,6 +341,18 @@ public class Controller implements Initializable {
         radioButtonNo.isSelected();
     }
 
+    /**
+     * Set all the labels with the parameters
+     *
+     * @param amountOfRuns         the amount of runs of the simulation
+     * @param kConcurrentConection the k concurrent conections of the simulation
+     * @param pExecutionServers    the p execution servers of the simulation
+     * @param mTransactionServers  the m transaction servers of the simulation
+     * @param nVerificationServers the n verification servers of the simulation
+     * @param timeBetEvents        the time between events
+     * @param simulationTime       the simulation time
+     * @param tTimeout             the t timeout of the simulation
+     */
     private void setAllLabels(int amountOfRuns, int kConcurrentConection, int pExecutionServers, int mTransactionServers,
                               int nVerificationServers, int timeBetEvents, int simulationTime,
                               int tTimeout) {
@@ -296,19 +366,31 @@ public class Controller implements Initializable {
         labelTimePerRun.setText(String.valueOf(simulationTime));
     }
 
+    /**
+     * Block the textField of the timeBetEvents, because it is only used on the slowMode
+     * @param event
+     */
     @FXML
     void clickRadioButtonNo(ActionEvent event) {
         slowMode = false;
         txtTimeBetEvents.setDisable(true);
     }
 
+    /**
+     * Unblock the textField of the timeBetEvents, because it is only used on the slowMode
+     * @param event
+     */
     @FXML
     void clickRadioButtonYes(ActionEvent event) {
         slowMode = true;
         txtTimeBetEvents.setDisable(false);
     }
 
-
+    /**
+     * Initializer
+     * @param location
+     * @param resources
+     */
     public void initialize(URL location, ResourceBundle resources) {
         comboBoxModule.setValue("Modulo");
         comboBoxModule.setItems(modules);
@@ -318,6 +400,9 @@ public class Controller implements Initializable {
 
     }
 
+    /**
+     * Disable all the textFields of the UI
+     */
     private void setAllTextAreasDisabled() {
         txtKConnection.setDisable(true);
         txtPTrans.setDisable(true);
@@ -331,6 +416,9 @@ public class Controller implements Initializable {
         radioButtonNo.setDisable(true);
     }
 
+    /**
+     * Enable all the textFields of the UI
+     */
     private void setAllTextAreasEnabled() {
         txtKConnection.setDisable(false);
         txtPTrans.setDisable(false);

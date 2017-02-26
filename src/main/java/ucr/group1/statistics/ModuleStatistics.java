@@ -2,8 +2,10 @@ package ucr.group1.statistics;
 
 import ucr.group1.module.Module;
 import ucr.group1.query.Query;
-import ucr.group1.query.QueryType;
+import ucr.group1.query.QueryLabel;
 import ucr.group1.simulation.Simulation;
+
+import static ucr.group1.query.QueryLabel.*;
 
 /**
  * Created by Daniel on 18/2/2017.
@@ -57,14 +59,14 @@ public class ModuleStatistics {
      * @return The lambda of the module
      */
     public double getLambda() {
-        return (1 / timeBetweenArrives);
+        return (1.0 / timeBetweenArrives);
     }
 
     /**
      * @return The mu of the module
      */
     public double getMu() {
-        return (1 / getW_s());
+        return (1.0 / getW_s());
     }
 
     /**
@@ -117,11 +119,11 @@ public class ModuleStatistics {
     }
 
     /**
-     * @param type The type of query that is wanted to get the average time through the module
+     * @param label The type of query that is wanted to get the average time through the module
      * @return The average time in module of a specified type of query
      */
-    public double getAverageTime(QueryType type) {
-        switch (type.getType()) {
+    public double getAverageTime(QueryLabel label) {
+        switch (label) {
             case DDL:
                 return ddlMT;
             case JOIN:
@@ -141,7 +143,7 @@ public class ModuleStatistics {
     public double getLeisureTime() {
         double rho = getRho();
         if (rho < 1) {
-            return ((1 - rho) * simulation.getTime());
+            return ((1.0 - rho) * simulation.getTime());
         } else {
             return 0;
         }
@@ -159,9 +161,9 @@ public class ModuleStatistics {
      */
     public void updateTimeBetweenArrives(double newTimeBetweenArrives) {
         numberTimeBetweenArrives++;
-        double percentage = (1 - (1 / numberTimeBetweenArrives));
+        double percentage = (1.0 - (1.0 / numberTimeBetweenArrives));
         timeBetweenArrives *= percentage;
-        timeBetweenArrives += (1 - percentage) * (newTimeBetweenArrives - lastArrive);
+        timeBetweenArrives += (1.0 - percentage) * (newTimeBetweenArrives - lastArrive);
         lastArrive = newTimeBetweenArrives;
     }
 
@@ -170,7 +172,7 @@ public class ModuleStatistics {
      */
     public void updateL_Q(int newL_q) {
         numberL_Q++;
-        double percentage = (1 - (1 / numberL_Q));
+        double percentage = (1.0 - (1.0 / numberL_Q));
         l_q *= percentage;
         l_q += (1 - percentage) * (double) newL_q;
     }
@@ -180,7 +182,7 @@ public class ModuleStatistics {
      */
     public void updateL_S(int newL_s) {
         numberL_S++;
-        double percentage = (1 - (1 / numberL_S));
+        double percentage = (1.0 - (1.0 / numberL_S));
         l_s *= percentage;
         l_s += (1 - percentage) * (double) newL_s;
     }
@@ -196,27 +198,27 @@ public class ModuleStatistics {
         switch (query.getType()) {
             case DDL:
                 numberDdlMT++;
-                percentage = (1 - (1 / numberDdlMT));
+                percentage = (1.0 - (1.0 / numberDdlMT));
                 ddlMT *= percentage;
                 ddlMT += (1 - percentage) * newModuleTime;
                 break;
             case UPDATE:
                 numberUpdateMT++;
-                percentage = (1 - (1 / numberUpdateMT));
+                percentage = (1.0 - (1.0 / numberUpdateMT));
                 updateMT *= percentage;
-                updateMT += (1 - percentage) * newModuleTime;
+                updateMT += (1.0 - percentage) * newModuleTime;
                 break;
             case SELECT:
                 numberSelectMT++;
-                percentage = (1 - (1 / numberSelectMT));
+                percentage = (1.0 - (1.0 / numberSelectMT));
                 selectMT *= percentage;
-                selectMT += (1 - percentage) * newModuleTime;
+                selectMT += (1.0 - percentage) * newModuleTime;
                 break;
             case JOIN:
                 numberJoinMT++;
-                percentage = (1 - (1 / numberJoinMT));
+                percentage = (1.0 - (1.0 / numberJoinMT));
                 joinMT *= percentage;
-                joinMT += (1 - percentage) * newModuleTime;
+                joinMT += (1.0 - percentage) * newModuleTime;
                 break;
         }
         amountOfServedQueries++;

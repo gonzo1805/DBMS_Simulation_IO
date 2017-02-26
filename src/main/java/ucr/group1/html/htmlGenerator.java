@@ -4,6 +4,8 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import ucr.group1.simulation.Simulation;
+import ucr.group1.statistics.ModuleStatistics;
+import ucr.group1.statistics.QueryStatistics;
 import ucr.group1.statistics.SimulationsStatistics;
 
 import java.io.File;
@@ -21,6 +23,9 @@ import java.util.List;
  */
 public class htmlGenerator {
 
+    /**
+     * Main Parameters of the Simulation
+     */
     int kConcurrentConection;
     int nVerificationServers;
     int pExecutionServers;
@@ -30,75 +35,107 @@ public class htmlGenerator {
     int timeBetEvents;
     int simulationTime;
     int amountOfRuns;
-    Simulation simulation;
+    Simulation simulation;// A pointer to the simulation
 
-    public void crea(String fileName, String whichSimulation) {
-         /*  first, get and initialize an engine  */
+    /**
+     * Create the .html for an specific run of the simulation
+     *
+     * @param fileName        the name of the .html
+     * @param whichSimulation a parameter to put on the template structure of the .html
+     */
+    public void crea(String fileName, String whichSimulation, Simulation simulation) {
+
         VelocityEngine ve = new VelocityEngine();
         ve.init();
-        /*  next, get the Template  */
+        // Get the template
         Template t = ve.getTemplate("./src/main/resources/htmlGenerator.vcss");
-        /*  create a context and add data */
+
         VelocityContext context = new VelocityContext();
+        // Give it the button to return to the main page and the name
         context.put("whichSimulation", whichSimulation);
         context.put("ifIndex", "<a href=\"index.html\">Regresar</a>");
+        // Give it the parameters of all the simulation
         insertGeneralParameters(context);
-        /* now render the template into a StringWriter */
-        StringWriter writer = new StringWriter();
-        t.merge(context, writer);
 
+        fillStatsPerModuleWithModuleStats(simulation.getClientManagementStatistics(), context, 0,
+                simulation.getQueryStatistics());
+        fillStatsPerModuleWithModuleStats(simulation.getClientManagementStatistics(), context, 1,
+                simulation.getQueryStatistics());
+        fillStatsPerModuleWithModuleStats(simulation.getQueriesVerificationStatistics(), context, 2,
+                simulation.getQueryStatistics());
+        fillStatsPerModuleWithModuleStats(simulation.getTransactionsStatistics(), context, 3,
+                simulation.getQueryStatistics());
+        fillStatsPerModuleWithModuleStats(simulation.getQueriesExecutionStatistics(), context, 4,
+                simulation.getQueryStatistics());
+
+        // Merge the template
         StringWriter finalWriter = new StringWriter();
         ve.mergeTemplate("./src/main/resources/htmlGenerator.vcss", "utf-8", context, finalWriter);
         String html = finalWriter.toString();
 
-
         try {
+            // Create the file, if it exist, delete it and create again
             File file = new File("./src/main/resources/" + fileName + ".html");
             file.delete();
             file.createNewFile();
             Files.write(Paths.get("./src/main/resources/" + fileName + ".html"), html.getBytes(), StandardOpenOption.APPEND);
-            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Create the template for the main .html page
+     * @param links A list of the other simulations names, it will be send to the template to create the
+     *              Hyperlinks to the personal simulation pages
+     * @param stats The general stats of the simulation
+     */
     public void createIndex(List<String> links, SimulationsStatistics stats) {
-         /*  first, get and initialize an engine  */
+
         VelocityEngine ve = new VelocityEngine();
         ve.init();
-        /*  next, get the Template  */
+        // Get the template
         Template t = ve.getTemplate("./src/main/resources/htmlGenerator.vcss");
-        /*  create a context and add data */
-        VelocityContext context = new VelocityContext();
-        context.put("whichSimulation", "en General");
 
+        VelocityContext context = new VelocityContext();
+        // Give the general name
+        context.put("whichSimulation", "en General");
+        // Fill with all the stats of the simulation
         insertGeneralParameters(context);
         fillStats(stats, context);
-
-        /* now render the template into a StringWriter */
-        StringWriter writer = new StringWriter();
+        // Because it is the main .html give it an extra section for the other simulations links
         context.put("ifIndex", "<h1>Estadísticas específicas por corrida</h1>");
+        // Insert all the other simulations
         context.put("listOfSimulations", links);
-        t.merge(context, writer);
+        // Merge the Template
         StringWriter finalWriter = new StringWriter();
-
-
         ve.mergeTemplate("./src/main/resources/htmlGenerator.vcss", "utf-8", context, finalWriter);
         String html = finalWriter.toString();
 
-
         try {
+            // Create the file, if it exist, delete it and create again
             File file = new File("./src/main/resources/index.html");
             file.delete();
             file.createNewFile();
             Files.write(Paths.get("./src/main/resources/index.html"), html.getBytes(), StandardOpenOption.APPEND);
-            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Initializes the attributes (parameters) of the simulation
+     * @param simulation a pointer to the simulation
+     * @param amountOfRuns the amount of runs of the simulation
+     * @param kConcurrentConection the k concurrent conections of the simulations
+     * @param pExecutionServers the p execution servers of the simulations
+     * @param mTransactionServers the m transaction servers of the simulations
+     * @param nVerificationServers the n verification servers of the simulations
+     * @param timeBetEvents the time between events of the simulations
+     * @param simulationTime the time per simulation of the simulations
+     * @param tTimeout the t timeout of the simulations
+     * @param slowMode if the simulations are on slow mode or not
+     */
     public void fillParameters(Simulation simulation, int amountOfRuns, int kConcurrentConection, int pExecutionServers,
                                int mTransactionServers, int nVerificationServers, int timeBetEvents, int simulationTime,
                                int tTimeout, boolean slowMode) {
@@ -114,9 +151,15 @@ public class htmlGenerator {
         this.amountOfRuns = amountOfRuns;
     }
 
-    public void fillStats(SimulationsStatistics stats, VelocityContext context) {
+    /**
+     * Caller for the method that fill all the stats of the simulation on the context send by parameter
+     * @param stats the stats of the simulation
+     * @param context the simulation template to fill the stats
+     */
+    private void fillStats(SimulationsStatistics stats, VelocityContext context) {
+        // There are 5 modules, so we need to fill 5 times per simulation
         for (int i = 0; i < 5; i++) {
-            fillStatsPerModule(stats, context, i);
+            fillStatsPerModule(stats, context, i /*The module*/);
         }
     }
 
@@ -154,9 +197,9 @@ public class htmlGenerator {
         }
 
         // Avg Rejected querys of
-        context.put("avgRejectedConections", stats.getNumberOfRejectedQueries());
+        context.put("avgRejectedConections", stats.getAverageRejectedQueries());
         // Avg Time for connections
-        context.put("avgTimePerConection", stats.getAvgLifespanOfQuery());
+        context.put("avgTimePerConection", stats.getAverageLifespan());
         // If it is stable or not in function of rhp
         if (stats.getRho(module) < 1) {
             context.put("stability" + stringModule + "Module", "Estable");
@@ -183,8 +226,70 @@ public class htmlGenerator {
         context.put("wq" + stringModule + "Module", stats.getW_q(module));
         // Avg time of clients on service
         context.put("ws" + stringModule + "Module", stats.getL_s(module));
+        // Leisure time of the module
+        context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime(module));
     }
 
+    private void fillStatsPerModuleWithModuleStats(ModuleStatistics stats, VelocityContext context, int module,
+                                                   QueryStatistics queryStatistics) {
+        // Switch to bypass the implementation of the parameters of the velocity template
+        String stringModule = "";
+        switch (module) {
+            case 0:
+                stringModule += "First";
+                break;
+            case 1:
+                stringModule += "Second";
+                break;
+            case 2:
+                stringModule += "Third";
+                break;
+            case 3:
+                stringModule += "Fourth";
+                break;
+            case 4:
+                stringModule += "Fifth";
+                break;
+        }
+
+        // Avg Rejected querys of
+        context.put("avgRejectedConections", queryStatistics.getNumberOfRejectedQueries());
+        // Avg Time for connections
+        context.put("avgTimePerConection", queryStatistics.getAvgLifespanOfQuery());
+        // If it is stable or not in function of rhp
+        if (stats.getRho() < 1) {
+            context.put("stability" + stringModule + "Module", "Estable");
+        } else {
+            context.put("stability" + stringModule + "Module", "Inestable");
+        }
+        // Avg size of the queue
+        context.put("avgSizeOfTheQueue" + stringModule + "Module", stats.getL_q());
+        // Income rate
+        context.put("lambda" + stringModule + "Module", stats.getLambda());
+        // Service rate
+        context.put("mu" + stringModule + "Module", stats.getMu());
+        // Percentage of usage
+        context.put("rho" + stringModule + "Module", stats.getRho());
+        // Avg Clients on the system
+        context.put("l" + stringModule + "Module", stats.getL());
+        // Avg Clients on service
+        context.put("ls" + stringModule + "Module", stats.getL_s());
+        // Avg Clients on queue
+        context.put("lq" + stringModule + "Module", stats.getL_q());
+        // Avg time of clients on the system
+        context.put("w" + stringModule + "Module", stats.getW());
+        // Avg time of clients on queue
+        context.put("wq" + stringModule + "Module", stats.getW_q());
+        // Avg time of clients on service
+        context.put("ws" + stringModule + "Module", stats.getL_s());
+        // Leisure Time of the module
+        context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime());
+    }
+
+    /**
+     * Insert the general parameters of all the simulations on the template
+     * @param context the context where we gonna insert the data
+     */
     private void insertGeneralParameters(VelocityContext context) {
         context.put("kConcurrentConnections", kConcurrentConection);
         context.put("nVerificationServers", nVerificationServers);
@@ -199,6 +304,4 @@ public class htmlGenerator {
         context.put("timeBetEvents", timeBetEvents);
         context.put("simulationTime", simulationTime);
     }
-
-
 }

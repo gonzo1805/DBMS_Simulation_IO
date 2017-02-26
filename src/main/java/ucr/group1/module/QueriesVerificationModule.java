@@ -78,7 +78,7 @@ public class QueriesVerificationModule extends Module<Query> {
 
     public Query aQueryFinished() {
         Query out = beingServedQueries.poll();
-        out.setBeingServed(true);
+        out.setBeingServed(false);
         out.addLifeSpan(simulation.getTime() - out.getArrivalTime());
         moduleStatistics.updateModuleTime(out, simulation.getTime() - out.getArrivalTime());
         return out;
@@ -100,7 +100,7 @@ public class QueriesVerificationModule extends Module<Query> {
         if (exitTime > -1) {
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                     " is now being verified");
-            simulation.addEvent(new Event(EXIT_VERIFICATION_MODULE, exitTime, actualEvent.getQuery()));
+            simulation.addEvent(new Event(EXIT_VERIFICATION_MODULE,actualEvent.getQuery().getDepartureTime(),actualEvent.getQuery()));
         }
     }
 
@@ -111,7 +111,7 @@ public class QueriesVerificationModule extends Module<Query> {
             ((TransactionsModule)nextModule).enterTransactionsModuleEvent(actualEvent);
         } else {
             // AQUI UNA CONSULTA MUERE Y AUMENTA LA ESTADíSTICA
-            simulation.getQueryStatistics().rejectAQuery();
+            simulation.getQueryStatistics().aQueryIsKilled();
             simulation.releaseAConnectionServer();
         }
         if (!queue.isEmpty()) {

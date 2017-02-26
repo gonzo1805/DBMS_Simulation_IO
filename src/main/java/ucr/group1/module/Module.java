@@ -45,13 +45,17 @@ public abstract class Module<E> {
 
     public abstract void updateL_qStatistics();
 
+    /**
+     * @return True if and only if the query was founded in the queue
+     */
+    public boolean kickAQueryFromQueue(Query query) {
+        return queue.remove(query);
+    }
+
     /************************************************ Getters *********************************************************/
 
-    /**
-     * @return The queue from the module
-     */
-    public Queue<E> getQueue() {
-        return queue;
+    public ModuleStatistics getStatistics(){
+        return moduleStatistics;
     }
 
     /**

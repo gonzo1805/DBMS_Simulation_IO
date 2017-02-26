@@ -13,7 +13,13 @@ import ucr.group1.ui.Controller;
 public class Main extends Application {
     public static void main(String[]  args){
         launch(args);
-
+        /*Simulation simulation = new Simulation(15, 3, 2,1
+        ,15,false,0,15000);
+        simulation.simulate();
+        simulation.createATimeLogArchive("bitacora de prueba");
+        System.out.println("Lambda de conexion: " + simulation.getClientManagementStatistics().getLambda());
+        System.out.println("Mu de conexion: " + simulation.getClientManagementStatistics().getMu());
+        System.out.println("tiempo promedio de vida de los querys: "+ simulation.getQueryStatistics().getAvgLifespanOfQuery());*/
     }
 
     @Override
