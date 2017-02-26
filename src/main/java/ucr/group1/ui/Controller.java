@@ -96,6 +96,16 @@ public class Controller implements Initializable {
     @FXML
     private Label labelMConsults;
 
+    @FXML
+    private Label labelSimulationClock;
+
+    @FXML
+    private Label labelActualEvent;
+
+    @FXML
+    private Label labelRejectedConections;
+
+
     /**
      * The Combo Box of the UI
      */
@@ -436,5 +446,17 @@ public class Controller implements Initializable {
         txtTimePerRun.setDisable(false);
         radioButtonYes.setDisable(false);
         radioButtonNo.setDisable(false);
+    }
+
+    public void setLabelRejectedConections(String toWrite) {
+        labelRejectedConections.setText(toWrite);
+    }
+
+    public void setLabelSimulationClock(String toWrite) {
+        labelSimulationClock.setText(toWrite);
+    }
+
+    public void setLabelActualEvent(String toWrite) {
+        labelActualEvent.setText(toWrite);
     }
 }

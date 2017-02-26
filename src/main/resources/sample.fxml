@@ -83,13 +83,13 @@
         <TextArea fx:id="mainTextArea" editable="false" layoutX="285.0" prefHeight="365.0" prefWidth="276.0"
                   wrapText="true"/>
         <Label layoutX="567.0" layoutY="5.0" text="Reloj del Sistema:"/>
-        <Label layoutX="716.0" layoutY="5.0" text="Label"/>
+        <Label fx:id="labelSimulationClock" layoutX="716.0" layoutY="5.0" text="Label"/>
         <ComboBox fx:id="comboBoxModule" layoutX="566.0" layoutY="103.0" prefWidth="150.0" promptText="Modulo"
                   visibleRowCount="5"/>
         <Label layoutX="567.0" layoutY="35.0" text="Evento actual:"/>
-        <Label layoutX="716.0" layoutY="35.0" text="Label"/>
+        <Label fx:id="labelActualEvent" layoutX="716.0" layoutY="35.0" text="Label"/>
         <Label layoutX="567.0" layoutY="65.0" text="Conecciones Descartadas:"/>
-        <Label layoutX="716.0" layoutY="65.0" text="Label"/>
+        <Label fx:id="labelRejectedConections" layoutX="716.0" layoutY="65.0" text="Label"/>
         <Button fx:id="buttonRestartSimulation" layoutX="566.0" layoutY="318.0" mnemonicParsing="false"
                 onAction="#clickRestart" text="Reiniciar"/>
         <Button fx:id="buttonNewSimulation" layoutX="641.0" layoutY="318.0" mnemonicParsing="false" onAction="#clickNew"
