@@ -65,6 +65,9 @@ public class Controller implements Initializable {
     @FXML
     private TextField txtMConsults;
 
+    @FXML
+    private TextArea mainTextArea;
+
     /**
      * All the Labels of the UI
      */
@@ -92,6 +95,16 @@ public class Controller implements Initializable {
 
     @FXML
     private Label labelMConsults;
+
+    @FXML
+    private Label labelSimulationClock;
+
+    @FXML
+    private Label labelActualEvent;
+
+    @FXML
+    private Label labelRejectedConections;
+
 
     /**
      * The Combo Box of the UI
@@ -310,6 +323,9 @@ public class Controller implements Initializable {
         JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
     }
 
+    private void updateTextArea(String toWrite) {
+        mainTextArea.setText((mainTextArea.getText() + toWrite));
+    }
 
     @FXML
     void clickRestart(ActionEvent event) {
@@ -430,5 +446,17 @@ public class Controller implements Initializable {
         txtTimePerRun.setDisable(false);
         radioButtonYes.setDisable(false);
         radioButtonNo.setDisable(false);
+    }
+
+    public void setLabelRejectedConections(String toWrite) {
+        labelRejectedConections.setText(toWrite);
+    }
+
+    public void setLabelSimulationClock(String toWrite) {
+        labelSimulationClock.setText(toWrite);
+    }
+
+    public void setLabelActualEvent(String toWrite) {
+        labelActualEvent.setText(toWrite);
     }
 }
