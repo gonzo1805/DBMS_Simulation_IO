@@ -6,6 +6,7 @@ import ucr.group1.module.*;
 import ucr.group1.query.Query;
 import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
+import ucr.group1.ui.Controller;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static ucr.group1.event.EventType.*;
 
@@ -40,7 +42,9 @@ public class Simulation {
     private QueriesExecutionModule queriesExecutionModule;
     private QueryStatistics queryStatistics;
     private Generator generator;
+    private Controller controller;
     private List<String> timeLog;
+    private Queue<String> timeLogAux;
     private int timePerSimulation;
     private HashMap<Query, Event> killsMap;
 
@@ -56,7 +60,9 @@ public class Simulation {
      * @param slowMode              A condition that activates the slow mode
      * @param timeBetweenEvents     The time in seconds between the occurrence of events
      */
-    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses, int tTimeout, boolean slowMode, double timeBetweenEvents, int timePerSimulation) {
+    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses,
+                      int tTimeout, boolean slowMode, double timeBetweenEvents, int timePerSimulation,
+                      Controller controller) {
         time = 0;
         eventList = new PriorityQueue<Event>(kConnections * 2, new EventComparator());
         finalizedEvents = new LinkedList<Event>();
@@ -72,7 +78,9 @@ public class Simulation {
             this.timeBetweenEvents = 0;
         }
         this.generator = new Generator();
+        this.controller = controller;
         this.timeLog = new LinkedList<String>();
+        this.timeLogAux = new LinkedBlockingDeque<>(5);
         this.timePerSimulation = timePerSimulation;
         this.killsMap = new HashMap<>(kConnections);
         buildModulesAndStatistics();
@@ -119,10 +127,13 @@ public class Simulation {
                             "it will be kicked out");
                     break;
             }
-            try {
-                Thread.sleep((long) timeBetweenEvents * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while(!timeLogAux.isEmpty()){
+                controller.updateTextArea(timeLogAux.poll());
+                try {
+                    Thread.sleep((long) timeBetweenEvents * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             updateAllTheLOfStatistics();
             finalizeEvent(actualEvent);
@@ -130,7 +141,9 @@ public class Simulation {
     }
 
     public void addLineInTimeLog(String line) {
-        timeLog.add(getTimeInHHMMSS() + line);
+        line = getTimeInHHMMSS() + line;
+        timeLog.add(line);
+        timeLogAux.add(line);
     }
 
     /********************************************** GETTERS ***********************************************************/

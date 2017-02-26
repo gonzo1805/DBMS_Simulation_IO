@@ -295,7 +295,7 @@ public class Controller implements Initializable {
         for (int i = 1; i <= amountOfRuns; i++) {
             // A new simulation
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
-                    mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime);
+                    mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime, this);
             // Start it
             simulation.simulate();
             // Get the stats of the simulation
