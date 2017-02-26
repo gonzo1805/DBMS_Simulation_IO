@@ -65,6 +65,9 @@ public class Controller implements Initializable {
     @FXML
     private TextField txtMConsults;
 
+    @FXML
+    private TextArea mainTextArea;
+
     /**
      * All the Labels of the UI
      */
@@ -310,6 +313,9 @@ public class Controller implements Initializable {
         JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
     }
 
+    private void updateTextArea(String toWrite) {
+        mainTextArea.setText((mainTextArea.getText() + toWrite));
+    }
 
     @FXML
     void clickRestart(ActionEvent event) {

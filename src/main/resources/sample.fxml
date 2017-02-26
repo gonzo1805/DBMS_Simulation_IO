@@ -80,7 +80,8 @@
         </MenuBar>
         <Separator layoutX="278.0" layoutY="3.0" orientation="VERTICAL" prefHeight="359.0" prefWidth="13.0"/>
         <AmbientLight color="CHARTREUSE" lightOn="true"/>
-        <TextArea editable="false" layoutX="285.0" prefHeight="365.0" prefWidth="276.0" wrapText="true"/>
+        <TextArea fx:id="mainTextArea" editable="false" layoutX="285.0" prefHeight="365.0" prefWidth="276.0"
+                  wrapText="true"/>
         <Label layoutX="567.0" layoutY="5.0" text="Reloj del Sistema:"/>
         <Label layoutX="716.0" layoutY="5.0" text="Label"/>
         <ComboBox fx:id="comboBoxModule" layoutX="566.0" layoutY="103.0" prefWidth="150.0" promptText="Modulo"
