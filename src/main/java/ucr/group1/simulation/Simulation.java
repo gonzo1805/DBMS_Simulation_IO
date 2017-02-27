@@ -128,7 +128,7 @@ public class Simulation {
                     break;
             }
             while(!timeLogAux.isEmpty()){
-                controller.updateTextArea(timeLogAux.poll());
+                controller.updateTextArea(timeLogAux.poll()+"\n");
                 try {
                     Thread.sleep((long) timeBetweenEvents * 1000);
                 } catch (InterruptedException e) {

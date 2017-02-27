@@ -103,7 +103,7 @@ public class ClientManagementModule extends Module<Query> {
             moduleStatistics.updateTimeBetweenArrives(simulation.getTime());
             simulation.addLineInTimeLog("The query " + actualEvent.getQuery().getId() +
                     " is connected with the database");
-            ((ProcessesManagementModule)nextModule).enterProcessesManagementModule(actualEvent);
+            simulation.addEvent(new Event(EXIT_CLIENT_MANAGEMENT_MODULE,actualEvent.getQuery().getDepartureTime(),actualEvent.getQuery()));
             Event killEvent = new Event(KILL, simulation.getTimeOut() + actualEvent.getTime(), actualEvent.getQuery());
             simulation.addKillEventToMap(actualEvent.getQuery(),killEvent);
             simulation.addEvent(killEvent);

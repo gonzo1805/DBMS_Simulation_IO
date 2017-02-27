@@ -14,7 +14,7 @@ public class Main extends Application {
     public static void main(String[]  args){
         launch(args);
         /*Simulation simulation = new Simulation(15, 3, 2,1
-        ,15,false,0,15000);
+        ,15,false,0,15000, null);
         simulation.simulate();
         simulation.createATimeLogArchive("bitacora de prueba");
         System.out.println("Lambda de conexion: " + simulation.getClientManagementStatistics().getLambda());
