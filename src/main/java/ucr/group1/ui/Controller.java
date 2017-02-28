@@ -1,23 +1,35 @@
 package ucr.group1.ui;
 
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import ucr.group1.html.htmlGenerator;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.statistics.SimulationsStatistics;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.net.URL;
+import java.rmi.activation.ActivationID;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ThreadFactory;
 
-public class Controller implements Initializable {
+public class Controller extends Application implements Initializable, Runnable {
 
     /**
      * Parameters of the simulation
@@ -64,9 +76,6 @@ public class Controller implements Initializable {
 
     @FXML
     private TextField txtMConsults;
-
-    @FXML
-    private TextArea mainTextArea;
 
     /**
      * All the Labels of the UI
@@ -275,7 +284,7 @@ public class Controller implements Initializable {
 
     //////////////////////////////////End of the press enter methods on textField///////////////////////////////////////
 
-
+    boolean finished = false;
     /**
      * Completely starts the simulation with the parameters on the textFields, it also gather the stats from the
      * simulation and stacks it for .html, when the button is clicked, all the textField got blocked and when the
@@ -296,6 +305,16 @@ public class Controller implements Initializable {
             // A new simulation
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
                     mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime, this);
+            /*Thread thread = new Thread();
+            thread.start();
+
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    txtArea.appendText(toWrite + "\n");
+                }
+            });*/
             // Start it
             simulation.simulate();
             // Get the stats of the simulation
@@ -310,7 +329,7 @@ public class Controller implements Initializable {
             // Create the list for the links on the main
             simulationList.add("simulation" + i + ".html");
 
-            simulation.createATimeLogArchive("Bitacora" + i);
+            //simulation.createATimeLogArchive("Bitacora" + i);
         }
         // The index html
         htmlGenerator htmlGenerator = new htmlGenerator();
@@ -323,8 +342,17 @@ public class Controller implements Initializable {
         JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
     }
 
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    @FXML
+    private TextArea txtArea;
+    private String toWrite = "";
     public void updateTextArea(String toWrite) {
-        mainTextArea.setText((mainTextArea.getText() + toWrite));
+        txtArea.appendText(toWrite);
+        //this.toWrite = toWrite;
+        //labelActualEvent.setText(toWrite);
     }
 
     @FXML
@@ -458,5 +486,25 @@ public class Controller implements Initializable {
 
     public void setLabelActualEvent(String toWrite) {
         labelActualEvent.setText(toWrite);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
+        primaryStage.setTitle("Simulation Group 1 Main Menu");
+        primaryStage.setScene(new Scene(root, 804, 359));
+        primaryStage.show();
+        txtArea = new TextArea();
+    }
+
+    public void begin(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void run() {
+        System.out.print("Entro");
+        simulation.simulate();
+        setFinished(true);
     }
 }

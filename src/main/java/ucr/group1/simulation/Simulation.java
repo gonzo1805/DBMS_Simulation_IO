@@ -128,12 +128,13 @@ public class Simulation {
                     break;
             }
             while(!timeLogAux.isEmpty()){
-                controller.updateTextArea(timeLogAux.poll()+"\n");
-                try {
+                String toWrite = timeLogAux.poll() + "\n";
+                controller.updateTextArea(toWrite);
+                /*try {
                     Thread.sleep((long) timeBetweenEvents * 1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }*/
             }
             updateAllTheLOfStatistics();
             finalizeEvent(actualEvent);
@@ -143,7 +144,7 @@ public class Simulation {
     public void addLineInTimeLog(String line) {
         line = getTimeInHHMMSS() + line;
         timeLog.add(line);
-        timeLogAux.add(line);
+        //timeLogAux.add(line);
     }
 
     /********************************************** GETTERS ***********************************************************/
