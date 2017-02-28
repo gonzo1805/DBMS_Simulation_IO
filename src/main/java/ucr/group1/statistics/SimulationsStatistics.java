@@ -235,8 +235,8 @@ public class SimulationsStatistics {
 
     private void updateAverageRejectedQueries(double newRejected){
         double percentage = (1.0-(1.0/totalSimulations));
-        averageLifespan *= percentage;
-        averageLifespan += (1 - percentage)*newRejected;
+        averageRejectedQueries *= percentage;
+        averageRejectedQueries += (1 - percentage)*newRejected;
     }
 
     private void updateAverageKilledQueries(double newKilled){
