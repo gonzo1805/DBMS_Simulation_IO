@@ -149,6 +149,26 @@ public class Simulation {
 
     /********************************************** GETTERS ***********************************************************/
 
+    public int getNumberBusyServersOnClientManagementModule() {
+        return clientManagementModule.getNumberOfBusyServers();
+    }
+
+    public int getNumberBusyServersOnProcessesManagementModule() {
+        return processesManagementModule.getNumberOfBusyServers();
+    }
+
+    public int getNumberBusyServersOnQueriesVerificationModule() {
+        return queriesVerificationModule.getNumberOfBusyServers();
+    }
+
+    public int getNumberBusyServersOnTransactionsModule() {
+        return transactionsModule.getNumberOfBusyServers();
+    }
+
+    public int getNumberBusyServersOnQueriesExecutionModule() {
+        return queriesExecutionModule.getNumberOfBusyServers();
+    }
+
     public int getTimeOut() {
         return tTimeout;
     }
@@ -302,4 +322,6 @@ public class Simulation {
             e.printStackTrace();
         }
     }
+
+
 }

@@ -18,6 +18,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ucr.group1.html.htmlGenerator;
 import ucr.group1.simulation.Simulation;
+import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.SimulationsStatistics;
 
 import javax.swing.*;
@@ -44,6 +45,8 @@ public class Controller extends Application implements Initializable, Runnable {
     int simulationTime;
     int amountOfRuns;
     Simulation simulation;
+    SimulationsStatistics simulationsStatistics;
+    ModuleStatistics moduleStatistics;
 
     // A list for the comboBox of the UI
     ObservableList<String> modules = FXCollections.observableArrayList("ClientManagementModule", "System Call", "QueriesVerificationModule",
@@ -189,6 +192,17 @@ public class Controller extends Application implements Initializable, Runnable {
 
     ////////////////////////////////////End of click methods on textField///////////////////////////////////////////////
 
+    @FXML
+    private Label labelamountOfServers;
+
+    @FXML
+    private Label labelbusyServers;
+
+    @FXML
+    private Label labelqueueLenght;
+
+    @FXML
+    private Label labelclientsServed;
 
     ///////////////////////////////Begin of the press enter methods on textField////////////////////////////////////////
 
@@ -299,7 +313,7 @@ public class Controller extends Application implements Initializable, Runnable {
         // Blocks the textFields
         setAllTextAreasDisabled();
         // The stats for each simulation
-        SimulationsStatistics simulationsStatistics = new SimulationsStatistics();
+        simulationsStatistics = new SimulationsStatistics();
         // For every run (the parameter)
         for (int i = 1; i <= amountOfRuns; i++) {
             // A new simulation
@@ -331,6 +345,7 @@ public class Controller extends Application implements Initializable, Runnable {
 
             //simulation.createATimeLogArchive("Bitacora" + i);
         }
+        labelRejectedConections.setText(String.valueOf(simulationsStatistics.getAverageRejectedQueries()));
         // The index html
         htmlGenerator htmlGenerator = new htmlGenerator();
         htmlGenerator.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
@@ -340,10 +355,6 @@ public class Controller extends Application implements Initializable, Runnable {
         setAllTextAreasEnabled();
         // It`s finished
         JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
-    }
-
-    public void setFinished(boolean finished) {
-        this.finished = finished;
     }
 
     @FXML
@@ -357,11 +368,28 @@ public class Controller extends Application implements Initializable, Runnable {
 
     @FXML
     void clickRestart(ActionEvent event) {
-
+        labelRejectedConections.setText("");
+        labelActualEvent.setText("");
+        labelSimulationClock.setText("");
+        labelActualEvent.setText("");
+        labelclientsServed.setText("");
+        labelqueueLenght.setText("");
+        labelamountOfServers.setText("");
+        labelbusyServers.setText("");
+        clickBotonStarSimulation(event);
     }
 
     @FXML
     void clickNew(ActionEvent event) {
+        labelRejectedConections.setText("");
+        labelActualEvent.setText("");
+        labelSimulationClock.setText("");
+        labelActualEvent.setText("");
+        labelclientsServed.setText("");
+        labelqueueLenght.setText("");
+        labelamountOfServers.setText("");
+        labelbusyServers.setText("");
+        clickDefault(event);
 
     }
 
@@ -441,7 +469,14 @@ public class Controller extends Application implements Initializable, Runnable {
         final ToggleGroup group = new ToggleGroup();
         radioButtonNo.setToggleGroup(group);
         radioButtonYes.setToggleGroup(group);
-
+        labelActualEvent.setText("");
+        labelSimulationClock.setText("");
+        labelActualEvent.setText("");
+        labelclientsServed.setText("");
+        labelqueueLenght.setText("");
+        labelamountOfServers.setText("");
+        labelbusyServers.setText("");
+        labelRejectedConections.setText("");
     }
 
     /**
@@ -470,7 +505,6 @@ public class Controller extends Application implements Initializable, Runnable {
         txtMConsults.setDisable(false);
         txtNProc.setDisable(false);
         txtRuns.setDisable(false);
-        txtTimeBetEvents.setDisable(false);
         txtTimePerRun.setDisable(false);
         radioButtonYes.setDisable(false);
         radioButtonNo.setDisable(false);
@@ -492,7 +526,7 @@ public class Controller extends Application implements Initializable, Runnable {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
         primaryStage.setTitle("Simulation Group 1 Main Menu");
-        primaryStage.setScene(new Scene(root, 804, 359));
+        primaryStage.setScene(new Scene(root, 850, 359));
         primaryStage.show();
         txtArea = new TextArea();
     }
@@ -501,10 +535,49 @@ public class Controller extends Application implements Initializable, Runnable {
         launch(args);
     }
 
+    @FXML
+    void chooseAnOption(ActionEvent event) {
+        switch (comboBoxModule.getValue()) {
+            case "ClientManagementModule":
+                labelamountOfServers.setText(String.valueOf(kConcurrentConection));
+                labelbusyServers.setText(String.valueOf(simulation.getNumberBusyServersOnClientManagementModule()));
+                labelqueueLenght.setText(String.valueOf(simulationsStatistics.getL_q(0)));
+                labelclientsServed.setText(String.valueOf(simulationsStatistics.getAmountOfServedQueries(0)));
+                break;
+            case "System Call":
+                labelamountOfServers.setText(String.valueOf("1"));
+                labelbusyServers.setText(String.valueOf(simulation.getNumberBusyServersOnProcessesManagementModule()));
+                labelqueueLenght.setText(String.valueOf(simulationsStatistics.getL_q(1)));
+                labelclientsServed.setText(String.valueOf(simulationsStatistics.getAmountOfServedQueries(1)));
+                break;
+            case "QueriesVerificationModule":
+                labelamountOfServers.setText(String.valueOf(nVerificationServers));
+                labelbusyServers.setText(String.valueOf(simulation.getNumberBusyServersOnQueriesVerificationModule()));
+                labelqueueLenght.setText(String.valueOf(simulationsStatistics.getL_q(2)));
+                labelclientsServed.setText(String.valueOf(simulationsStatistics.getAmountOfServedQueries(2)));
+                break;
+            case "TransactionsModule":
+                labelamountOfServers.setText(String.valueOf(mTransactionServers));
+                labelbusyServers.setText(String.valueOf(simulation.getNumberBusyServersOnTransactionsModule()));
+                labelqueueLenght.setText(String.valueOf(simulationsStatistics.getL_q(3)));
+                labelclientsServed.setText(String.valueOf(simulationsStatistics.getAmountOfServedQueries(3)));
+                break;
+            case "QueriesExecutionModule":
+                labelamountOfServers.setText(String.valueOf(pExecutionServers));
+                labelbusyServers.setText(String.valueOf(simulation.getNumberBusyServersOnQueriesExecutionModule()));
+                labelqueueLenght.setText(String.valueOf(simulationsStatistics.getL_q(4)));
+                labelclientsServed.setText(String.valueOf(simulationsStatistics.getAmountOfServedQueries(4)));
+                break;
+
+            default:
+                break;
+        }
+    }
+
+
     @Override
     public void run() {
         System.out.print("Entro");
         simulation.simulate();
-        setFinished(true);
     }
 }

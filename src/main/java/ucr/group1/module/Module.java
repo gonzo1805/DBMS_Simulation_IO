@@ -88,4 +88,8 @@ public abstract class Module<E> {
     public Generator getGenerator() {
         return generator;
     }
+
+    public int getNumberOfBusyServers() {
+        return (numberOfServers - numberOfFreeServers);
+    }
 }
