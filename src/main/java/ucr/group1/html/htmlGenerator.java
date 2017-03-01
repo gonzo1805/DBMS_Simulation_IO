@@ -3,6 +3,7 @@ package ucr.group1.html;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
@@ -57,6 +58,8 @@ public class htmlGenerator {
         // Give it the parameters of all the simulation
         insertGeneralParameters(context);
 
+        context.put("avgConectionsIfIndex", "");
+        context.put("avgCreatedConections", "");
         fillStatsPerModuleWithModuleStats(simulation.getClientManagementStatistics(), context, 0,
                 simulation.getQueryStatistics());
         fillStatsPerModuleWithModuleStats(simulation.getClientManagementStatistics(), context, 1,
@@ -107,6 +110,11 @@ public class htmlGenerator {
         context.put("ifIndex", "<h1>Estadísticas específicas por corrida</h1>");
         // Insert all the other simulations
         context.put("listOfSimulations", links);
+        // If index insert the avg Conections tries
+        context.put("avgConectionsIfIndex", "Número de conexiones que intentaron entrar en el sistema en promedio: ");
+        // Insert all the created queries
+        QueryStatistics queryStatistics = simulation.getQueryStatistics();
+        context.put("avgCreatedConections", getAllCreatedQueries(stats, queryStatistics) + "<br>");
         // Merge the Template
         StringWriter finalWriter = new StringWriter();
         ve.mergeTemplate("./src/main/resources/htmlGenerator.vcss", "utf-8", context, finalWriter);
@@ -121,6 +129,17 @@ public class htmlGenerator {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Return the average of created queries of all the simulations in a set of runs
+     *
+     * @param simulationsStatistics the Statistics with the average of created queries
+     * @return the global average of created queries
+     */
+    private double getAllCreatedQueries(SimulationsStatistics simulationsStatistics, QueryStatistics queryStatistics) {
+        return (simulationsStatistics.getAverageKilledQueries() + simulationsStatistics.getAverageRejectedQueries() +
+                queryStatistics.getNumberServedQueries());
     }
 
     /**
@@ -225,7 +244,7 @@ public class htmlGenerator {
         // Avg time of clients on queue
         context.put("wq" + stringModule + "Module", stats.getW_q(module));
         // Avg time of clients on service
-        context.put("ws" + stringModule + "Module", stats.getL_s(module));
+        context.put("ws" + stringModule + "Module", stats.getW_s(module));
         // Leisure time of the module
         context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime(module));
     }
@@ -281,7 +300,7 @@ public class htmlGenerator {
         // Avg time of clients on queue
         context.put("wq" + stringModule + "Module", stats.getW_q());
         // Avg time of clients on service
-        context.put("ws" + stringModule + "Module", stats.getL_s());
+        context.put("ws" + stringModule + "Module", stats.getW_s());
         // Leisure Time of the module
         context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime());
     }

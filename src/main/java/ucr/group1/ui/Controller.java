@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -319,11 +320,12 @@ public class Controller extends Application implements Initializable, Runnable {
             // A new simulation
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
                     mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime, this);
-            /*Thread thread = new Thread();
-            thread.start();
+
+            /*Thread thread = new Thread(this);
+            thread.start();*/
 
 
-            Platform.runLater(new Runnable() {
+            /*Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     txtArea.appendText(toWrite + "\n");

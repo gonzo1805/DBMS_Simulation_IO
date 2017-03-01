@@ -38,6 +38,10 @@ public class QueryStatistics {
         numberKilledQueries++;
     }
 
+    public int getNumberServedQueries() {
+        return numberAverageLifespan;
+    }
+
     public void addFinishedQuery(Query q){
         numberAverageLifespan++;
         double percentage = (1.0-(1.0/numberAverageLifespan));

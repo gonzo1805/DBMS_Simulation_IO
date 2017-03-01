@@ -101,7 +101,7 @@ public class ModuleStatistics {
      * @return The average spended time of a single query on module
      */
     public double getW() {
-        return (getL() * timeBetweenArrives);
+        return (getW_q() + getW_s());
     }
 
     /**

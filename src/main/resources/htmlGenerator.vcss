@@ -30,6 +30,7 @@
 <h3>Generales:</h3>
 
 <p>
+    $avgConectionsIfIndex $avgCreatedConections
     Número promedio de conexiones rechazadas: $avgRejectedConections<br>
     Tiempo promedio de la vida de una conexión: $avgTimePerConection<br>
 </p>
