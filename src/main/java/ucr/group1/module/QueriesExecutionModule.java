@@ -34,10 +34,10 @@ public class QueriesExecutionModule extends Module<Query> {
     }
 
     public double entriesANewQuery(Query query) {
+        query.setArrivalTime(simulation.getTime());
         if ((numberOfFreeServers > 0)&&(!aDdlIsWaiting)) {
             if(query.getPriority() > 1) {
                 numberOfFreeServers--;
-                query.setArrivalTime(simulation.getTime());
                 beingServedQueries.add(query);
                 query.setDepartureTime(((numberOfServers - numberOfFreeServers) * 0.03) + query.getArrivalTime());
                 query.setBeingServed(true);
@@ -47,7 +47,6 @@ public class QueriesExecutionModule extends Module<Query> {
                 aDdlIsWaiting = true;
                 if (numberOfFreeServers == numberOfServers) {
                     numberOfFreeServers--;
-                    query.setArrivalTime(simulation.getTime());
                     beingServedQueries.add(query);
                     query.setDepartureTime(0.03 + query.getArrivalTime());
                     query.setBeingServed(true);
