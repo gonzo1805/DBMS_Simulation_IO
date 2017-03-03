@@ -10,7 +10,7 @@ import ucr.group1.ui.Controller;
 import javax.naming.ldap.Control;
 
 /**
- * Created by Daniel on 12/2/2017.
+ * Created by Daniel and Gonzalo on 12/2/2017.
  */
 public class Main {
     public static void main(String[]  args){

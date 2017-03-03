@@ -20,7 +20,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
- * Created by Gonzalo on 2/20/2017.
+ * Created by Gonzalo and Daniel on 2/20/2017.
  */
 public class htmlGenerator {
 
@@ -249,6 +249,14 @@ public class htmlGenerator {
         context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime(module));
     }
 
+    /**
+     * Fill the stats of the simulation, module by module, using the class ModuleStatistics for it
+     *
+     * @param stats           the stats for the fill
+     * @param context         the velocity context
+     * @param module          the module, from 0 to 4
+     * @param queryStatistics the stats from the queries
+     */
     private void fillStatsPerModuleWithModuleStats(ModuleStatistics stats, VelocityContext context, int module,
                                                    QueryStatistics queryStatistics) {
         // Switch to bypass the implementation of the parameters of the velocity template

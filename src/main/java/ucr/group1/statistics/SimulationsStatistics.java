@@ -8,9 +8,13 @@ import ucr.group1.simulation.Simulation;
 import static ucr.group1.query.QueryLabel.*;
 
 /**
- * Created by Daniel on 23/2/2017.
+ * Created by Daniel and Gonzalo on 23/2/2017.
  */
 public class SimulationsStatistics {
+
+    /**
+     * Attributes
+     */
     private double[] lambda;
     private double[] mu;
     private double[] l_s;
@@ -31,6 +35,9 @@ public class SimulationsStatistics {
     private double averageLifespan;
     private int totalSimulations;
 
+    /**
+     * Constructor
+     */
     public SimulationsStatistics(){
         lambda = new double[5];
         mu = new double[5];

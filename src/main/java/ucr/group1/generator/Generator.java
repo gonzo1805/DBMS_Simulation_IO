@@ -2,7 +2,7 @@ package ucr.group1.generator;
 import java.util.Random;
 
 /**
- * Created by Daniel on 8/2/2017.
+ * Created by Daniel and Gonzalo on 8/2/2017.
  */
 public class Generator {
     private Random random;

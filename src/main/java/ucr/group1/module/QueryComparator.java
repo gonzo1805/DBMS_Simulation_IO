@@ -5,7 +5,7 @@ import ucr.group1.query.Query;
 import java.util.Comparator;
 
 /**
- * Created by Gonzalo on 2/11/2017.
+ * Created by Gonzalo and Daniel on 2/11/2017.
  */
 public class QueryComparator implements Comparator<Query> {
 

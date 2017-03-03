@@ -21,10 +21,13 @@ import static ucr.group1.event.EventType.*;
 
 
 /**
- * Created by Daniel on 11/2/2017.
+ * Created by Daniel and Gonzalo on 11/2/2017.
  */
 public class Simulation {
 
+    /**
+     * Attributes
+     */
     private double time;
     private Queue<Event> eventList;
     private List<Event> finalizedEvents;
@@ -86,6 +89,9 @@ public class Simulation {
         buildModulesAndStatistics();
     }
 
+    /**
+     * Start and do all the behavior of the simulation
+     */
     public void simulate() {
         int idAssigner = 1;
         Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING, 0, new Query(idAssigner++, generator));
@@ -141,6 +147,11 @@ public class Simulation {
         }
     }
 
+    /**
+     * Add a line on a timeLog for debug purposes
+     *
+     * @param line
+     */
     public void addLineInTimeLog(String line) {
         line = getTimeInHHMMSS() + line;
         timeLog.add(line);
@@ -313,6 +324,10 @@ public class Simulation {
         queriesExecutionModule.updateL_qStatistics();
     }
 
+    /**
+     * Creates a time log for debug purposes
+     * @param name the name of the time log
+     */
     public void createATimeLogArchive(String name) {
         name += ".txt";
         Path file = Paths.get(name);

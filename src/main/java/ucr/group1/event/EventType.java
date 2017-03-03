@@ -1,7 +1,7 @@
 package ucr.group1.event;
 
 /**
- * Created by Daniel on 21/2/2017.
+ * Created by Daniel and Gonzalo on 21/2/2017.
  */
 public enum EventType {
     A_NEW_QUERY_IS_REQUESTING,

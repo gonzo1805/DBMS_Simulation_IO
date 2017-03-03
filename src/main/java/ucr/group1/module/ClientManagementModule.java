@@ -15,7 +15,7 @@ import java.util.Queue;
 import static ucr.group1.event.EventType.*;
 
 /**
- * Created by Gonzalo on 2/9/2017.
+ * Created by Gonzalo and Daniel on 2/9/2017.
  */
 public class ClientManagementModule extends Module<Query> {
 

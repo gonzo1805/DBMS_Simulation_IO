@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ThreadFactory;
 
+/**
+ * Created by Gonzalo and Daniel on 2/20/2017.
+ */
 public class Controller extends Application implements Initializable, Runnable {
 
     /**
@@ -47,7 +50,6 @@ public class Controller extends Application implements Initializable, Runnable {
     int amountOfRuns;
     Simulation simulation;
     SimulationsStatistics simulationsStatistics;
-    ModuleStatistics moduleStatistics;
 
     // A list for the comboBox of the UI
     ObservableList<String> modules = FXCollections.observableArrayList("ClientManagementModule", "System Call", "QueriesVerificationModule",
@@ -118,6 +120,17 @@ public class Controller extends Application implements Initializable, Runnable {
     @FXML
     private Label labelRejectedConections;
 
+    @FXML
+    private Label labelamountOfServers;
+
+    @FXML
+    private Label labelbusyServers;
+
+    @FXML
+    private Label labelqueueLenght;
+
+    @FXML
+    private Label labelclientsServed;
 
     /**
      * The Combo Box of the UI
@@ -127,20 +140,8 @@ public class Controller extends Application implements Initializable, Runnable {
     private ComboBox<String> comboBoxModule;
 
     /**
-     * Buttons and Radio Buttons of the UI
+     * Radio Buttons of the UI
      */
-
-    @FXML
-    private Button botonStartSimulation;
-
-    @FXML
-    private Button buttonRestartSimulation;
-
-    @FXML
-    private Button buttonNewSimulation;
-
-    @FXML
-    private Button buttonDefault;
 
     @FXML
     private RadioButton radioButtonYes;
@@ -192,18 +193,6 @@ public class Controller extends Application implements Initializable, Runnable {
     }
 
     ////////////////////////////////////End of click methods on textField///////////////////////////////////////////////
-
-    @FXML
-    private Label labelamountOfServers;
-
-    @FXML
-    private Label labelbusyServers;
-
-    @FXML
-    private Label labelqueueLenght;
-
-    @FXML
-    private Label labelclientsServed;
 
     ///////////////////////////////Begin of the press enter methods on textField////////////////////////////////////////
 
@@ -299,7 +288,6 @@ public class Controller extends Application implements Initializable, Runnable {
 
     //////////////////////////////////End of the press enter methods on textField///////////////////////////////////////
 
-    boolean finished = false;
     /**
      * Completely starts the simulation with the parameters on the textFields, it also gather the stats from the
      * simulation and stacks it for .html, when the button is clicked, all the textField got blocked and when the
@@ -347,6 +335,7 @@ public class Controller extends Application implements Initializable, Runnable {
 
             //simulation.createATimeLogArchive("Bitacora" + i);
         }
+        // Update the UI data display
         labelRejectedConections.setText(String.valueOf(simulationsStatistics.getAverageRejectedQueries()));
         // The index html
         htmlGenerator htmlGenerator = new htmlGenerator();
@@ -359,6 +348,7 @@ public class Controller extends Application implements Initializable, Runnable {
         JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
     }
 
+    // This textArea and String is for the constant update of the UI in slow mode (unimplemented)
     @FXML
     private TextArea txtArea;
     private String toWrite = "";
@@ -368,6 +358,11 @@ public class Controller extends Application implements Initializable, Runnable {
         //labelActualEvent.setText(toWrite);
     }
 
+    /**
+     * Set all the labels clean again and restart the simulation with the same values
+     *
+     * @param event
+     */
     @FXML
     void clickRestart(ActionEvent event) {
         labelRejectedConections.setText("");
@@ -381,6 +376,10 @@ public class Controller extends Application implements Initializable, Runnable {
         clickBotonStarSimulation(event);
     }
 
+    /**
+     * Set the default values and clean the labels
+     * @param event
+     */
     @FXML
     void clickNew(ActionEvent event) {
         labelRejectedConections.setText("");
@@ -397,7 +396,6 @@ public class Controller extends Application implements Initializable, Runnable {
 
     /**
      * Set the parameters by a default value, chosen by us
-     *
      * @param event
      */
     @FXML
@@ -512,18 +510,11 @@ public class Controller extends Application implements Initializable, Runnable {
         radioButtonNo.setDisable(false);
     }
 
-    public void setLabelRejectedConections(String toWrite) {
-        labelRejectedConections.setText(toWrite);
-    }
-
-    public void setLabelSimulationClock(String toWrite) {
-        labelSimulationClock.setText(toWrite);
-    }
-
-    public void setLabelActualEvent(String toWrite) {
-        labelActualEvent.setText(toWrite);
-    }
-
+    /**
+     * Creates and shows the UI
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
@@ -533,10 +524,19 @@ public class Controller extends Application implements Initializable, Runnable {
         txtArea = new TextArea();
     }
 
+    /**
+     * Calls the start method
+     * @param args
+     */
     public void begin(String[] args) {
         launch(args);
     }
 
+    /**
+     * The method in charge of the display of stats on the comboBox, it shows the stats required by the project
+     * statement
+     * @param event
+     */
     @FXML
     void chooseAnOption(ActionEvent event) {
         switch (comboBoxModule.getValue()) {
@@ -576,7 +576,9 @@ public class Controller extends Application implements Initializable, Runnable {
         }
     }
 
-
+    /**
+     * Method for the multi-thread task of the UI (unimplemented)
+     */
     @Override
     public void run() {
         System.out.print("Entro");

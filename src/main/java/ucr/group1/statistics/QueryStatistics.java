@@ -2,15 +2,21 @@ package ucr.group1.statistics;
 import ucr.group1.query.Query;
 
 /**
- * Created by Daniel on 9/2/2017.
+ * Created by Daniel and Gonzalo on 9/2/2017.
  */
 public class QueryStatistics {
 
+    /**
+     * Attributes
+     */
     private int numberRejectedQueries;
     private int numberKilledQueries;
     private double averageLifespan;
     private int numberAverageLifespan;
 
+    /**
+     * Constructor
+     */
     public QueryStatistics(){
         numberRejectedQueries = 0;
         numberKilledQueries = 0;

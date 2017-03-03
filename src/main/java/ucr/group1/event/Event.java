@@ -3,10 +3,13 @@ package ucr.group1.event;
 import ucr.group1.query.Query;
 
 /**
- * Created by Gonzalo on 2/11/2017.
+ * Created by Gonzalo and Daniel on 2/11/2017.
  */
 public class Event {
 
+    /**
+     * Attributes
+     */
     private Query query;
     private double time;
     private EventType EventType;

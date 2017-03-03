@@ -14,7 +14,7 @@ import static ucr.group1.event.EventType.EXIT_EXECUTION_MODULE;
 import static ucr.group1.query.QueryLabel.DDL;
 
 /**
- * Created by Gonzalo on 2/9/2017.
+ * Created by Gonzalo and Daniel on 2/9/2017.
  */
 public class QueriesExecutionModule extends Module<Query> {
 
