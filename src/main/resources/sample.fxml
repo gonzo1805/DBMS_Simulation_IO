@@ -4,14 +4,13 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="mainWindow" prefHeight="362.0" prefWidth="1063.0" xmlns="http://javafx.com/javafx/8.0.111"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucr.group1.ui.Controller">
@@ -59,51 +58,44 @@
         <Label fx:id="labelPTrans" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="169.0" text="3"/>
         <Label fx:id="labelMConsults" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="274.0"
                text="3"/>
-        <MenuBar prefHeight="25.0" prefWidth="285.0">
-            <menus>
-                <Menu mnemonicParsing="false" text="File">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Close"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Delete"/>
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="About"/>
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
-        <Separator layoutX="278.0" layoutY="3.0" orientation="VERTICAL" prefHeight="359.0" prefWidth="13.0"/>
+        <Separator layoutX="279.0" layoutY="-10.0" orientation="VERTICAL" prefHeight="376.0" prefWidth="13.0"/>
         <AmbientLight color="CHARTREUSE" lightOn="true"/>
-        <Label layoutX="690.0" layoutY="5.0" text="Reloj del Sistema:"/>
-        <Label fx:id="labelSimulationClock" layoutX="839.0" layoutY="5.0" text="Label"/>
-        <ComboBox fx:id="comboBoxModule" layoutX="689.0" layoutY="103.0" onAction="#chooseAnOption" prefWidth="150.0"
+        <Label layoutX="690.0" layoutY="49.0" text="Reloj del Sistema:"/>
+        <Label fx:id="labelSimulationClock" layoutX="839.0" layoutY="49.0" text="Label"/>
+        <ComboBox fx:id="comboBoxModule" layoutX="689.0" layoutY="147.0" onAction="#chooseAnOption" prefWidth="150.0"
                   promptText="Modulo" visibleRowCount="5"/>
-        <Label layoutX="690.0" layoutY="35.0" text="Evento actual:"/>
-        <Label fx:id="labelActualEvent" layoutX="839.0" layoutY="35.0" text="Label"/>
-        <Label layoutX="690.0" layoutY="65.0" text="Conecciones Descartadas:"/>
-        <Label fx:id="labelRejectedConections" layoutX="839.0" layoutY="65.0" text="Label"/>
+        <Label layoutX="690.0" layoutY="79.0" text="Evento actual:"/>
+        <Label fx:id="labelActualEvent" layoutX="839.0" layoutY="79.0" text="Label"/>
+        <Label layoutX="690.0" layoutY="109.0" text="Conecciones Descartadas:"/>
+        <Label fx:id="labelRejectedConections" layoutX="839.0" layoutY="109.0" text="Label"/>
         <Button fx:id="buttonRestartSimulation" layoutX="689.0" layoutY="318.0" mnemonicParsing="false"
                 onAction="#clickRestart" text="Reiniciar"/>
         <Button fx:id="buttonNewSimulation" layoutX="764.0" layoutY="318.0" mnemonicParsing="false" onAction="#clickNew"
                 text="Nueva Simulación"/>
-        <Label layoutX="690.0" layoutY="156.0" text="Cantidad de Servidores:"/>
-        <Label fx:id="labelamountOfServers" layoutX="839.0" layoutY="156.0" text="Label"/>
-        <Label layoutX="690.0" layoutY="186.0" text="Servidores ocupados:"/>
-        <Label layoutX="690.0" layoutY="216.0" text="Longitud de la cola:"/>
-        <Label layoutX="689.0" layoutY="246.0" text="Clientes servidos:"/>
-        <Label fx:id="labelbusyServers" layoutX="839.0" layoutY="186.0" text="Label"/>
-        <Label fx:id="labelqueueLenght" layoutX="839.0" layoutY="216.0" text="Label"/>
-        <Label fx:id="labelclientsServed" layoutX="839.0" layoutY="246.0" text="Label"/>
+        <Label layoutX="690.0" layoutY="200.0" text="Cantidad de Servidores:"/>
+        <Label fx:id="labelamountOfServers" layoutX="839.0" layoutY="200.0" text="Label"/>
+        <Label layoutX="690.0" layoutY="230.0" text="Servidores ocupados:"/>
+        <Label layoutX="690.0" layoutY="260.0" text="Longitud de la cola:"/>
+        <Label layoutX="689.0" layoutY="290.0" text="Clientes servidos:"/>
+        <Label fx:id="labelbusyServers" layoutX="839.0" layoutY="230.0" text="Label"/>
+        <Label fx:id="labelqueueLenght" layoutX="839.0" layoutY="260.0" text="Label"/>
+        <Label fx:id="labelclientsServed" layoutX="839.0" layoutY="290.0" text="Label"/>
         <RadioButton fx:id="radioButtonYes" layoutX="15.0" layoutY="174.0" mnemonicParsing="false"
                      onAction="#clickRadioButtonYes" text="Si"/>
         <RadioButton fx:id="radioButtonNo" layoutX="56.0" layoutY="174.0" mnemonicParsing="false"
                      onAction="#clickRadioButtonNo" selected="true" text="No"/>
         <TextArea fx:id="txtArea" layoutX="285.0" layoutY="6.0" prefHeight="352.0" prefWidth="393.0"/>
+        <Text layoutX="5.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Parámetros de la Simulación"
+              wrappingWidth="275.982421875">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Text>
+        <Text layoutX="689.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Estadísticas y Resultados">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Text>
+        <Separator layoutX="672.0" layoutY="-5.0" orientation="VERTICAL" prefHeight="368.0" prefWidth="13.0"/>
     </children>
 </AnchorPane>

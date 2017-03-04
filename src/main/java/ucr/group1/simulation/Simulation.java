@@ -98,7 +98,9 @@ public class Simulation {
     public void addLineInTimeLog(String line) {
         line = getTimeInHHMMSS() + line;
         timeLog.add(line);
-        timeLogAux.add(line);
+        if (slowMode) {
+            timeLogAux.add(line);
+        }
     }
 
     /**
