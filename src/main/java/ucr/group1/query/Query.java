@@ -3,9 +3,13 @@ import ucr.group1.event.Event;
 import ucr.group1.generator.Generator;
 
 /**
- * Created by Daniel on 8/2/2017.
+ * Created by Daniel and Gonzalo on 8/2/2017.
  */
 public class Query {
+
+    /**
+     * Attributes
+     */
     private int id;
     private QueryType type;
     private double lifespan;
@@ -15,6 +19,12 @@ public class Query {
     private boolean beingServed;
     private int chargedBlocks;
 
+    /**
+     * Constructor
+     *
+     * @param ID    the ID of the query
+     * @param gener
+     */
     public Query(int ID, Generator gener){
         id = ID;
         type = new QueryType(gener);

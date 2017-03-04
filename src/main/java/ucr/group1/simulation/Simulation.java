@@ -6,6 +6,8 @@ import ucr.group1.module.*;
 import ucr.group1.query.Query;
 import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
+import ucr.group1.ui.Controller;
+import ucr.group1.ui.Printer;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -14,15 +16,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static ucr.group1.event.EventType.*;
 
 
 /**
- * Created by Daniel on 11/2/2017.
+ * Created by Daniel and Gonzalo on 11/2/2017.
  */
 public class Simulation {
 
+    /**
+     * Attributes
+     */
     private double time;
     private Queue<Event> eventList;
     private List<Event> finalizedEvents;
@@ -40,7 +46,9 @@ public class Simulation {
     private QueriesExecutionModule queriesExecutionModule;
     private QueryStatistics queryStatistics;
     private Generator generator;
+    private Controller controller;
     private List<String> timeLog;
+    private Queue<String> timeLogAux;
     private int timePerSimulation;
     private HashMap<Query, Event> killsMap;
 
@@ -56,7 +64,9 @@ public class Simulation {
      * @param slowMode              A condition that activates the slow mode
      * @param timeBetweenEvents     The time in seconds between the occurrence of events
      */
-    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses, int tTimeout, boolean slowMode, double timeBetweenEvents, int timePerSimulation) {
+    public Simulation(int kConnections, int nConcurrentProcesses, int pTransactionProcesses, int mAvailableProcesses,
+                      int tTimeout, boolean slowMode, double timeBetweenEvents, int timePerSimulation,
+                      Controller controller) {
         time = 0;
         eventList = new PriorityQueue<Event>(kConnections * 2, new EventComparator());
         finalizedEvents = new LinkedList<Event>();
@@ -72,68 +82,104 @@ public class Simulation {
             this.timeBetweenEvents = 0;
         }
         this.generator = new Generator();
+        this.controller = controller;
         this.timeLog = new LinkedList<String>();
+        this.timeLogAux = new LinkedBlockingDeque<>(5);
         this.timePerSimulation = timePerSimulation;
         this.killsMap = new HashMap<>(kConnections);
         buildModulesAndStatistics();
     }
 
-    public void simulate() {
-        int idAssigner = 1;
-        Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING, 0, new Query(idAssigner++, generator));
-        addEvent(firstEvent);
-        while (time < timePerSimulation) {
-            Event actualEvent = getNextEvent();
-            this.time = actualEvent.getTime();
-            switch (actualEvent.getEventType()) {
-                case A_NEW_QUERY_IS_REQUESTING:
-                    clientManagementModule.newQueryRequestingEvent(idAssigner, actualEvent);
-                    idAssigner++;
-                    break;
-                case A_QUERY_IS_FINISHED:
-                    clientManagementModule.aQueryIsFinishedEvent(actualEvent);
-                    break;
-                case EXIT_CLIENT_MANAGEMENT_MODULE:
-                    clientManagementModule.exitClientManagementEvent(actualEvent);
-                    break;
-                case EXIT_PROCESSES_MANAGEMENT_MODULE:
-                    processesManagementModule.exitProcessesManagementModule(actualEvent);
-                    break;
-                case EXIT_VERIFICATION_MODULE:
-                    queriesVerificationModule.exitVerificationModuleEvent(actualEvent);
-                    break;
-                case EXIT_TRANSACTIONS_MODULE:
-                    transactionsModule.exitTransactionsModuleEvent(actualEvent);
-                    break;
-                case EXIT_EXECUTION_MODULE:
-                    queriesExecutionModule.exitExecutionModuleEvent(actualEvent);
-                    break;
-                case KILL:
-                    if (actualEvent.getQuery().isBeingServed()) {
-                        actualEvent.getQuery().kill();
-                    } else {
-                        kickTheQueryFromAQueue(actualEvent.getQuery());
-                        getQueryStatistics().aQueryIsKilled();
-                    }
-                    addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, " +
-                            "it will be kicked out");
-                    break;
-            }
-            try {
-                Thread.sleep((long) timeBetweenEvents * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            updateAllTheLOfStatistics();
-            finalizeEvent(actualEvent);
-        }
+    /**
+     * Add a line on a timeLog for debug purposes
+     *
+     * @param line
+     */
+    public void addLineInTimeLog(String line) {
+        line = getTimeInHHMMSS() + line;
+        timeLog.add(line);
+        timeLogAux.add(line);
     }
 
-    public void addLineInTimeLog(String line) {
-        timeLog.add(getTimeInHHMMSS() + line);
+    /**
+     * Process the Next Event
+     *
+     * @param idAssigner the number of the event
+     */
+    public void processNextEvent(int idAssigner) {
+        Event actualEvent = getNextEvent();
+        this.time = actualEvent.getTime();
+        switch (actualEvent.getEventType()) {// What type of event is
+            case A_NEW_QUERY_IS_REQUESTING:
+                clientManagementModule.newQueryRequestingEvent(idAssigner, actualEvent);
+                idAssigner++;
+                break;
+            case A_QUERY_IS_FINISHED:
+                clientManagementModule.aQueryIsFinishedEvent(actualEvent);
+                break;
+            case EXIT_CLIENT_MANAGEMENT_MODULE:
+                clientManagementModule.exitClientManagementEvent(actualEvent);
+                break;
+            case EXIT_PROCESSES_MANAGEMENT_MODULE:
+                processesManagementModule.exitProcessesManagementModule(actualEvent);
+                break;
+            case EXIT_VERIFICATION_MODULE:
+                queriesVerificationModule.exitVerificationModuleEvent(actualEvent);
+                break;
+            case EXIT_TRANSACTIONS_MODULE:
+                transactionsModule.exitTransactionsModuleEvent(actualEvent);
+                break;
+            case EXIT_EXECUTION_MODULE:
+                queriesExecutionModule.exitExecutionModuleEvent(actualEvent);
+                break;
+            case KILL:
+                if (actualEvent.getQuery().isBeingServed()) {
+                    actualEvent.getQuery().kill();
+                } else {
+                    kickTheQueryFromAQueue(actualEvent.getQuery());
+                    getQueryStatistics().aQueryIsKilled();
+                }
+                addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, " +
+                        "it will be kicked out");
+                break;
+        }
+        // Create the Printer object to send it to the UI for its print, on slowMode == true
+        if (slowMode) {
+            String toWrite = "";
+            while (!timeLogAux.isEmpty()) {
+                toWrite = toWrite + timeLogAux.poll() + "\n";
+            }
+            controller.updateTextArea(new Printer((int) time, String.valueOf(actualEvent.getEventType()), toWrite));
+        }
+        updateAllTheLOfStatistics();
+        finalizeEvent(actualEvent);
     }
 
     /********************************************** GETTERS ***********************************************************/
+
+    public int getNumberBusyServersOnClientManagementModule() {
+        return clientManagementModule.getNumberOfBusyServers();
+    }
+
+    public int getTimePerSimulation() {
+        return timePerSimulation;
+    }
+
+    public int getNumberBusyServersOnProcessesManagementModule() {
+        return processesManagementModule.getNumberOfBusyServers();
+    }
+
+    public int getNumberBusyServersOnQueriesVerificationModule() {
+        return queriesVerificationModule.getNumberOfBusyServers();
+    }
+
+    public int getNumberBusyServersOnTransactionsModule() {
+        return transactionsModule.getNumberOfBusyServers();
+    }
+
+    public int getNumberBusyServersOnQueriesExecutionModule() {
+        return queriesExecutionModule.getNumberOfBusyServers();
+    }
 
     public int getTimeOut() {
         return tTimeout;
@@ -279,6 +325,10 @@ public class Simulation {
         queriesExecutionModule.updateL_qStatistics();
     }
 
+    /**
+     * Creates a time log for debug purposes
+     * @param name the name of the time log
+     */
     public void createATimeLogArchive(String name) {
         name += ".txt";
         Path file = Paths.get(name);
@@ -288,4 +338,6 @@ public class Simulation {
             e.printStackTrace();
         }
     }
+
+
 }

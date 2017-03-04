@@ -8,9 +8,12 @@ import ucr.group1.simulation.Simulation;
 import static ucr.group1.query.QueryLabel.*;
 
 /**
- * Created by Daniel on 18/2/2017.
+ * Created by Daniel and Gonzalo on 18/2/2017.
  */
 public class ModuleStatistics {
+    /**
+     * Attributes
+     */
     private double timeBetweenArrives;
     private int numberTimeBetweenArrives;
     private double lastArrive;
@@ -101,7 +104,7 @@ public class ModuleStatistics {
      * @return The average spended time of a single query on module
      */
     public double getW() {
-        return (getL() * timeBetweenArrives);
+        return (getW_q() + getW_s());
     }
 
     /**

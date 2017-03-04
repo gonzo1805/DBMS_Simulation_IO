@@ -9,7 +9,7 @@ import ucr.group1.simulation.Simulation;
 import ucr.group1.statistics.ModuleStatistics;
 
 /**
- * Created by Gonzalo on 2/8/2017.
+ * Created by Gonzalo and Daniel on 2/8/2017.
  */
 public abstract class Module<E> {
     protected Queue<E> queue;
@@ -87,5 +87,9 @@ public abstract class Module<E> {
      */
     public Generator getGenerator() {
         return generator;
+    }
+
+    public int getNumberOfBusyServers() {
+        return (numberOfServers - numberOfFreeServers);
     }
 }

@@ -3,11 +3,15 @@ import ucr.group1.generator.Generator;
 import static ucr.group1.query.QueryLabel.*;
 
 /**
- * Created by Daniel on 8/2/2017.
+ * Created by Daniel and Gonzalo on 8/2/2017.
  */
 
 
 public class QueryType {
+
+    /**
+     * Attributes
+     */
     private QueryLabel qType;
     private int priority;
     private boolean readOnly;

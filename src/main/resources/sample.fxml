@@ -13,7 +13,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="mainWindow" prefHeight="359.0" prefWidth="804.0" xmlns="http://javafx.com/javafx/8.0.111"
+<AnchorPane fx:id="mainWindow" prefHeight="362.0" prefWidth="1063.0" xmlns="http://javafx.com/javafx/8.0.111"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="ucr.group1.ui.Controller">
     <children>
         <Label layoutX="15.0" layoutY="41.0" text="Numero de Runs"/>
@@ -29,7 +29,7 @@
         <Label layoutX="15.0" layoutY="253.0" text="Timeout (T)"/>
         <TextField fx:id="txtTimeout" layoutX="15.0" layoutY="270.0" onAction="#enterTimeout"
                    onMouseClicked="#clickTimeout" prefHeight="25.0" prefWidth="50.0" text="Seg."/>
-        <Label layoutX="118.0" layoutY="41.0" text="Conecciones Concurrentes(K)"/>
+        <Label layoutX="118.0" layoutY="41.0" text="Conexiones Concurrentes(K)"/>
         <TextField fx:id="txtKConnection" layoutX="118.0" layoutY="58.0" onAction="#enterKConnection"
                    onMouseClicked="#clickKConnection" prefHeight="25.0" prefWidth="50.0"/>
         <Label layoutX="118.0" layoutY="94.0" text="Procesos Disp. (N)"/>
@@ -80,30 +80,30 @@
         </MenuBar>
         <Separator layoutX="278.0" layoutY="3.0" orientation="VERTICAL" prefHeight="359.0" prefWidth="13.0"/>
         <AmbientLight color="CHARTREUSE" lightOn="true"/>
-        <TextArea editable="false" layoutX="285.0" prefHeight="365.0" prefWidth="276.0" wrapText="true"/>
-        <Label layoutX="567.0" layoutY="5.0" text="Reloj del Sistema:"/>
-        <Label layoutX="716.0" layoutY="5.0" text="Label"/>
-        <ComboBox fx:id="comboBoxModule" layoutX="566.0" layoutY="103.0" prefWidth="150.0" promptText="Modulo"
-                  visibleRowCount="5"/>
-        <Label layoutX="567.0" layoutY="35.0" text="Evento actual:"/>
-        <Label layoutX="716.0" layoutY="35.0" text="Label"/>
-        <Label layoutX="567.0" layoutY="65.0" text="Conecciones Descartadas:"/>
-        <Label layoutX="716.0" layoutY="65.0" text="Label"/>
-        <Button fx:id="buttonRestartSimulation" layoutX="566.0" layoutY="318.0" mnemonicParsing="false"
+        <Label layoutX="690.0" layoutY="5.0" text="Reloj del Sistema:"/>
+        <Label fx:id="labelSimulationClock" layoutX="839.0" layoutY="5.0" text="Label"/>
+        <ComboBox fx:id="comboBoxModule" layoutX="689.0" layoutY="103.0" onAction="#chooseAnOption" prefWidth="150.0"
+                  promptText="Modulo" visibleRowCount="5"/>
+        <Label layoutX="690.0" layoutY="35.0" text="Evento actual:"/>
+        <Label fx:id="labelActualEvent" layoutX="839.0" layoutY="35.0" text="Label"/>
+        <Label layoutX="690.0" layoutY="65.0" text="Conecciones Descartadas:"/>
+        <Label fx:id="labelRejectedConections" layoutX="839.0" layoutY="65.0" text="Label"/>
+        <Button fx:id="buttonRestartSimulation" layoutX="689.0" layoutY="318.0" mnemonicParsing="false"
                 onAction="#clickRestart" text="Reiniciar"/>
-        <Button fx:id="buttonNewSimulation" layoutX="641.0" layoutY="318.0" mnemonicParsing="false" onAction="#clickNew"
+        <Button fx:id="buttonNewSimulation" layoutX="764.0" layoutY="318.0" mnemonicParsing="false" onAction="#clickNew"
                 text="Nueva Simulación"/>
-        <Label layoutX="567.0" layoutY="156.0" text="Cantidad de Servidores:"/>
-        <Label layoutX="716.0" layoutY="156.0" text="Label"/>
-        <Label layoutX="567.0" layoutY="186.0" text="Servidores ocupados:"/>
-        <Label layoutX="567.0" layoutY="216.0" text="Longitud de la cola:"/>
-        <Label layoutX="566.0" layoutY="246.0" text="Clientes servidos:"/>
-        <Label layoutX="716.0" layoutY="186.0" text="Label"/>
-        <Label layoutX="716.0" layoutY="216.0" text="Label"/>
-        <Label layoutX="716.0" layoutY="246.0" text="Label"/>
+        <Label layoutX="690.0" layoutY="156.0" text="Cantidad de Servidores:"/>
+        <Label fx:id="labelamountOfServers" layoutX="839.0" layoutY="156.0" text="Label"/>
+        <Label layoutX="690.0" layoutY="186.0" text="Servidores ocupados:"/>
+        <Label layoutX="690.0" layoutY="216.0" text="Longitud de la cola:"/>
+        <Label layoutX="689.0" layoutY="246.0" text="Clientes servidos:"/>
+        <Label fx:id="labelbusyServers" layoutX="839.0" layoutY="186.0" text="Label"/>
+        <Label fx:id="labelqueueLenght" layoutX="839.0" layoutY="216.0" text="Label"/>
+        <Label fx:id="labelclientsServed" layoutX="839.0" layoutY="246.0" text="Label"/>
         <RadioButton fx:id="radioButtonYes" layoutX="15.0" layoutY="174.0" mnemonicParsing="false"
                      onAction="#clickRadioButtonYes" text="Si"/>
         <RadioButton fx:id="radioButtonNo" layoutX="56.0" layoutY="174.0" mnemonicParsing="false"
                      onAction="#clickRadioButtonNo" selected="true" text="No"/>
+        <TextArea fx:id="txtArea" layoutX="285.0" layoutY="6.0" prefHeight="352.0" prefWidth="393.0"/>
     </children>
 </AnchorPane>

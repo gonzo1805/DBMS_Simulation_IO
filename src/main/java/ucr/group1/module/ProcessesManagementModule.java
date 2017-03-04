@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static ucr.group1.event.EventType.EXIT_PROCESSES_MANAGEMENT_MODULE;
 
 /**
- * Created by Gonzalo on 2/9/2017.
+ * Created by Gonzalo and Daniel on 2/9/2017.
  */
 public class ProcessesManagementModule extends Module<Query> {
 

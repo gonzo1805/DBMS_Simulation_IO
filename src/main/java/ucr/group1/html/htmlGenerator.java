@@ -3,11 +3,13 @@ package ucr.group1.html;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
 import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
 import ucr.group1.statistics.SimulationsStatistics;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,7 +21,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 /**
- * Created by Gonzalo on 2/20/2017.
+ * Created by Gonzalo and Daniel on 2/20/2017.
  */
 public class htmlGenerator {
 
@@ -57,6 +59,8 @@ public class htmlGenerator {
         // Give it the parameters of all the simulation
         insertGeneralParameters(context);
 
+        context.put("avgConectionsIfIndex", "");
+        context.put("avgCreatedConections", "");
         fillStatsPerModuleWithModuleStats(simulation.getClientManagementStatistics(), context, 0,
                 simulation.getQueryStatistics());
         fillStatsPerModuleWithModuleStats(simulation.getClientManagementStatistics(), context, 1,
@@ -74,11 +78,25 @@ public class htmlGenerator {
         String html = finalWriter.toString();
 
         try {
-            // Create the file, if it exist, delete it and create again
-            File file = new File("./src/main/resources/" + fileName + ".html");
-            file.delete();
-            file.createNewFile();
-            Files.write(Paths.get("./src/main/resources/" + fileName + ".html"), html.getBytes(), StandardOpenOption.APPEND);
+            boolean exists = new File("./src/main/resources/Statistics").exists();
+            if (exists) {
+                File file = new File("./src/main/resources/Statistics/" + fileName + ".html");
+                file.delete();
+                file.createNewFile();
+                Files.write(Paths.get("./src/main/resources/Statistics/" + fileName + ".html"), html.getBytes(),
+                        StandardOpenOption.APPEND);
+            } else {
+                boolean succes = new File("./src/main/resources/Statistics").mkdirs();
+                if (succes) {
+                    File file = new File("./src/main/resources/Statistics/" + fileName + ".html");
+                    file.delete();
+                    file.createNewFile();
+                    Files.write(Paths.get("./src/main/resources/Statistics/" + fileName + ".html"), html.getBytes(),
+                            StandardOpenOption.APPEND);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se pudo crear la carpeta", "Error", 0);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,20 +125,57 @@ public class htmlGenerator {
         context.put("ifIndex", "<h1>Estadísticas específicas por corrida</h1>");
         // Insert all the other simulations
         context.put("listOfSimulations", links);
+        // If index insert the avg Conections tries
+        context.put("avgConectionsIfIndex", "Número de conexiones que intentaron entrar en el sistema en promedio: ");
+        // Insert all the created queries
+        QueryStatistics queryStatistics = simulation.getQueryStatistics();
+        context.put("avgCreatedConections", getAllCreatedQueries(stats, queryStatistics) + "<br>");
         // Merge the Template
         StringWriter finalWriter = new StringWriter();
         ve.mergeTemplate("./src/main/resources/htmlGenerator.vcss", "utf-8", context, finalWriter);
         String html = finalWriter.toString();
 
         try {
+            if (Files.exists(Paths.get("./src/main/resources/Statistics"))) {
+                File file = new File("./src/main/resources/Statistics/index.html");
+                file.delete();
+                file.createNewFile();
+                Files.write(Paths.get("./src/main/resources/Statistics/index.html"), html.getBytes(), StandardOpenOption.APPEND);
+                if (!Files.exists(Paths.get("./src/main/resources/Statistics/indexStyle.css"))) {
+                    copyFileUsingJava7Files(new File("./src/main/resources/indexStyle.css"),
+                            new File("./src/main/resources/Statistics/indexStyle.css"));
+                }
+            } else {
+                boolean succes = new File("./src/main/resources/Statistics").mkdirs();
+                if (succes) {
+                    File file = new File("./src/main/resources/Statistics/index.html");
+                    file.delete();
+                    file.createNewFile();
+                    Files.write(Paths.get("./src/main/resources/Statistics/index.html"), html.getBytes(), StandardOpenOption.APPEND);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se pudo crear la carpeta", "Error", 0);
+                }
+            }
             // Create the file, if it exist, delete it and create again
-            File file = new File("./src/main/resources/index.html");
-            file.delete();
-            file.createNewFile();
-            Files.write(Paths.get("./src/main/resources/index.html"), html.getBytes(), StandardOpenOption.APPEND);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void copyFileUsingJava7Files(File source, File dest) throws IOException {
+        Files.copy(source.toPath(), dest.toPath());
+    }
+
+    /**
+     * Return the average of created queries of all the simulations in a set of runs
+     *
+     * @param simulationsStatistics the Statistics with the average of created queries
+     * @return the global average of created queries
+     */
+    private double getAllCreatedQueries(SimulationsStatistics simulationsStatistics, QueryStatistics queryStatistics) {
+        return (simulationsStatistics.getAverageKilledQueries() + simulationsStatistics.getAverageRejectedQueries() +
+                queryStatistics.getNumberServedQueries());
     }
 
     /**
@@ -225,11 +280,19 @@ public class htmlGenerator {
         // Avg time of clients on queue
         context.put("wq" + stringModule + "Module", stats.getW_q(module));
         // Avg time of clients on service
-        context.put("ws" + stringModule + "Module", stats.getL_s(module));
+        context.put("ws" + stringModule + "Module", stats.getW_s(module));
         // Leisure time of the module
         context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime(module));
     }
 
+    /**
+     * Fill the stats of the simulation, module by module, using the class ModuleStatistics for it
+     *
+     * @param stats           the stats for the fill
+     * @param context         the velocity context
+     * @param module          the module, from 0 to 4
+     * @param queryStatistics the stats from the queries
+     */
     private void fillStatsPerModuleWithModuleStats(ModuleStatistics stats, VelocityContext context, int module,
                                                    QueryStatistics queryStatistics) {
         // Switch to bypass the implementation of the parameters of the velocity template
@@ -281,7 +344,7 @@ public class htmlGenerator {
         // Avg time of clients on queue
         context.put("wq" + stringModule + "Module", stats.getW_q());
         // Avg time of clients on service
-        context.put("ws" + stringModule + "Module", stats.getL_s());
+        context.put("ws" + stringModule + "Module", stats.getW_s());
         // Leisure Time of the module
         context.put("leisureTime" + stringModule + "Module", stats.getLeisureTime());
     }

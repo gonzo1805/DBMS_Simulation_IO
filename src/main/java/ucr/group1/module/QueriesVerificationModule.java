@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import static ucr.group1.event.EventType.EXIT_VERIFICATION_MODULE;
 
 /**
- * Created by Gonzalo on 2/9/2017.
+ * Created by Gonzalo and Daniel on 2/9/2017.
  */
 public class QueriesVerificationModule extends Module<Query> {
 
