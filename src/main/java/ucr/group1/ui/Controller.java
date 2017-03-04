@@ -1,11 +1,17 @@
 package ucr.group1.ui;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -13,43 +19,43 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import ucr.group1.event.Event;
 import ucr.group1.html.htmlGenerator;
+import ucr.group1.query.Query;
 import ucr.group1.simulation.Simulation;
-import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.SimulationsStatistics;
 
 import javax.swing.*;
-import java.io.IOException;
+import javax.swing.Timer;
+import java.awt.event.ActionListener;
 import java.net.URL;
-import java.rmi.activation.ActivationID;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.concurrent.ThreadFactory;
+import java.sql.Time;
+import java.util.*;
+
+import static ucr.group1.event.EventType.A_NEW_QUERY_IS_REQUESTING;
 
 /**
  * Created by Gonzalo and Daniel on 2/20/2017.
  */
-public class Controller extends Application implements Initializable, Runnable {
+public class Controller extends Application implements Initializable {
 
     /**
      * Parameters of the simulation
      */
-    int kConcurrentConection;
-    int nVerificationServers;
-    int pExecutionServers;
-    int mTransactionServers;
-    int tTimeout;
-    boolean slowMode;
-    int timeBetEvents;
-    int simulationTime;
-    int amountOfRuns;
-    Simulation simulation;
-    SimulationsStatistics simulationsStatistics;
+    private int kConcurrentConection;
+    private int nVerificationServers;
+    private int pExecutionServers;
+    private int mTransactionServers;
+    private int tTimeout;
+    private boolean slowMode;
+    private int timeBetEvents;
+    private int simulationTime;
+    private int amountOfRuns;
+    private Simulation simulation;
+    private SimulationsStatistics simulationsStatistics;
+    final ToggleGroup group = new ToggleGroup();
 
     // A list for the comboBox of the UI
     ObservableList<String> modules = FXCollections.observableArrayList("ClientManagementModule", "System Call", "QueriesVerificationModule",
@@ -296,31 +302,55 @@ public class Controller extends Application implements Initializable, Runnable {
      * @param event
      */
     @FXML
+    Button botonStartSimulation;
+    private Timer innerTimer;
+    private TimerTask innerTask;
+    private Timeline timeline;
+    Task task;
+
+    @FXML
     void clickBotonStarSimulation(ActionEvent event) {
+        innerTimer = new Timer(1000, null);
+        innerTimer.setDelay(1000);
+
         // A list of all the names of the simulations, for purposes of the .html
         List<String> simulationList = new LinkedList<>();
         // Blocks the textFields
         setAllTextAreasDisabled();
         // The stats for each simulation
         simulationsStatistics = new SimulationsStatistics();
+
+        if (slowMode) {
+            Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(timeBetEvents), new EventHandler<ActionEvent>() {
+                int i = 0;
+
+                @Override
+                public void handle(ActionEvent event) {
+                    txtArea.appendText(toWrite.get(i).getLog());
+                    labelActualEvent.setText(toWrite.get(i).getEvent());
+                    labelSimulationClock.setText(String.valueOf(toWrite.get(i).getTime()));
+                    i++;
+                }
+            }));
+            fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
+            fiveSecondsWonder.play();
+        }
+
         // For every run (the parameter)
         for (int i = 1; i <= amountOfRuns; i++) {
             // A new simulation
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
                     mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime, this);
 
-            /*Thread thread = new Thread(this);
-            thread.start();*/
+            int idAssigner = 1;
+            Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING, 0, new Query(idAssigner++, simulation.getGenerator()));
+            simulation.addEvent(firstEvent);
+            while (simulation.getTime() < simulation.getTimePerSimulation()) {
+                simulation.processNextEvent(idAssigner);
+            }
 
-
-            /*Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    txtArea.appendText(toWrite + "\n");
-                }
-            });*/
             // Start it
-            simulation.simulate();
+
             // Get the stats of the simulation
             simulationsStatistics.addSimulation(simulation);
             // Create the personal html for this simulation
@@ -345,17 +375,24 @@ public class Controller extends Application implements Initializable, Runnable {
         htmlGenerator.createIndex(simulationList, simulationsStatistics);
         setAllTextAreasEnabled();
         // It`s finished
-        JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
+        if (!slowMode) {
+            JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
+        }
     }
 
     // This textArea and String is for the constant update of the UI in slow mode (unimplemented)
     @FXML
     private TextArea txtArea;
-    private String toWrite = "";
-    public void updateTextArea(String toWrite) {
-        txtArea.appendText(toWrite);
+
+    private LinkedList<Printer> toWrite = new LinkedList();
+
+    public void updateTextArea(Printer toWrite) {
+
+        this.toWrite.add(toWrite);
         //this.toWrite = toWrite;
         //labelActualEvent.setText(toWrite);
+        //timeline.play();
+
     }
 
     /**
@@ -409,8 +446,9 @@ public class Controller extends Application implements Initializable, Runnable {
         timeBetEvents = 0;
         simulationTime = 15000;
         tTimeout = 15;
+        radioButtonNo.setSelected(true);
         slowMode = false;
-        radioButtonNo.isSelected();
+        txtTimeBetEvents.setDisable(true);
     }
 
     /**
@@ -466,7 +504,6 @@ public class Controller extends Application implements Initializable, Runnable {
     public void initialize(URL location, ResourceBundle resources) {
         comboBoxModule.setValue("Modulo");
         comboBoxModule.setItems(modules);
-        final ToggleGroup group = new ToggleGroup();
         radioButtonNo.setToggleGroup(group);
         radioButtonYes.setToggleGroup(group);
         labelActualEvent.setText("");
@@ -519,7 +556,7 @@ public class Controller extends Application implements Initializable, Runnable {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("sample.fxml"));
         primaryStage.setTitle("Simulation Group 1 Main Menu");
-        primaryStage.setScene(new Scene(root, 850, 359));
+        primaryStage.setScene(new Scene(root, 1063, 359));
         primaryStage.show();
         txtArea = new TextArea();
     }
@@ -574,14 +611,5 @@ public class Controller extends Application implements Initializable, Runnable {
             default:
                 break;
         }
-    }
-
-    /**
-     * Method for the multi-thread task of the UI (unimplemented)
-     */
-    @Override
-    public void run() {
-        System.out.print("Entro");
-        simulation.simulate();
     }
 }

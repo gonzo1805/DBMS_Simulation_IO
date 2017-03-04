@@ -7,6 +7,7 @@ import ucr.group1.query.Query;
 import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
 import ucr.group1.ui.Controller;
+import ucr.group1.ui.Printer;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -89,62 +90,34 @@ public class Simulation {
         buildModulesAndStatistics();
     }
 
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
+
+    boolean finished = false;
+
+
     /**
      * Start and do all the behavior of the simulation
      */
-    public void simulate() {
-        int idAssigner = 1;
-        Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING, 0, new Query(idAssigner++, generator));
-        addEvent(firstEvent);
-        while (time < timePerSimulation) {
-            Event actualEvent = getNextEvent();
-            this.time = actualEvent.getTime();
-            switch (actualEvent.getEventType()) {
-                case A_NEW_QUERY_IS_REQUESTING:
-                    clientManagementModule.newQueryRequestingEvent(idAssigner, actualEvent);
-                    idAssigner++;
-                    break;
-                case A_QUERY_IS_FINISHED:
-                    clientManagementModule.aQueryIsFinishedEvent(actualEvent);
-                    break;
-                case EXIT_CLIENT_MANAGEMENT_MODULE:
-                    clientManagementModule.exitClientManagementEvent(actualEvent);
-                    break;
-                case EXIT_PROCESSES_MANAGEMENT_MODULE:
-                    processesManagementModule.exitProcessesManagementModule(actualEvent);
-                    break;
-                case EXIT_VERIFICATION_MODULE:
-                    queriesVerificationModule.exitVerificationModuleEvent(actualEvent);
-                    break;
-                case EXIT_TRANSACTIONS_MODULE:
-                    transactionsModule.exitTransactionsModuleEvent(actualEvent);
-                    break;
-                case EXIT_EXECUTION_MODULE:
-                    queriesExecutionModule.exitExecutionModuleEvent(actualEvent);
-                    break;
-                case KILL:
-                    if (actualEvent.getQuery().isBeingServed()) {
-                        actualEvent.getQuery().kill();
-                    } else {
-                        kickTheQueryFromAQueue(actualEvent.getQuery());
-                        getQueryStatistics().aQueryIsKilled();
-                    }
-                    addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, " +
-                            "it will be kicked out");
-                    break;
+    Timer timer = new Timer();
+    TimerTask taks = new TimerTask() {
+        @Override
+        public void run() {
+            try {
+                this.wait(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            while(!timeLogAux.isEmpty()){
-                String toWrite = timeLogAux.poll() + "\n";
-                controller.updateTextArea(toWrite);
-                /*try {
-                    Thread.sleep((long) timeBetweenEvents * 1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
-            }
-            updateAllTheLOfStatistics();
-            finalizeEvent(actualEvent);
         }
+    };
+
+    public void simulate() {
+
     }
 
     /**
@@ -155,13 +128,63 @@ public class Simulation {
     public void addLineInTimeLog(String line) {
         line = getTimeInHHMMSS() + line;
         timeLog.add(line);
-        //timeLogAux.add(line);
+        timeLogAux.add(line);
+    }
+
+    public void processNextEvent(int idAssigner) {
+        Event actualEvent = getNextEvent();
+        this.time = actualEvent.getTime();
+        switch (actualEvent.getEventType()) {
+            case A_NEW_QUERY_IS_REQUESTING:
+                clientManagementModule.newQueryRequestingEvent(idAssigner, actualEvent);
+                idAssigner++;
+                break;
+            case A_QUERY_IS_FINISHED:
+                clientManagementModule.aQueryIsFinishedEvent(actualEvent);
+                break;
+            case EXIT_CLIENT_MANAGEMENT_MODULE:
+                clientManagementModule.exitClientManagementEvent(actualEvent);
+                break;
+            case EXIT_PROCESSES_MANAGEMENT_MODULE:
+                processesManagementModule.exitProcessesManagementModule(actualEvent);
+                break;
+            case EXIT_VERIFICATION_MODULE:
+                queriesVerificationModule.exitVerificationModuleEvent(actualEvent);
+                break;
+            case EXIT_TRANSACTIONS_MODULE:
+                transactionsModule.exitTransactionsModuleEvent(actualEvent);
+                break;
+            case EXIT_EXECUTION_MODULE:
+                queriesExecutionModule.exitExecutionModuleEvent(actualEvent);
+                break;
+            case KILL:
+                if (actualEvent.getQuery().isBeingServed()) {
+                    actualEvent.getQuery().kill();
+                } else {
+                    kickTheQueryFromAQueue(actualEvent.getQuery());
+                    getQueryStatistics().aQueryIsKilled();
+                }
+                addLineInTimeLog("The query " + actualEvent.getQuery().getId() + " have reached his timeout, " +
+                        "it will be kicked out");
+                break;
+        }
+        String toWrite = "";
+        while (!timeLogAux.isEmpty()) {
+            toWrite = toWrite + timeLogAux.poll() + "\n";
+        }
+        controller.updateTextArea(new Printer((int) time, String.valueOf(actualEvent.getEventType()), toWrite));
+        updateAllTheLOfStatistics();
+        finalizeEvent(actualEvent);
     }
 
     /********************************************** GETTERS ***********************************************************/
 
     public int getNumberBusyServersOnClientManagementModule() {
         return clientManagementModule.getNumberOfBusyServers();
+    }
+
+    public int getTimePerSimulation() {
+        return timePerSimulation;
     }
 
     public int getNumberBusyServersOnProcessesManagementModule() {
