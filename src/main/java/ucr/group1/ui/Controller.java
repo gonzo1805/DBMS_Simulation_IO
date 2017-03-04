@@ -301,29 +301,30 @@ public class Controller extends Application implements Initializable {
      *
      * @param event
      */
-    @FXML
-    Button botonStartSimulation;
-    private Timer innerTimer;
-    private TimerTask innerTask;
-    private Timeline timeline;
-    Task task;
 
     @FXML
     void clickBotonStarSimulation(ActionEvent event) {
-        innerTimer = new Timer(1000, null);
-        innerTimer.setDelay(1000);
-
+        // If you want the html with the stats
+        int input = JOptionPane.showConfirmDialog(null, "¿Desea crear HTML para cada simulación?", "Html", JOptionPane.YES_NO_OPTION);
+        // If yes
+        if (input == 0) {
+            JOptionPane.showMessageDialog(null,
+                    "Los Html serán creados en la carpeta DBMS_Simulation_IO\\src\\main\\resources\\Statistics");
+        }
         // A list of all the names of the simulations, for purposes of the .html
         List<String> simulationList = new LinkedList<>();
         // Blocks the textFields
         setAllTextAreasDisabled();
         // The stats for each simulation
         simulationsStatistics = new SimulationsStatistics();
-
+        // If the user choose the slow mode on
         if (slowMode) {
-            Timeline fiveSecondsWonder = new Timeline(new KeyFrame(Duration.seconds(timeBetEvents), new EventHandler<ActionEvent>() {
+            // The timeline that inserts the delay assigned by the user
+            Timeline delay = new Timeline(new KeyFrame(Duration.seconds(timeBetEvents), new EventHandler<ActionEvent>() {
+                // Counter
                 int i = 0;
 
+                // Set the labels and write on the textArea
                 @Override
                 public void handle(ActionEvent event) {
                     txtArea.appendText(toWrite.get(i).getLog());
@@ -332,25 +333,25 @@ public class Controller extends Application implements Initializable {
                     i++;
                 }
             }));
-            fiveSecondsWonder.setCycleCount(Timeline.INDEFINITE);
-            fiveSecondsWonder.play();
+            // Work indefinite
+            delay.setCycleCount(Timeline.INDEFINITE);
+            // Start
+            delay.play();
         }
-
         // For every run (the parameter)
         for (int i = 1; i <= amountOfRuns; i++) {
             // A new simulation
             simulation = new Simulation(kConcurrentConection, nVerificationServers, pExecutionServers,
                     mTransactionServers, tTimeout, slowMode, timeBetEvents, simulationTime, this);
-
+            // The simulation ID
             int idAssigner = 1;
             Event firstEvent = new Event(A_NEW_QUERY_IS_REQUESTING, 0, new Query(idAssigner++, simulation.getGenerator()));
+            // Add the first event
             simulation.addEvent(firstEvent);
+            // Start it
             while (simulation.getTime() < simulation.getTimePerSimulation()) {
                 simulation.processNextEvent(idAssigner);
             }
-
-            // Start it
-
             // Get the stats of the simulation
             simulationsStatistics.addSimulation(simulation);
             // Create the personal html for this simulation
@@ -359,7 +360,10 @@ public class Controller extends Application implements Initializable {
             personalHtml.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                     nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
             // Create the html
-            personalHtml.crea("simulation" + i, String.valueOf(i), simulation);
+            if (input == 0) {
+                // Create the html of the personal simulations
+                personalHtml.crea("simulation" + i, String.valueOf(i), simulation);
+            }
             // Create the list for the links on the main
             simulationList.add("simulation" + i + ".html");
 
@@ -372,27 +376,29 @@ public class Controller extends Application implements Initializable {
         htmlGenerator.fillParameters(simulation, amountOfRuns, kConcurrentConection, pExecutionServers, mTransactionServers,
                 nVerificationServers, timeBetEvents, simulationTime, tTimeout, slowMode);
         // Create the index html
-        htmlGenerator.createIndex(simulationList, simulationsStatistics);
+        if (input == 0) {
+            htmlGenerator.createIndex(simulationList, simulationsStatistics);
+        }
         setAllTextAreasEnabled();
-        // It`s finished
+        // It`s finished!
         if (!slowMode) {
             JOptionPane.showMessageDialog(null, "La simulación se ha completado", "Finalizada", 1);
         }
     }
 
-    // This textArea and String is for the constant update of the UI in slow mode (unimplemented)
+    // This textArea and Linked List is for the constant update of the UI in slow mode
     @FXML
     private TextArea txtArea;
 
     private LinkedList<Printer> toWrite = new LinkedList();
 
+    /**
+     * Update the LinkedList with the Printers objects to show on screen in case of SlowMode == true
+     *
+     * @param toWrite
+     */
     public void updateTextArea(Printer toWrite) {
-
         this.toWrite.add(toWrite);
-        //this.toWrite = toWrite;
-        //labelActualEvent.setText(toWrite);
-        //timeline.play();
-
     }
 
     /**
@@ -559,6 +565,8 @@ public class Controller extends Application implements Initializable {
         primaryStage.setScene(new Scene(root, 1063, 359));
         primaryStage.show();
         txtArea = new TextArea();
+        // On close action shut down all te app
+        primaryStage.setOnCloseRequest(e -> System.exit(0));
     }
 
     /**
@@ -607,7 +615,6 @@ public class Controller extends Application implements Initializable {
                 labelqueueLenght.setText(String.valueOf(simulationsStatistics.getL_q(4)));
                 labelclientsServed.setText(String.valueOf(simulationsStatistics.getAmountOfServedQueries(4)));
                 break;
-
             default:
                 break;
         }

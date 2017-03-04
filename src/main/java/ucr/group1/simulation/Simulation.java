@@ -90,36 +90,6 @@ public class Simulation {
         buildModulesAndStatistics();
     }
 
-    public boolean isFinished() {
-        return finished;
-    }
-
-    public void setFinished(boolean finished) {
-        this.finished = finished;
-    }
-
-    boolean finished = false;
-
-
-    /**
-     * Start and do all the behavior of the simulation
-     */
-    Timer timer = new Timer();
-    TimerTask taks = new TimerTask() {
-        @Override
-        public void run() {
-            try {
-                this.wait(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    };
-
-    public void simulate() {
-
-    }
-
     /**
      * Add a line on a timeLog for debug purposes
      *
@@ -131,10 +101,15 @@ public class Simulation {
         timeLogAux.add(line);
     }
 
+    /**
+     * Process the Next Event
+     *
+     * @param idAssigner the number of the event
+     */
     public void processNextEvent(int idAssigner) {
         Event actualEvent = getNextEvent();
         this.time = actualEvent.getTime();
-        switch (actualEvent.getEventType()) {
+        switch (actualEvent.getEventType()) {// What type of event is
             case A_NEW_QUERY_IS_REQUESTING:
                 clientManagementModule.newQueryRequestingEvent(idAssigner, actualEvent);
                 idAssigner++;
@@ -168,11 +143,14 @@ public class Simulation {
                         "it will be kicked out");
                 break;
         }
-        String toWrite = "";
-        while (!timeLogAux.isEmpty()) {
-            toWrite = toWrite + timeLogAux.poll() + "\n";
+        // Create the Printer object to send it to the UI for its print, on slowMode == true
+        if (slowMode) {
+            String toWrite = "";
+            while (!timeLogAux.isEmpty()) {
+                toWrite = toWrite + timeLogAux.poll() + "\n";
+            }
+            controller.updateTextArea(new Printer((int) time, String.valueOf(actualEvent.getEventType()), toWrite));
         }
-        controller.updateTextArea(new Printer((int) time, String.valueOf(actualEvent.getEventType()), toWrite));
         updateAllTheLOfStatistics();
         finalizeEvent(actualEvent);
     }

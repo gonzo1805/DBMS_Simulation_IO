@@ -9,6 +9,7 @@ import ucr.group1.statistics.ModuleStatistics;
 import ucr.group1.statistics.QueryStatistics;
 import ucr.group1.statistics.SimulationsStatistics;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -77,11 +78,25 @@ public class htmlGenerator {
         String html = finalWriter.toString();
 
         try {
-            // Create the file, if it exist, delete it and create again
-            File file = new File("./src/main/resources/" + fileName + ".html");
-            file.delete();
-            file.createNewFile();
-            Files.write(Paths.get("./src/main/resources/" + fileName + ".html"), html.getBytes(), StandardOpenOption.APPEND);
+            boolean exists = new File("./src/main/resources/Statistics").exists();
+            if (exists) {
+                File file = new File("./src/main/resources/Statistics/" + fileName + ".html");
+                file.delete();
+                file.createNewFile();
+                Files.write(Paths.get("./src/main/resources/Statistics/" + fileName + ".html"), html.getBytes(),
+                        StandardOpenOption.APPEND);
+            } else {
+                boolean succes = new File("./src/main/resources/Statistics").mkdirs();
+                if (succes) {
+                    File file = new File("./src/main/resources/Statistics/" + fileName + ".html");
+                    file.delete();
+                    file.createNewFile();
+                    Files.write(Paths.get("./src/main/resources/Statistics/" + fileName + ".html"), html.getBytes(),
+                            StandardOpenOption.APPEND);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se pudo crear la carpeta", "Error", 0);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -121,14 +136,35 @@ public class htmlGenerator {
         String html = finalWriter.toString();
 
         try {
+            if (Files.exists(Paths.get("./src/main/resources/Statistics"))) {
+                File file = new File("./src/main/resources/Statistics/index.html");
+                file.delete();
+                file.createNewFile();
+                Files.write(Paths.get("./src/main/resources/Statistics/index.html"), html.getBytes(), StandardOpenOption.APPEND);
+                if (!Files.exists(Paths.get("./src/main/resources/Statistics/indexStyle.css"))) {
+                    copyFileUsingJava7Files(new File("./src/main/resources/indexStyle.css"),
+                            new File("./src/main/resources/Statistics/indexStyle.css"));
+                }
+            } else {
+                boolean succes = new File("./src/main/resources/Statistics").mkdirs();
+                if (succes) {
+                    File file = new File("./src/main/resources/Statistics/index.html");
+                    file.delete();
+                    file.createNewFile();
+                    Files.write(Paths.get("./src/main/resources/Statistics/index.html"), html.getBytes(), StandardOpenOption.APPEND);
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se pudo crear la carpeta", "Error", 0);
+                }
+            }
             // Create the file, if it exist, delete it and create again
-            File file = new File("./src/main/resources/index.html");
-            file.delete();
-            file.createNewFile();
-            Files.write(Paths.get("./src/main/resources/index.html"), html.getBytes(), StandardOpenOption.APPEND);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void copyFileUsingJava7Files(File source, File dest) throws IOException {
+        Files.copy(source.toPath(), dest.toPath());
     }
 
     /**

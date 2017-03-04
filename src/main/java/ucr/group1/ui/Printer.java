@@ -1,9 +1,14 @@
 package ucr.group1.ui;
 
 /**
- * Created by Gonzalo on 3/3/2017.
+ * Class made only to display data on the UI
+ * Created by Gonzalo and Daniel on 3/3/2017.
  */
 public class Printer {
+
+    /**
+     * Attributes
+     */
     int time;
     String event;
     String log;
@@ -32,6 +37,13 @@ public class Printer {
         this.log = log;
     }
 
+    /**
+     * Constructor
+     *
+     * @param time  The time at the query is processed
+     * @param event The event that is processes
+     * @param log   The line that is gonna be displayed on textArea
+     */
     public Printer(int time, String event, String log) {
         this.time = time;
         this.event = event;
