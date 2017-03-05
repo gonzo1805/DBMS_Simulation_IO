@@ -98,7 +98,9 @@ public class Simulation {
     public void addLineInTimeLog(String line) {
         line = getTimeInHHMMSS() + line;
         timeLog.add(line);
-        timeLogAux.add(line);
+        if (slowMode) {
+            timeLogAux.add(line);
+        }
     }
 
     /**
@@ -313,6 +315,9 @@ public class Simulation {
         return queriesExecutionModule.getStatistics();
     }
 
+    /**
+     * Update all the statistics
+     */
     public void updateAllTheLOfStatistics() {
         clientManagementModule.updateL_sStatistics();
         processesManagementModule.updateL_sStatistics();
@@ -326,7 +331,7 @@ public class Simulation {
     }
 
     /**
-     * Creates a time log for debug purposes
+     * Creates a time log for debug purposes, right now it is disabled
      * @param name the name of the time log
      */
     public void createATimeLogArchive(String name) {
@@ -338,6 +343,4 @@ public class Simulation {
             e.printStackTrace();
         }
     }
-
-
 }

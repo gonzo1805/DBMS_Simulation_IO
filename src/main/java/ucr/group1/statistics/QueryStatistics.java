@@ -48,6 +48,11 @@ public class QueryStatistics {
         return numberAverageLifespan;
     }
 
+    /**
+     * Add a finished query to the general stats of Average Lifespan
+     *
+     * @param q
+     */
     public void addFinishedQuery(Query q){
         numberAverageLifespan++;
         double percentage = (1.0-(1.0/numberAverageLifespan));

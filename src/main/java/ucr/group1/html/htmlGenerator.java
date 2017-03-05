@@ -77,6 +77,7 @@ public class htmlGenerator {
         ve.mergeTemplate("./src/main/resources/htmlGenerator.vcss", "utf-8", context, finalWriter);
         String html = finalWriter.toString();
 
+        // Creates the folder Statistics, if it exists just creates the files
         try {
             boolean exists = new File("./src/main/resources/Statistics").exists();
             if (exists) {
@@ -135,6 +136,7 @@ public class htmlGenerator {
         ve.mergeTemplate("./src/main/resources/htmlGenerator.vcss", "utf-8", context, finalWriter);
         String html = finalWriter.toString();
 
+        // Creates the folder Statistics, if it exists just creates the files
         try {
             if (Files.exists(Paths.get("./src/main/resources/Statistics"))) {
                 File file = new File("./src/main/resources/Statistics/index.html");
