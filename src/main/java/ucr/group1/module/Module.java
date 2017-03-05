@@ -41,8 +41,14 @@ public abstract class Module<E> {
      */
     public abstract Query aQueryFinished();
 
+    /**
+     * Update the average amount of queries beign seved statistic
+     */
     public abstract void updateL_sStatistics();
 
+    /**
+     * Update the average size of the queue statistic
+     */
     public abstract void updateL_qStatistics();
 
     /**

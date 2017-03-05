@@ -148,48 +148,89 @@ public class SimulationsStatistics {
         return averageKilledQueries;
     }
 
+    /**
+     * Update the lambda value for the module specified by parameter
+     *
+     * @param newLambda the new lambda value
+     * @param nModule   the module
+     */
     private void updateLambda(double newLambda, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
         lambda[nModule] *= percentage;
         lambda[nModule] += (1.0 - percentage) * newLambda;
     }
 
+    /**
+     * Update the Mu value for the module specified by parameter
+     * @param newMu the new Mu value
+     * @param nModule the module
+     */
     private void updateMu(double newMu, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
         mu[nModule] *= percentage;
         mu[nModule] += (1.0 - percentage) * newMu;
     }
 
+    /**
+     * Update the L_q value for the module specified by parameter
+     * @param newL_q the new L_q value
+     * @param nModule the module
+     */
     private void updateL_Q(double newL_q, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
         l_q[nModule] *= percentage;
         l_q[nModule] += (1.0 - percentage) * newL_q;
     }
 
+    /**
+     * Update the L_s value for the module specified by parameter
+     * @param newL_s the new L_s value
+     * @param nModule the module
+     */
     private void updateL_S(double newL_s, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
         l_s[nModule] *= percentage;
         l_s[nModule] += (1.0 - percentage) * newL_s;
     }
 
+    /**
+     * Update the L value for the module specified by parameter
+     * @param newL the new L value
+     * @param nModule the module
+     */
     private void updateL(double newL, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
         l[nModule] *= percentage;
         l[nModule] += (1.0 - percentage) * newL;
     }
 
+    /**
+     * Update the W_q value for the module specified by parameter
+     * @param newW_q the new W_q value
+     * @param nModule the module
+     */
     private void updateW_Q(double newW_q, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
         w_q[nModule] *= percentage;
         w_q[nModule] += (1.0 - percentage) * newW_q;
     }
 
+    /**
+     * Update the W_s value for the module specified by parameter
+     * @param newW_s the new W_s value
+     * @param nModule the module
+     */
     private void updateW_S(double newW_s, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
         w_s[nModule] *= percentage;
         w_s[nModule] += (1.0 - percentage) * newW_s;
     }
 
+    /**
+     * Update the W value for the module specified by parameter
+     * @param newW the new W value
+     * @param nModule the module
+     */
     private void updateW(double newW, int nModule) {
         double percentage = (1.0-(1.0/totalSimulations));
         w[nModule] *= percentage;
@@ -222,42 +263,73 @@ public class SimulationsStatistics {
         }
     }
 
+    /**
+     * Update the served queries value for the module specified by parameter
+     * @param newServed the new served queries value
+     * @param nModule the module
+     */
     private void updateAverageServedQueries(double newServed, int nModule){
         double percentage = (1.0-(1.0/totalSimulations));
         averageServedQueries[nModule] *= percentage;
         averageServedQueries[nModule] += (1.0 - percentage)*newServed;
     }
 
+    /**
+     * Update the Rho value for the module specified by parameter
+     * @param newRho the new Rho value
+     * @param nModule the module
+     */
     private void updateRho(double newRho, int nModule){
         double percentage = (1.0-(1.0/totalSimulations));
         rho[nModule] *= percentage;
         rho[nModule] += (1.0 - percentage) * newRho;
     }
 
+    /**
+     * Update the LeisureTime value for the module specified by parameter
+     * @param newLeisureTime the new LeisureTime value
+     * @param nModule the module
+     */
     private void updateLeisureTime(double newLeisureTime, int nModule){
         double percentage = (1.0-(1.0/totalSimulations));
         leisureTime[nModule] *= percentage;
         leisureTime[nModule] += (1.0 - percentage) * newLeisureTime;
     }
 
+    /**
+     * Update the Rejected queries value
+     * @param newRejected the new Rejected queries value
+     */
     private void updateAverageRejectedQueries(double newRejected){
         double percentage = (1.0-(1.0/totalSimulations));
         averageRejectedQueries *= percentage;
         averageRejectedQueries += (1 - percentage)*newRejected;
     }
 
+    /**
+     * Update the Killed queries value
+     * @param newKilled the new Killed queries value
+     */
     private void updateAverageKilledQueries(double newKilled){
         double percentage = (1.0-(1.0/totalSimulations));
         averageKilledQueries *= percentage;
         averageKilledQueries += (1.0 - percentage)*newKilled;
     }
 
+    /**
+     * Update the Lifespan value
+     * @param newLifespan the new Lifespan value
+     */
     private void updateAverageLifespan(double newLifespan){
         double percentage = (1.0-(1.0/totalSimulations));
         averageLifespan *= percentage;
         averageLifespan += (1.0 - percentage)*newLifespan;
     }
 
+    /**
+     * Add the simulation to the general statistics sheet
+     * @param simulation
+     */
     public void addSimulation(Simulation simulation){
         totalSimulations++;
         //CLIENT MANAGEMENT MODULE
